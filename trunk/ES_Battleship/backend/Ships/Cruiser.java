@@ -22,7 +22,7 @@ public class Cruiser implements IShip {
 	 * Returns the symbol to represent each unit of the ship.
 	 * @see backend.IShip#getSymbol()
 	 */
-	public String getSymbol() {
-		return "c";
+	public char getSymbol() {
+		return 'c';
 	}
 }

@@ -22,7 +22,7 @@ public class Battleship implements IShip {
 	 * Returns the symbol to represent each unit of the ship.
 	 * @see backend.IShip#getSymbol()
 	 */
-	public String getSymbol() {
-		return "b";
+	public char getSymbol() {
+		return 'b';
 	}
 }

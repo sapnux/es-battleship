@@ -19,7 +19,8 @@ public class Board {
 	/*
 	 * Populate the board with empty asteriks. 
 	 */
-	public Board() {
+	public Board()
+	{
 		for(int i = 0; i < this.board.length - 1; i++)
 		{
 			for(int j = 0; j < this.board.length - 1; j++)
@@ -33,9 +34,9 @@ public class Board {
 	/*
 	 * Adds the given ship to the board at the given coordinates and orientation.
 	 */
-	public void add(IShip ship, int x, int y) {
+	public void add(IShip ship, int x, int y)
+	{
 		Logger.LogInfo("adding " + ship.getName() + "..");
-		int size = ship.getSize();
 		
 		if(this.board[x][y] == Constants.BOARD_EMPTY)
 		{
@@ -46,7 +47,8 @@ public class Board {
 	/*
 	 * Prints out an ASCII version of the current board. Helpful for debugging.
 	 */
-	public void print() {
+	public void print()
+	{
 		for(int i = 0; i < this.board.length - 1; i++)
 		{
 			for(int j = 0; j < this.board.length - 1; j++)

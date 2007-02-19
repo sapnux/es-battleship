@@ -22,7 +22,7 @@ public class AircraftCarrier implements IShip {
 	 * Returns the symbol to represent each unit of the ship.
 	 * @see backend.IShip#getSymbol()
 	 */
-	public String getSymbol() {
-		return "a";
+	public char getSymbol() {
+		return 'a';
 	}
 }
