@@ -22,7 +22,7 @@ public class Submarine implements IShip {
 	 * Returns the symbol to represent each unit of the ship.
 	 * @see backend.IShip#getSymbol()
 	 */
-	public String getSymbol() {
-		return "s";
+	public char getSymbol() {
+		return 's';
 	}
 }

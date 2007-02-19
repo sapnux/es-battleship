@@ -22,7 +22,7 @@ public class PatrolBoat implements IShip {
 	 * Returns the symbol to represent each unit of the ship.
 	 * @see backend.IShip#getSymbol()
 	 */
-	public String getSymbol() {
-		return "p";
+	public char getSymbol() {
+		return 'p';
 	}
 }
