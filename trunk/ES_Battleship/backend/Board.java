@@ -1,6 +1,7 @@
 package backend;
 
 import backend.Ships.IShip;
+import backend.util.Logger;
 
 /* Board Symbols:
  *	a = Aircraft Carrier (length of 5)
