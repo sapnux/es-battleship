@@ -1,4 +1,4 @@
-package backend;
+package backend.util;
 
 /*
  * Encapsulates the logging framework.
