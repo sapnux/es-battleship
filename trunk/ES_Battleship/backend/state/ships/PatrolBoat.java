@@ -1,4 +1,4 @@
-package backend.Ships;
+package backend.state.ships;
 
 public class PatrolBoat implements IShip {
 	

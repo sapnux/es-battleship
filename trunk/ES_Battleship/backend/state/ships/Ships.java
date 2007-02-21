@@ -1,4 +1,4 @@
-package backend.Ships;
+package backend.state.ships;
 
 /*
  * Returns instance of each ship using the singleton pattern.

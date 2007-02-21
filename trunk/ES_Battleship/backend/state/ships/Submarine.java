@@ -1,13 +1,13 @@
-package backend.Ships;
+package backend.state.ships;
 
-public class Battleship implements IShip {
+public class Submarine implements IShip {
 	
 	/*
 	 * Returns the friendly name of the ship.
 	 * @see backend.IShip#getName()
 	 */
 	public String getName() {
-		return "Battleship";
+		return "Submarine";
 	}
 	
 	/*
@@ -15,7 +15,7 @@ public class Battleship implements IShip {
 	 * @see backend.IShip#getSize()
 	 */
 	public int getSize() {
-		return 4;
+		return 3;
 	}
 	
 	/*
@@ -23,6 +23,6 @@ public class Battleship implements IShip {
 	 * @see backend.IShip#getSymbol()
 	 */
 	public char getSymbol() {
-		return 'b';
+		return 's';
 	}
 }
