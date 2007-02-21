@@ -1,6 +1,6 @@
-package backend;
+package backend.state;
 
-import backend.Ships.IShip;
+import backend.state.ships.IShip;
 import backend.util.Logger;
 
 /* Board Symbols:

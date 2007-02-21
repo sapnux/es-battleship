@@ -1,4 +1,4 @@
-package backend.Ships;
+package backend.state.ships;
 
 public interface IShip {
 	String getName();

@@ -1,4 +1,6 @@
-package backend;
+package backend.client;
+
+import backend.state.Board;
 
 public class Client implements IClient {
 	private Board board;
