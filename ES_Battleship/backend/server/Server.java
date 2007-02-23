@@ -10,6 +10,7 @@ public class Server {
 	protected static int com_port;  //port for the server to listen/respond on
 	protected static ServerConsole serverConsole;
 	
+	
 	public static void main (String args[]) {
 		com_port = Integer.parseInt(args[0]);
 		serverConsole = new ServerConsole();
@@ -19,14 +20,16 @@ public class Server {
 		try {
     		ServerSocketFactory sf = ServerSocketFactory.getDefault();
 			ServerSocket com_sock = sf.createServerSocket(com_port);
-
+			
+			
         	while (true) {
         		new ServerThread(com_sock.accept()).start();
         	}
         	
 		} catch (IOException e) {
-			serverConsole.write("IMServer: Exception " + e);
+			serverConsole.write("Server: Exception " + e);
       		System.out.println("Exception " + e);
     	}
-	}	
+	}
+	
 }
