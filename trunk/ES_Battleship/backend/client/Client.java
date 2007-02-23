@@ -9,7 +9,9 @@ import java.util.StringTokenizer;
 
 import javax.net.SocketFactory;
 
+import backend.server.ServerThread;
 import backend.state.Board;
+import backend.util.MsgUtils;
 
 public class Client implements IClient {
 	private Board playerBoard;
@@ -17,6 +19,7 @@ public class Client implements IClient {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
+	private ClientListenThread listener;
 
 	/*
 	 * 
@@ -36,6 +39,8 @@ public class Client implements IClient {
 			socket = sf.createSocket(server,Integer.parseInt(port));
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
+			listener = new ClientListenThread(socket);
+			listener.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,6 +56,7 @@ public class Client implements IClient {
 			out.close();
 			in.close();
 			socket.close();
+			listener.stopListener();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,8 +70,8 @@ public class Client implements IClient {
 	public boolean move(int x, int y) {
 		boolean isValidMove = false;
 		try {
-			String pack = "1|"+Integer.toString(x)+"|"+Integer.toString(y);
-			out.println(pack);
+			listener.yield();
+			MsgUtils.sendMoveMessage(out, x, y);
 			String reply = in.readLine();
 	        System.out.println(reply);
 	        StringTokenizer st = new StringTokenizer(reply,"|");
@@ -90,8 +96,7 @@ public class Client implements IClient {
 	}
 	
 	public void sendTestPacket() {
-		String pack = "0|test";
-		out.println(pack);
+		MsgUtils.sendTestMessage(out);
 	}
 	
 }
