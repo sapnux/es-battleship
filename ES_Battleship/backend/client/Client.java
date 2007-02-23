@@ -1,15 +1,29 @@
 package backend.client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.StringTokenizer;
+
+import javax.net.SocketFactory;
+
 import backend.state.Board;
 
 public class Client implements IClient {
-	private Board board;
+	private Board playerBoard;
+	private Board opponentBoard;
+	private Socket socket;
+	private BufferedReader in;
+	private PrintWriter out;
 
 	/*
 	 * 
 	 */
 	public Client(Board board) {
-		this.board = board;
+		this.playerBoard = board;
+		this.opponentBoard = new Board();
 	}
 	
 	/*
@@ -17,7 +31,15 @@ public class Client implements IClient {
 	 * @see backend.IClient#connect(java.lang.String, java.lang.String)
 	 */
 	public void connect(String server, String port) {
-		
+		SocketFactory sf = SocketFactory.getDefault();
+		try {
+			socket = sf.createSocket(server,Integer.parseInt(port));
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new PrintWriter(socket.getOutputStream(), true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -25,7 +47,14 @@ public class Client implements IClient {
 	 * @see backend.IClient#disconnect()
 	 */
 	public void disconnect() {
-		
+		try {
+			out.close();
+			in.close();
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -33,7 +62,23 @@ public class Client implements IClient {
 	 * @see backend.IClient#move(int, int)
 	 */
 	public boolean move(int x, int y) {
-		return true;
+		boolean isValidMove = false;
+		try {
+			String pack = "1|"+Integer.toString(x)+"|"+Integer.toString(y);
+			out.println(pack);
+			String reply = in.readLine();
+	        System.out.println(reply);
+	        StringTokenizer st = new StringTokenizer(reply,"|");
+	        isValidMove = false;
+	        if (Integer.parseInt(st.nextToken()) == 2) {
+	        	isValidMove = Boolean.parseBoolean(st.nextToken());
+	        	System.out.println(isValidMove);
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return isValidMove;
 	}
 
 	/*
@@ -41,6 +86,16 @@ public class Client implements IClient {
 	 * @see backend.IClient#getBoard()
 	 */
 	public Board getBoard() {
-		return this.board;
+		return this.playerBoard;
 	}
+	
+	public void sendTestPacket() {
+		String pack = "0|test";
+		out.println(pack);
+	}
+	
 }
+
+
+
+
