@@ -24,10 +24,10 @@ public class Client implements IClient {
 	/*
 	 * 
 	 */
-	public Client() {
+	public Client(Board board) {
 		Random r = new Random();
 		int randint = r.nextInt(100000);
-		player = new Player(String.valueOf(randint), new Board());
+		player = new Player(String.valueOf(randint), board);
 	}
 	
 	/*
@@ -40,8 +40,8 @@ public class Client implements IClient {
 			socket = sf.createSocket(server,Integer.parseInt(port));
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
-			listener = new ClientListenThread(socket);
-			listener.start();
+//			listener = new ClientListenThread(socket);
+//			listener.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,7 +57,7 @@ public class Client implements IClient {
 			out.close();
 			in.close();
 			socket.close();
-			listener.stopListener();
+//			listener.stopListener();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
