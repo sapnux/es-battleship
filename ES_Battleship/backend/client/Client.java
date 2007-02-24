@@ -5,17 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import javax.net.SocketFactory;
 
-import backend.server.ServerThread;
 import backend.state.Board;
+import backend.state.Player;
 import backend.util.MsgUtils;
 
 public class Client implements IClient {
-	private Board playerBoard;
-	private Board opponentBoard;
+	private Player player;
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
@@ -24,9 +24,10 @@ public class Client implements IClient {
 	/*
 	 * 
 	 */
-	public Client(Board board) {
-		this.playerBoard = board;
-		this.opponentBoard = new Board();
+	public Client() {
+		Random r = new Random();
+		int randint = r.nextInt(100000);
+		player = new Player(String.valueOf(randint), new Board());
 	}
 	
 	/*
@@ -70,7 +71,6 @@ public class Client implements IClient {
 	public boolean move(int x, int y) {
 		boolean isValidMove = false;
 		try {
-			listener.yield();
 			MsgUtils.sendMoveMessage(out, x, y);
 			String reply = in.readLine();
 	        System.out.println(reply);
@@ -88,16 +88,18 @@ public class Client implements IClient {
 	}
 
 	/*
-	 * Returns the current instance of the game board.
+	 * Returns the current instance of the player.
 	 * @see backend.IClient#getBoard()
 	 */
-	public Board getBoard() {
-		return this.playerBoard;
+	public Player getPlayer() {
+		return player;
 	}
 	
 	public void sendTestPacket() {
 		MsgUtils.sendTestMessage(out);
 	}
+
+
 	
 }
 

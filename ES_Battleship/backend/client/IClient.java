@@ -1,10 +1,10 @@
 package backend.client;
 
-import backend.state.Board;
+import backend.state.Player;
 
 public interface IClient {
 	void connect(String server, String port);
 	void disconnect();
 	boolean move(int x, int y);
-	Board getBoard();
+	Player getPlayer();
 }

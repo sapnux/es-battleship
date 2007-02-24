@@ -5,10 +5,13 @@ import java.net.ServerSocket;
 
 import javax.net.ServerSocketFactory;
 
+import backend.gameengine.GameEngine;
+
 public class Server {
 	
 	protected static int com_port;  //port for the server to listen/respond on
 	protected static ServerConsole serverConsole;
+	protected GameEngine gameEngine;
 	
 	
 	public static void main (String args[]) {

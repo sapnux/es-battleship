@@ -6,6 +6,15 @@ import backend.state.ships.*;
 public class TestDriver {
 	
 	public static void main (String args[]) throws InterruptedException {
+		Client cl = new Client();
+		String server = args[0];
+		String port = args[1];
+		cl.connect(server, port);
+		cl.sendTestPacket();
+		Thread.sleep(5000);
+		cl.move(2, 3);
+		Thread.sleep(5000);
+		cl.disconnect();
 		
 		Board board = new Board();
 		board.add(Ships.GetAircraftCarrier(), 0, 0, true);
