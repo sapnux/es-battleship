@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import backend.util.MsgUtils;
+
 public class ServerThread extends Thread {
 	private Socket sock = null;
 
@@ -31,8 +33,7 @@ public class ServerThread extends Thread {
 					String x = st.nextToken();
 					String y = st.nextToken();
 					Server.serverConsole.write("ServerThread: MOVE(1) message received, coordinates: "+x+", "+y);
-					String pack = "2|true";
-					out.println(pack);
+					MsgUtils.sendIsHitMessage(out, Server.gameEngine.move(x,y));
 					break;
 				case 3:
 					Server.serverConsole.write("ServerThread: message 3 received");

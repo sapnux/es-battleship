@@ -11,11 +11,11 @@ public class Server {
 	
 	protected static int com_port;  //port for the server to listen/respond on
 	protected static ServerConsole serverConsole;
-	protected GameEngine gameEngine;
-	
+	protected static GameEngine gameEngine;
 	
 	public static void main (String args[]) {
 		com_port = Integer.parseInt(args[0]);
+		gameEngine = new GameEngine();
 		serverConsole = new ServerConsole();
 		serverConsole.pack();
         serverConsole.setLocation(200,150);

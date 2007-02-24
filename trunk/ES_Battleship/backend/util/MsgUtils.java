@@ -14,4 +14,10 @@ public class MsgUtils {
 		String pack = "1|"+Integer.toString(x)+"|"+Integer.toString(y);
 		out.println(pack);
 	}
+	
+	//Messages from Server to Clients
+	public static void sendIsHitMessage (PrintWriter out, boolean isHit) {
+		String pack = "2|"+isHit;
+		out.println(pack);
+	}
 }
