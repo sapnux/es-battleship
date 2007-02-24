@@ -32,21 +32,31 @@ public class Board {
 	}
 
 	/**
+	 * Returns the board symbol at the given coordinates. 
+	 * @param x
+	 * @param y
+	 * @return character at coordinates x, y
+	 */
+	public char getCoordinate(int x, int y)
+	{
+		return this.board[x][y];
+	}
+	
+	/**
 	 * Adds the given ship to the board at the given coordinates and orientation.
 	 * @param ship
 	 * @param x
 	 * @param y
 	 * @param vertical
 	 */
-	public void add(IShip ship, int x, int y, boolean vertical)
-	{
+	public void add(IShip ship, int x, int y, Orientation orientation) {
 		Logger.LogInfo("adding " + ship.getName() + " (" + ship.getSize() + ")..");
 		int size = ship.getSize();
 		int a, b;
 		
 		for(int i = x; i < x + size; i++)
 		{
-			if(!vertical)
+			if(orientation.equals(Orientation.Horizontal))
 			{
 				// place ship horizonally
 				a = x;
@@ -81,7 +91,7 @@ public class Board {
 			{
 				if(j == this.board.length - 1)
 				{
-					System.out.print(this.board[i][j] + "]");
+					System.out.print(this.board[i][j] + "]" + i);
 				}
 				else
 				{
@@ -94,5 +104,6 @@ public class Board {
 			}
 			System.out.println();
 		}
+		System.out.println("  0123456789");
 	}
 }

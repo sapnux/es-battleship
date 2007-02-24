@@ -1,10 +1,13 @@
 package backend.state;
 
-public class Player {
+import java.util.*;
+
+public class Player extends Observable {
 	
 	private String id;
 	private Board myBoard;
 	private Board oppBoard;
+	private boolean myTurn;
 	
 	public Player(String id, Board board) {
 		this.id = id;
@@ -22,5 +25,9 @@ public class Player {
 
 	public Board getOppBoard() {
 		return oppBoard;
+	}
+
+	public boolean isMyTurn() {
+		return myTurn;
 	}
 }
