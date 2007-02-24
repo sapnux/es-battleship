@@ -1,4 +1,4 @@
-package backend.gameengine;
+package backend.engine;
 
 public class GameEngine {
 
