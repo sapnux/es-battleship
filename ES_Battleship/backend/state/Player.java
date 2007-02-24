@@ -9,25 +9,46 @@ public class Player extends Observable {
 	private Board oppBoard;
 	private boolean myTurn;
 	
+	/**
+	 * 
+	 * @param id
+	 * @param board
+	 */
 	public Player(String id, Board board) {
 		this.id = id;
 		this.myBoard = board;
 		this.oppBoard = new Board();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Board getMyBoard() {
-		return myBoard;
+		return this.myBoard;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Board getOppBoard() {
-		return oppBoard;
+		return this.oppBoard;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean isMyTurn() {
-		return myTurn;
+		return this.myTurn;
 	}
 }

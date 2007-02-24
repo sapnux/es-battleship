@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 
 import javax.net.ServerSocketFactory;
 
-import backend.gameengine.GameEngine;
+import backend.engine.GameEngine;
 
 public class Server {
 	

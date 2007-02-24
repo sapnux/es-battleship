@@ -2,6 +2,7 @@ package backend.state;
 
 import backend.state.ships.IShip;
 import backend.util.Logger;
+import java.util.*;
 
 /* Board Symbols:
  *	a = Aircraft Carrier (length of 5)
@@ -32,6 +33,17 @@ public class Board {
 	}
 
 	/**
+	 * Set the x,y coordinates with the given character.
+	 * @param c
+	 * @param x
+	 * @param y
+	 */
+	public void setCoordinate(char c, int x, int y)
+	{
+		this.board[x][y] = c;
+	}
+	
+	/**
 	 * Returns the board symbol at the given coordinates. 
 	 * @param x
 	 * @param y
@@ -40,6 +52,77 @@ public class Board {
 	public char getCoordinate(int x, int y)
 	{
 		return this.board[x][y];
+	}
+	
+	/**
+	 * Returns a all coordinates occupied by the given ship.
+	 * @param ship
+	 * @return 
+	 */
+	public List<Coordinates> getShipCoordinates(IShip ship)
+	{
+		return getCoordinatesByChar(ship.getSymbol());
+	}
+	
+	/**
+	 * Returns a list of MISSED coordinates on the board.
+	 * @return
+	 */
+	public List<Coordinates> getAllMissedCoordinates()
+	{
+		return getCoordinatesByChar(Constants.BOARD_MISS);
+	}
+	
+	/**
+	 * Returns a list of HIT coordinates on the board.
+	 * @return
+	 */
+	public List<Coordinates> getAllHitCoordinates()
+	{
+		return getCoordinatesByChar(Constants.BOARD_HIT);
+	}
+	
+	/**
+	 * Returns a list of EMPTY coordinates on the board.
+	 * @return
+	 */
+	public List<Coordinates> getAllEmptyCoordinates()
+	{
+		return getCoordinatesByChar(Constants.BOARD_EMPTY);
+	}
+	
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
+	private List<Coordinates> getCoordinatesByChar(char c)
+	{
+		List<Coordinates> list = new ArrayList<Coordinates>();
+		for(int i = 0; i < this.board.length; i++)
+		{
+			for(int j = 0; j < this.board.length; j++)
+			{
+				if(this.board[i][j] == c)
+				{
+					Coordinates coordinates = new Coordinates();
+					coordinates.setX(i);
+					coordinates.setY(j);
+					list.add(coordinates);
+				}
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * Adds the given ship to the board at the given coordinates and orientation.
+	 * @param ship
+	 * @param coordinates
+	 * @param orientation
+	 */
+	public void add(IShip ship, Coordinates coordinates, Orientation orientation) {
+		add(ship, coordinates.getX(), coordinates.getY(), orientation);
 	}
 	
 	/**
@@ -54,9 +137,10 @@ public class Board {
 		int size = ship.getSize();
 		int a, b;
 		
+		// add each ship to the board
 		for(int i = x; i < x + size; i++)
 		{
-			if(orientation.equals(Orientation.Horizontal))
+			if(orientation.equals(Orientation.HORIZONTAL))
 			{
 				// place ship horizonally
 				a = x;
@@ -69,12 +153,22 @@ public class Board {
 				b = y;
 			}
 			
-			// output coordinates
-			//System.out.println("[" + a + "," + b + "]");
+			// validate for out of bounds conditions
+			if(Math.abs(a) > this.board.length || Math.abs(b) > this.board.length)
+			{
+				Logger.LogError("This ship placement results in an OutOfBoundsException.");
+				return;
+			}
 			
+			// ensure that the coordinate is empty
 			if(this.board[a][b] == Constants.BOARD_EMPTY)
 			{
 				this.board[a][b] = ship.getSymbol();
+			}
+			else
+			{
+				Logger.LogError("The coordinate (" + a + "," + b + ") is already occupied.");
+				return;
 			}
 		}
 	}
