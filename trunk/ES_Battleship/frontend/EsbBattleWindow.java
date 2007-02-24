@@ -18,7 +18,8 @@ public class EsbBattleWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private JPanel jContentPane = null;
-	private EsbGridPanel mPlayerBoard = null;
+	private EsbPlayerGridPanel mPlayerBoard   = null;
+	private EsbOpponentGridPanel mOpponentBoard = null;
 	/**
 	 * This is the default constructor
 	 */
@@ -35,7 +36,8 @@ public class EsbBattleWindow extends JFrame {
 	 */
 	private void initialize() {
 		//this.setSize(400, 400);
-		mPlayerBoard = new EsbGridPanel();
+		mPlayerBoard   = new EsbPlayerGridPanel();
+		mOpponentBoard = new EsbOpponentGridPanel(); 
 		this.setContentPane(getJContentPane());
 		this.setTitle("Battle Window");
 	}
@@ -46,24 +48,32 @@ public class EsbBattleWindow extends JFrame {
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
-		/*
+		
 		if (jContentPane == null) {
 			GridBagConstraints gridBagConstraints = new GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 0;
+			gridBagConstraints.gridheight = 2;
+			gridBagConstraints.gridwidth  = 1;
+			gridBagConstraints.insets = new Insets(10, 10, 10, 10);
+			
+			mPlayerBoard.setBackground(Color.CYAN);
+			mPlayerBoard.setVisible(true);		
+			
+			mOpponentBoard.setBackground(Color.BLUE);
+			mOpponentBoard.setVisible(true);	
+			
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new GridBagLayout());
 			jContentPane.setBackground(Color.white);
-			jContentPane.setVisible(false);
-			jContentPane.add(mPlayerBoard, gridBagConstraints);
-			mPlayerBoard.setBackground(Color.CYAN);
-			mPlayerBoard.setVisible(true);
+			jContentPane.setVisible(true);
+			jContentPane.add(mPlayerBoard,  gridBagConstraints);
+			
+			gridBagConstraints.gridx = 1;
+			jContentPane.add(mOpponentBoard, gridBagConstraints);
 		}
 		return jContentPane;
-		*/
-		mPlayerBoard.setBackground(Color.CYAN);
-		mPlayerBoard.setVisible(true);
-		return mPlayerBoard;
+		
 	}
 
 }
