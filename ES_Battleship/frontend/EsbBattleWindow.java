@@ -26,6 +26,8 @@ public class EsbBattleWindow extends JFrame {
 	public EsbBattleWindow() {
 		super();
 		initialize();
+		//TEST CODE
+		mOpponentBoard.setCanClick(true);
 		this.pack();
 	}
 
@@ -57,10 +59,7 @@ public class EsbBattleWindow extends JFrame {
 			gridBagConstraints.gridwidth  = 1;
 			gridBagConstraints.insets = new Insets(10, 10, 10, 10);
 			
-			mPlayerBoard.setBackground(Color.CYAN);
 			mPlayerBoard.setVisible(true);		
-			
-			mOpponentBoard.setBackground(Color.BLUE);
 			mOpponentBoard.setVisible(true);	
 			
 			jContentPane = new JPanel();
