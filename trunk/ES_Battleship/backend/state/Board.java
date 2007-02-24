@@ -22,26 +22,50 @@ public class Board {
 	 */
 	public Board()
 	{
-		for(int i = 0; i < this.board.length - 1; i++)
+		for(int i = 0; i < this.board.length; i++)
 		{
-			for(int j = 0; j < this.board.length - 1; j++)
+			for(int j = 0; j < this.board.length; j++)
 			{
 				this.board[i][j] = Constants.BOARD_EMPTY;
 			}
 		}
-		this.print();
 	}
-	
-	/*
+
+	/**
 	 * Adds the given ship to the board at the given coordinates and orientation.
+	 * @param ship
+	 * @param x
+	 * @param y
+	 * @param vertical
 	 */
-	public void add(IShip ship, int x, int y)
+	public void add(IShip ship, int x, int y, boolean vertical)
 	{
-		Logger.LogInfo("adding " + ship.getName() + "..");
+		Logger.LogInfo("adding " + ship.getName() + " (" + ship.getSize() + ")..");
+		int size = ship.getSize();
+		int a, b;
 		
-		if(this.board[x][y] == Constants.BOARD_EMPTY)
+		for(int i = x; i < x + size; i++)
 		{
+			if(!vertical)
+			{
+				// place ship horizonally
+				a = x;
+				b = i;
+			}
+			else
+			{
+				// place ship vertically
+				a = i;
+				b = y;
+			}
 			
+			// output coordinates
+			//System.out.println("[" + a + "," + b + "]");
+			
+			if(this.board[a][b] == Constants.BOARD_EMPTY)
+			{
+				this.board[a][b] = ship.getSymbol();
+			}
 		}
 	}
 	
@@ -50,21 +74,22 @@ public class Board {
 	 */
 	public void print()
 	{
-		for(int i = 0; i < this.board.length - 1; i++)
+		System.out.println("  0123456789");
+		for(int i = 0; i < this.board.length; i++)
 		{
-			for(int j = 0; j < this.board.length - 1; j++)
+			for(int j = 0; j < this.board.length; j++)
 			{
-				if(j == 0)
-				{
-					System.out.print("[");
-				}
-				else if(j == this.board.length - 2)
+				if(j == this.board.length - 1)
 				{
 					System.out.print(this.board[i][j] + "]");
 				}
 				else
 				{
-					System.out.print(this.board[i][j] + ",");
+					if(j == 0)
+					{
+						System.out.print(i + "[");
+					}
+					System.out.print(this.board[i][j]);
 				}
 			}
 			System.out.println();
