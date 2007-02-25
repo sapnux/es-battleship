@@ -11,7 +11,7 @@ import java.awt.Dimension;
  * @author cloud
  *
  */
-public class EsbGridPanel extends JPanel {
+public abstract class EsbGridPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final int mBoardSide = 400;
@@ -71,9 +71,19 @@ public class EsbGridPanel extends JPanel {
 	}
 	
 	/**
-	 * Abstract method to be implemented by child classes or left blank.  This is where a
-	 * child class would draw out its own unique features.
+	 * Abstract method to be implemented by child classes or left blank.  This
+	 * is where a child class would draw out its own unique features.  This
+	 * function would be called after the gridlines have been put down on the
+	 * panel.
 	 * @param g The graphics object for the panel.
 	 */
-	protected void drawFeatures(Graphics g){}
+	protected abstract void drawFeatures(Graphics g);
+	
+	/**
+	 * Abstract method to be implemented by child classes or left blank.  This
+	 * is called by the container to tell the panel that some screen feature
+	 * has been updated and provides the panel with the opportunity to update
+	 * its information outside of the Paint() method.
+	 */
+	public abstract void screenNotify();
 }

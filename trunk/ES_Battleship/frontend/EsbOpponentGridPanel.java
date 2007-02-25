@@ -2,13 +2,20 @@ package frontend;
 
 import java.awt.event.*;
 import java.awt.Color;
+import java.awt.Graphics;
+import backend.state.*;
+import java.util.*;
 
 public class EsbOpponentGridPanel extends EsbGridPanel  {
 	
 	private boolean mCanClick;
+	private EsbFrontendController mFController;
+	Iterator<Coordinates> mHitsIterator;
+	Iterator<Coordinates> mMissIterator;
 	
-	public EsbOpponentGridPanel(){
-		super();
+	public EsbOpponentGridPanel(EsbFrontendController aFController){
+		super();		
+		mFController = aFController;
 		initialize();
 	}
 	
@@ -23,14 +30,23 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 		//capture mouse clicks on the panel
 		this.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
+				int gridX, gridY;
 				if(mCanClick){
 					EsbGridPanel tThePanel = (EsbGridPanel) e.getComponent();
+					int cellSide = tThePanel.getCellSide();
+					gridX = e.getX() / cellSide;
+					gridY = e.getY() / cellSide;
 
 					//TEST CODE
 					System.out.println("click detected " 
-							+ e.getX() / tThePanel.getCellSide() 
+							+ gridX 
 							+ " " 
-							+ e.getY() / tThePanel.getCellSide());
+							+ gridY);
+					
+					//Check to ensure that click is within legal game board
+					if(((gridX >= 0)&&(gridX <= cellSide))&&
+							((gridY >= 0)&&(gridY <= cellSide)))
+						mFController.makeMove(gridX, gridY);
 				}
 			}
 		});
@@ -48,5 +64,24 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 			mGridLineColor = Color.GRAY;
 		
 		mCanClick = aCanClick;
+	}
+	
+	protected void drawFeatures(Graphics g){
+
+		
+		g.setColor(Color.RED);
+		while(mHitsIterator.hasNext()){
+			
+		}
+		
+		g.setColor(Color.WHITE);
+		while(mMissIterator.hasNext()){
+			
+		}
+	}
+	
+	public void screenNotify(){		
+		mHitsIterator = mFController.getOpponentHits().iterator();
+		mMissIterator = mFController.getOpponentMisses().iterator();
 	}
 }
