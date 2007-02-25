@@ -2,6 +2,8 @@ package backend.util;
 
 import java.io.PrintWriter;
 
+import backend.state.Board;
+
 public class MsgUtils {
 	
 	//Messages from Clients to Server
@@ -9,9 +11,14 @@ public class MsgUtils {
 		String pack = "0|test";
 		out.println(pack);
 	}
+	
+	public static void sendReadyMessage(PrintWriter out, String pId, Board myBoard) {
+		String pack = "0|"+pId+"|"+myBoard.serialize();
+		out.println(pack);
+	}
 
-	public static void sendMoveMessage (PrintWriter out, int x, int y) {
-		String pack = "1|"+Integer.toString(x)+"|"+Integer.toString(y);
+	public static void sendMoveMessage (PrintWriter out, String pId, int x, int y) {
+		String pack = "1|"+pId+"|"+Integer.toString(x)+"|"+Integer.toString(y);
 		out.println(pack);
 	}
 	
@@ -20,4 +27,11 @@ public class MsgUtils {
 		String pack = "2|"+isHit;
 		out.println(pack);
 	}
+	
+	public static void sendTurnMessage (PrintWriter out, boolean turn) {
+		String pack = "3|"+turn;
+		out.println(pack);
+	}
+
+
 }

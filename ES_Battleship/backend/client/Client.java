@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Random;
 import java.util.StringTokenizer;
 
 import javax.net.SocketFactory;
@@ -19,15 +18,12 @@ public class Client implements IClient {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
-	private ClientListenThread listener;
 
 	/*
 	 * 
 	 */
-	public Client(Board board) {
-		Random r = new Random();
-		int randint = r.nextInt(100000);
-		player = new Player(String.valueOf(randint), board);
+	public Client(String id, Board board) {
+		player = new Player(id, board);
 	}
 	
 	/*
@@ -40,8 +36,14 @@ public class Client implements IClient {
 			socket = sf.createSocket(server,Integer.parseInt(port));
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
-//			listener = new ClientListenThread(socket);
-//			listener.start();
+			MsgUtils.sendReadyMessage(out, player.getId(), player.getMyBoard());
+			
+			String reply = in.readLine();
+			System.out.println(reply);
+	        StringTokenizer st = new StringTokenizer(reply,"|");
+	        if (Integer.parseInt(st.nextToken()) == 3) {
+	        	player.setMyTurn(Boolean.parseBoolean(st.nextToken()));
+	        }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,7 +59,6 @@ public class Client implements IClient {
 			out.close();
 			in.close();
 			socket.close();
-//			listener.stopListener();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -69,22 +70,28 @@ public class Client implements IClient {
 	 * @see backend.IClient#move(int, int)
 	 */
 	public boolean move(int x, int y) {
-		boolean isValidMove = false;
+		boolean isHit = false;
 		try {
-			MsgUtils.sendMoveMessage(out, x, y);
+			MsgUtils.sendMoveMessage(out, player.getId(), x, y);
 			String reply = in.readLine();
 	        System.out.println(reply);
 	        StringTokenizer st = new StringTokenizer(reply,"|");
-	        isValidMove = false;
+	        isHit = false;
 	        if (Integer.parseInt(st.nextToken()) == 2) {
-	        	isValidMove = Boolean.parseBoolean(st.nextToken());
-	        	System.out.println(isValidMove);
+	        	isHit = Boolean.parseBoolean(st.nextToken());
+	        	if (isHit) {
+	        		player.getOppBoard().setHit(x,y);
+	        	} else {
+	        		player.getOppBoard().setMiss(x,y);
+	        	}
+	        	player.setMyTurn(isHit);
 	        }
+	        
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return isValidMove;
+		return isHit;
 	}
 
 	/*
