@@ -1,7 +1,10 @@
 package backend.server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashMap;
 
 import javax.net.ServerSocketFactory;
 
@@ -12,6 +15,7 @@ public class Server {
 	protected static int com_port;  //port for the server to listen/respond on
 	protected static ServerConsole serverConsole;
 	protected static GameEngine gameEngine;
+	protected static HashMap outputters = new HashMap(2);
 	
 	public static void main (String args[]) {
 		com_port = Integer.parseInt(args[0]);
@@ -24,9 +28,13 @@ public class Server {
     		ServerSocketFactory sf = ServerSocketFactory.getDefault();
 			ServerSocket com_sock = sf.createServerSocket(com_port);
 			
-			
-        	while (true) {
-        		new ServerThread(com_sock.accept()).start();
+			int numConnections = 0;
+        	while (numConnections < 2) {
+        		Socket tempSock = com_sock.accept();
+        		numConnections++;
+        		PrintWriter out = new PrintWriter(tempSock.getOutputStream(), true);
+        		outputters.put(String.valueOf(numConnections), out);
+        		new ServerThread(tempSock, numConnections).start();
         	}
         	
 		} catch (IOException e) {

@@ -12,16 +12,19 @@ import backend.util.MsgUtils;
 
 public class ServerThread extends Thread {
 	private Socket sock = null;
+	private int threadNum;
 
-	public ServerThread(Socket s) {
+	public ServerThread(Socket s, int threadNum) {
 		sock = s;
+		this.threadNum = threadNum;
 	}
 
 	public void run() {
 		String inputLine = "";
 		Server.serverConsole.write("ServerThread: Query received");
 		try {
-			PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
+			PrintWriter myOut = (PrintWriter) Server.outputters.get(String.valueOf(threadNum));
+			PrintWriter oppOut = null;  //need to initialize after game is ready
 			BufferedReader in = new BufferedReader(new InputStreamReader(sock
 					.getInputStream()));
 			while ((inputLine = in.readLine()) != null) {
@@ -34,7 +37,8 @@ public class ServerThread extends Thread {
 					playerId = st.nextToken();
 					Server.gameEngine.addPlayer(playerId, Board.deserialize(st.nextToken()));
 					while (!Server.gameEngine.isGameReady()) continue;
-					MsgUtils.sendTurnMessage(out, Server.gameEngine.isMyTurn(playerId));
+					oppOut = (PrintWriter) Server.outputters.get(getOtherThreadNum());
+					MsgUtils.sendTurnMessage(myOut, Server.gameEngine.isMyTurn(playerId));
 					break;
 				case 1:
 					//format 1|<player id>|<x coordinate>|<y coordinate>
@@ -42,23 +46,26 @@ public class ServerThread extends Thread {
 					String x = st.nextToken();
 					String y = st.nextToken();
 					Server.serverConsole.write("ServerThread: MOVE(1) message received, coordinates: "+x+", "+y);
-					MsgUtils.sendIsHitMessage(out, Server.gameEngine.move(playerId,x,y));
-					break;
-				case 3:
-					Server.serverConsole.write("ServerThread: message 3 received");
-					break;
-				case 5:
-					Server.serverConsole.write("ServerThread: message 5 received");
+					MsgUtils.sendIsHitMessage(myOut, Server.gameEngine.move(playerId,x,y));
+					MsgUtils.sendMoveNotifyMessage(oppOut, x, y);
 					break;
 				}
 			}
 			Server.gameEngine.resetGame();
-			out.close();
+			myOut.close();
 			in.close();
 			sock.close();
 
 		} catch (IOException e) {
 			Server.serverConsole.write("ServerThread: " + e.getMessage());
+		}
+	}
+
+	private String getOtherThreadNum() {
+		if (threadNum == 1) {
+			return "2";
+		} else {
+			return "1";
 		}
 	}
 

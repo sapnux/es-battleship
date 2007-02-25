@@ -51,6 +51,23 @@ public class Board {
 	{
 		setCoordinate(Constants.BOARD_MISS, x, y);
 	}
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isHit(int x, int y) {
+		if (board[x][y] == 'a' 
+		|| board[x][y] == 'b' 
+		|| board[x][y] == 'c'
+		|| board[x][y] == 'p'
+		|| board[x][y] == 's') {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	/**
 	 * Set the x,y coordinates with the given character.

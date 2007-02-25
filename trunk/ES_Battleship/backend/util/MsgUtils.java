@@ -32,6 +32,11 @@ public class MsgUtils {
 		String pack = "3|"+turn;
 		out.println(pack);
 	}
+	
+	public static void sendMoveNotifyMessage (PrintWriter out, String x, String y) {
+		String pack = "4|"+x+"|"+y;
+		out.println(pack);
+	}
 
 
 }
