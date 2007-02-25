@@ -51,7 +51,7 @@ public class Player extends Observable {
 	public boolean isMyTurn() {
 		return this.myTurn;
 	}
-
+	
 	public void setMyTurn(boolean myTurn) {
 		this.myTurn = myTurn;
 		setChanged();

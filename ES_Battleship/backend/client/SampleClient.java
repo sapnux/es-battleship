@@ -26,6 +26,7 @@ public class SampleClient implements Observer
 		
 		countMoves = 0;
 		String test = board.serialize();
+		System.out.println(test);
 		Board.deserialize(test).print();
 		
 		cl = new Client(id, board);
@@ -58,6 +59,7 @@ public class SampleClient implements Observer
 		else
 		{
 			System.out.println("It's not our turn. Waiting for our turn.");
+			cl.listenForMessages();
 		}
 
 	}

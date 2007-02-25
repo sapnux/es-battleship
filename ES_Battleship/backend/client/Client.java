@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import javax.net.SocketFactory;
 
+import backend.server.Server;
 import backend.state.Board;
 import backend.state.Player;
 import backend.util.MsgUtils;
@@ -18,6 +19,7 @@ public class Client implements IClient {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
+	private boolean listening = false;
 
 	/*
 	 * 
@@ -100,6 +102,33 @@ public class Client implements IClient {
 	 */
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public void listenForMessages() {
+		String inputLine;
+		try {
+			while (!listening && !player.isMyTurn() && (inputLine = in.readLine()) != null) {
+				listening = true;
+				StringTokenizer st = new StringTokenizer(inputLine, "|");
+				switch (Integer.parseInt(st.nextToken())) {
+				case 4:
+					//format 4|<x coordinate>|<y coordinate>
+					int x = Integer.parseInt(st.nextToken());
+					int y = Integer.parseInt(st.nextToken());
+					if (player.getMyBoard().isHit(x, y)) {
+						player.getMyBoard().setHit(x, y);
+						player.setMyTurn(false);
+					} else {
+						player.getMyBoard().setMiss(x, y);
+						player.setMyTurn(true);
+					}
+					break;
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendTestPacket() {
