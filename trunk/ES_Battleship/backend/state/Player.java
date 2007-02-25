@@ -7,7 +7,7 @@ public class Player extends Observable {
 	private String id;
 	private Board myBoard;
 	private Board oppBoard;
-	private boolean myTurn;
+	private boolean myTurn = false;
 	
 	/**
 	 * 
@@ -50,5 +50,11 @@ public class Player extends Observable {
 	 */
 	public boolean isMyTurn() {
 		return this.myTurn;
+	}
+
+	public void setMyTurn(boolean myTurn) {
+		this.myTurn = myTurn;
+		setChanged();
+		notifyObservers();
 	}
 }

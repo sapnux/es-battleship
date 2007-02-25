@@ -33,6 +33,26 @@ public class Board {
 	}
 
 	/**
+	 * Sets specified coordinates as a hit 
+	 * @param x
+	 * @param y
+	 */
+	public void setHit(int x, int y)
+	{
+		setCoordinate(Constants.BOARD_HIT, x, y);
+	}
+	
+	/**
+	 * Sets specified coordinates as a miss 
+	 * @param x
+	 * @param y
+	 */
+	public void setMiss(int x, int y)
+	{
+		setCoordinate(Constants.BOARD_MISS, x, y);
+	}
+	
+	/**
 	 * Set the x,y coordinates with the given character.
 	 * @param c
 	 * @param x
@@ -199,5 +219,34 @@ public class Board {
 			System.out.println();
 		}
 		System.out.println("  0123456789");
+	}
+
+	public String serialize() {
+
+		String string = "";
+		for(int i = 0; i < this.board.length; i++)
+		{
+			for(int j = 0; j < this.board.length; j++)
+			{
+				string += this.board[i][j];
+			}
+		}
+		return string;
+	}
+	
+	public static Board deserialize(String string)
+	{
+		Board board = new Board();
+		int x, y = 0;
+		for(int i = 0; i < string.length(); i++)
+		{
+			x = i % 9;
+			if(x == 9)
+			{
+				y++;
+			}
+			board.setCoordinate(string.charAt(i), x, y);
+		}
+		return board;
 	}
 }

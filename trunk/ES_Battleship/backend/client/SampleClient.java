@@ -2,14 +2,19 @@ package backend.client;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 
 import backend.state.Board;
+import backend.state.Coordinates;
 import backend.state.Orientation;
 import backend.state.ships.Ships;
 
+
 public class SampleClient implements Observer
 {
-	public SampleClient(String server, String port) throws InterruptedException
+	private Client cl;
+	private int countMoves;
+	public SampleClient(String server, String port, String id) throws InterruptedException
 	{
 		Board board = new Board();
 		board.add(Ships.GetAircraftCarrier(), 0, 0, Orientation.VERTICAL);
@@ -18,19 +23,51 @@ public class SampleClient implements Observer
 		board.add(Ships.GetPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
 		board.add(Ships.GetSubmarine(), 5, 5, Orientation.VERTICAL);
 		board.print();
-
-		Client cl = new Client(board);
-		cl.connect(server, port);
-		cl.sendTestPacket();
-		Thread.sleep(5000);
-		cl.move(2, 3);
+		
+		countMoves = 0;
+		String test = board.serialize();
+		Board.deserialize(test).print();
+		
+		cl = new Client(id, board);
 		cl.getPlayer().addObserver(this);
-		Thread.sleep(5000);
-		cl.disconnect();		
+		cl.connect(server, port);	
 	}
 	
 	public void update(Observable o, Object obj)
+	{	
+		backend.util.Logger.LogInfo("myBoard:");
+		cl.getPlayer().getMyBoard().print();
+
+		backend.util.Logger.LogInfo("oppBoard:");
+		cl.getPlayer().getOppBoard().print();
+		
+		if (countMoves > 10) {
+			cl.disconnect();
+			System.exit(0);
+		}
+		
+		System.out.println("isMyTurn: " + cl.getPlayer().isMyTurn());
+		
+		boolean myTurn = cl.getPlayer().isMyTurn();
+		if(myTurn)
+		{
+			Coordinates move = makeMove();
+			countMoves++;
+			cl.move(move.getX(), move.getY());
+		}
+		else
+		{
+			System.out.println("It's not our turn. Waiting for our turn.");
+		}
+
+	}
+	
+	private Coordinates makeMove()
 	{
-		backend.util.Logger.LogWarning("IT WORKS");
+		Random r = new Random();
+		Coordinates coordinates = new Coordinates();
+		coordinates.setX(r.nextInt(10));
+		coordinates.setY(r.nextInt(10));
+		return coordinates;
 	}
 }
