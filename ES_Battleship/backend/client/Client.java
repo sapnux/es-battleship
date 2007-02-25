@@ -121,6 +121,7 @@ public class Client implements IClient {
 					} else {
 						player.getMyBoard().setMiss(x, y);
 						player.setMyTurn(true);
+						listening = false;
 					}
 					break;
 				}

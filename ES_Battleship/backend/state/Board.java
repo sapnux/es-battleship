@@ -254,15 +254,12 @@ public class Board {
 	public static Board deserialize(String string)
 	{
 		Board board = new Board();
-		int x, y = 0;
-		for(int i = 0; i < string.length(); i++)
-		{
-			x = i % 9;
-			if(x == 9)
-			{
-				y++;
+		int strCursor = 0;
+		for (int x = 0; x < board.board.length; x++) {
+			for (int y = 0; y < board.board.length; y++) {
+				board.setCoordinate(string.charAt(strCursor), x, y);
+				strCursor++;
 			}
-			board.setCoordinate(string.charAt(i), x, y);
 		}
 		return board;
 	}
