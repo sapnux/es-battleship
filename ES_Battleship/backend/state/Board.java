@@ -70,6 +70,24 @@ public class Board {
 	}
 	
 	/**
+	 * 
+	 * @return
+	 */
+	public boolean hasLost()
+	{
+		/*
+		 * Aircraft		5
+		 * Battleship	4
+		 * Cruiser		3
+		 * PatrolBoat	2
+		 * Submarine	3
+		 * --------------
+		 * Total		17
+		 */
+		return getAllHitCoordinates().size() == 17;
+	}
+	
+	/**
 	 * Set the x,y coordinates with the given character.
 	 * @param c
 	 * @param x

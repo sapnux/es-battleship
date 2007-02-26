@@ -8,6 +8,7 @@ public class Player extends Observable {
 	private Board myBoard;
 	private Board oppBoard;
 	private boolean myTurn = false;
+	private GameResult gameResult = GameResult.UNKNOWN;
 	
 	/**
 	 * 
@@ -20,6 +21,14 @@ public class Player extends Observable {
 		this.oppBoard = new Board();
 	}
 
+	/**
+	 * 
+	 */
+	public void setChanged()
+	{
+		super.setChanged();
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -42,6 +51,14 @@ public class Player extends Observable {
 	 */
 	public Board getOppBoard() {
 		return this.oppBoard;
+	}
+	
+	public GameResult getGameResult() {
+		return gameResult;
+	}
+
+	public void setGameResult(GameResult gameResult) {
+		this.gameResult = gameResult;
 	}
 
 	/**

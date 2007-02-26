@@ -3,6 +3,7 @@ package backend.util;
 import java.io.PrintWriter;
 
 import backend.state.Board;
+import backend.state.MoveResult;
 
 public class MsgUtils {
 	
@@ -23,7 +24,13 @@ public class MsgUtils {
 	}
 	
 	//Messages from Server to Clients
-	public static void sendIsHitMessage (PrintWriter out, boolean isHit) {
+	public static void sendIsHitMessage (PrintWriter out, MoveResult moveResult) {
+		String isHit = "";
+		if (moveResult == MoveResult.HIT) {
+			isHit = "true";
+		} else {
+			isHit = "false";
+		}
 		String pack = "2|"+isHit;
 		out.println(pack);
 	}
@@ -35,6 +42,11 @@ public class MsgUtils {
 	
 	public static void sendMoveNotifyMessage (PrintWriter out, String x, String y) {
 		String pack = "4|"+x+"|"+y;
+		out.println(pack);
+	}
+
+	public static void sendGameOverMessage(PrintWriter out, String x, String y, String result) {
+		String pack = "5|"+x+"|"+y+"|"+result;
 		out.println(pack);
 	}
 

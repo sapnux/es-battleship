@@ -9,8 +9,8 @@ import java.util.StringTokenizer;
 
 import javax.net.SocketFactory;
 
-import backend.server.Server;
 import backend.state.Board;
+import backend.state.GameResult;
 import backend.state.Player;
 import backend.util.MsgUtils;
 
@@ -19,7 +19,7 @@ public class Client implements IClient {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
-	private boolean listening = false;
+	private boolean listening = true;
 
 	/*
 	 * 
@@ -79,7 +79,8 @@ public class Client implements IClient {
 	        System.out.println(reply);
 	        StringTokenizer st = new StringTokenizer(reply,"|");
 	        isHit = false;
-	        if (Integer.parseInt(st.nextToken()) == 2) {
+	        switch (Integer.parseInt(st.nextToken())) {
+			case 2:
 	        	isHit = Boolean.parseBoolean(st.nextToken());
 	        	if (isHit) {
 	        		player.getOppBoard().setHit(x,y);
@@ -87,6 +88,13 @@ public class Client implements IClient {
 	        		player.getOppBoard().setMiss(x,y);
 	        	}
 	        	player.setMyTurn(isHit);
+	        	break;
+			case 5:
+				player.getOppBoard().setHit(x,y);
+				player.setGameResult(GameResult.WIN);
+				player.setChanged();
+				player.notifyObservers();
+				break;
 	        }
 	        
 		} catch (IOException e) {
@@ -107,14 +115,16 @@ public class Client implements IClient {
 	public void listenForMessages() {
 		String inputLine;
 		try {
-			while (!listening && !player.isMyTurn() && (inputLine = in.readLine()) != null) {
+			while (listening && !player.isMyTurn() && (inputLine = in.readLine()) != null) {
 				listening = true;
+				System.out.println(inputLine);
 				StringTokenizer st = new StringTokenizer(inputLine, "|");
+				int x,y;
 				switch (Integer.parseInt(st.nextToken())) {
 				case 4:
 					//format 4|<x coordinate>|<y coordinate>
-					int x = Integer.parseInt(st.nextToken());
-					int y = Integer.parseInt(st.nextToken());
+					x = Integer.parseInt(st.nextToken());
+					y = Integer.parseInt(st.nextToken());
 					if (player.getMyBoard().isHit(x, y)) {
 						player.getMyBoard().setHit(x, y);
 						player.setMyTurn(false);
@@ -124,6 +134,14 @@ public class Client implements IClient {
 						listening = false;
 					}
 					break;
+				case 5:
+					x = Integer.parseInt(st.nextToken());
+					y = Integer.parseInt(st.nextToken());
+					player.getMyBoard().setHit(x, y);
+					player.setGameResult(GameResult.LOSS);
+					player.setChanged();
+					player.notifyObservers();
+					break;
 				}
 			}
 		} catch (IOException e) {
@@ -131,12 +149,6 @@ public class Client implements IClient {
 			e.printStackTrace();
 		}
 	}
-	
-	public void sendTestPacket() {
-		MsgUtils.sendTestMessage(out);
-	}
-
-
 	
 }
 
