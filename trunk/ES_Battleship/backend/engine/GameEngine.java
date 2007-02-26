@@ -1,6 +1,7 @@
 package backend.engine;
 
 import backend.state.Board;
+import backend.state.MoveResult;
 import backend.state.Player;
 
 public class GameEngine {
@@ -35,19 +36,21 @@ public class GameEngine {
 	 * @param y y-coordinate of the move
 	 * @return true if move is a hit
 	 */
-	public boolean move(String pId, String x, String y) {
+	public MoveResult move(String pId, String x, String y) {
 		Board oppBoard = getOpponentBoard(pId);
 		Player thisMovePlayer = getPlayer(pId);
 		int xCoord = Integer.parseInt(x);
 		int yCoord = Integer.parseInt(y);
+		
 		if (oppBoard.isHit(xCoord, yCoord)) {
 			thisMovePlayer.getOppBoard().setHit(xCoord, yCoord);
-			return true;
+			if (thisMovePlayer.getOppBoard().hasLost()) 
+				return MoveResult.WIN;
+			return MoveResult.HIT;
 		} else {
 			thisMovePlayer.getOppBoard().setMiss(xCoord, yCoord);
-			return false;
+			return MoveResult.MISS;
 		}
-//		return true;
 	}
 
 	/**
