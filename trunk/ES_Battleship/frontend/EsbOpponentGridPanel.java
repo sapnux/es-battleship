@@ -10,8 +10,11 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 	
 	private boolean mCanClick;
 	private EsbFrontendController mFController;
-	Iterator<Coordinates> mHitsIterator;
-	Iterator<Coordinates> mMissIterator;
+	//stores the width of each grid cell by number of pixels
+	//used for resolving grid coordinates to screen coordinates & vice versa
+	private int mCellSide;
+	private List<Coordinates> mHitsList;
+	private List<Coordinates> mMissesList;
 	
 	public EsbOpponentGridPanel(EsbFrontendController aFController){
 		super();		
@@ -26,16 +29,17 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 		//the default state of the game is to disable clicking so that the player
 		//cannot make moves.
 		this.setCanClick(false);
+		mCellSide = this.getCellSide();		
+		mHitsList = mFController.getOpponentHits();
+		mMissesList = mFController.getOpponentMisses();
 		
 		//capture mouse clicks on the panel
 		this.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
 				int gridX, gridY;
 				if(mCanClick){
-					EsbGridPanel tThePanel = (EsbGridPanel) e.getComponent();
-					int cellSide = tThePanel.getCellSide();
-					gridX = e.getX() / cellSide;
-					gridY = e.getY() / cellSide;
+					gridX = e.getX() / mCellSide;
+					gridY = e.getY() / mCellSide;
 
 					//TEST CODE
 					System.out.println("click detected " 
@@ -44,8 +48,8 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 							+ gridY);
 					
 					//Check to ensure that click is within legal game board
-					if(((gridX >= 0)&&(gridX <= cellSide))&&
-							((gridY >= 0)&&(gridY <= cellSide)))
+					if(((gridX >= 0)&&(gridX < mNumCellsAcross))&&
+							((gridY >= 0)&&(gridY < mNumCellsAcross)))
 						mFController.makeMove(gridX, gridY);
 				}
 			}
@@ -67,21 +71,34 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 	}
 	
 	protected void drawFeatures(Graphics g){
-
+		int dispX, dispY;
+		Coordinates moveLoc;
+		
+		Iterator<Coordinates> tHitsIterator = mHitsList.iterator();
+		Iterator<Coordinates> tMissesIterator = mMissesList.iterator();
 		
 		g.setColor(Color.RED);
-		while(mHitsIterator.hasNext()){
+		while(tHitsIterator.hasNext()){
+			moveLoc = (Coordinates) tHitsIterator.next();
+			dispX = (moveLoc.getX() * mCellSide)+1;
+			dispY = (moveLoc.getY() * mCellSide)+1;
 			
+			g.fillRect(dispX, dispY, mCellSide-1, mCellSide-1);
 		}
 		
 		g.setColor(Color.WHITE);
-		while(mMissIterator.hasNext()){
+		while(tMissesIterator.hasNext()){
+			moveLoc = (Coordinates) tMissesIterator.next();
+			dispX = (moveLoc.getX() * mCellSide)+1;
+			dispY = (moveLoc.getY() * mCellSide)+1;
 			
+			g.fillRect(dispX, dispY, mCellSide-1, mCellSide-1);			
 		}
+		
 	}
 	
 	public void screenNotify(){		
-		mHitsIterator = mFController.getOpponentHits().iterator();
-		mMissIterator = mFController.getOpponentMisses().iterator();
+		mHitsList = mFController.getOpponentHits();
+		mMissesList = mFController.getOpponentMisses();
 	}
 }

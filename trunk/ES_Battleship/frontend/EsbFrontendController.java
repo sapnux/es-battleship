@@ -47,6 +47,7 @@ public class EsbFrontendController implements Observer {
 	}
 	
 	public void update(Observable o, Object obj) {
+		mBattleWindow.notifyComponents();
 		mBattleWindow.repaint();
 		//TEST CODE
 		System.out.println("Move was made");

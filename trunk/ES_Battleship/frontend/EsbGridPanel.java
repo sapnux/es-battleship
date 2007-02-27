@@ -14,8 +14,8 @@ import java.awt.Dimension;
 public abstract class EsbGridPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private static final int mBoardSide = 400;
-	private static final int mNumCellsAcross  = 10;
+	protected static final int mBoardSide = 400;
+	protected static final int mNumCellsAcross  = 10;
 	/**
 	 * Background color can be set by children.
 	 */
@@ -62,8 +62,7 @@ public abstract class EsbGridPanel extends JPanel {
 	}
 	
 	/**
-	 * Returns the number of cells per side, i.e. the number of separate grid locations
-	 * going across and down the game board.
+	 * Returns the width of each cell in pixels.
 	 * @return The number of grid locations along one side of the (square) board.
 	 */
 	protected int getCellSide() {
