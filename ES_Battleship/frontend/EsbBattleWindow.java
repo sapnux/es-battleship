@@ -80,6 +80,10 @@ public class EsbBattleWindow extends JFrame {
 		return jContentPane;		
 	}
 	
+	public void setTurn(boolean aIsPlayersTurn){
+		this.mOpponentPanel.setCanClick(aIsPlayersTurn);
+	}
+	
 	/**
 	 * This method should be called from a controller object that detects a
 	 * change in the data that is to be displayed.  This method allows 

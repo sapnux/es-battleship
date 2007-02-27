@@ -2,10 +2,9 @@ package frontend.test;
 
 import backend.client.IClient;
 import backend.state.*;
-import backend.state.Board;
-import backend.state.Orientation;
-import backend.state.Player;
 import backend.state.ships.Ships;
+import java.util.*;
+import frontend.test.TestOpponent;
 
 public class TestClient implements IClient {
 
@@ -41,7 +40,6 @@ public class TestClient implements IClient {
 
 	public boolean move(int x, int y) {
 		//TEST CODE
-//		System.out.println("Inside TestClient.move, player: " + mPlayer.getId());
 		boolean rValue = false;			
 		if((x%2 == 0)||(y%2 == 0)){
 			mPlayer.getOppBoard().setCoordinate(Constants.BOARD_HIT, x, y);
@@ -50,9 +48,17 @@ public class TestClient implements IClient {
 			mPlayer.getOppBoard().setCoordinate(Constants.BOARD_MISS, x, y);
 			rValue = false;
 		}
-		mPlayer.setMyTurn(true);
-//		System.out.println("number of observers of mPlayer: " + mPlayer.countObservers());
-//		System.out.println("player has changed = " + mPlayer.hasChanged());
+		
+		// If Hit, still player's turn
+		mPlayer.setMyTurn(rValue);
+		
+		if (!rValue) {
+			Thread t = new Thread(new TestOpponent(mPlayer));
+			t.start();
+		}
+		
+		//mPlayer.getMyBoard().setCoordinate(c, x, y);
+		
 		return rValue;
 	}
 

@@ -47,8 +47,10 @@ public class EsbFrontendController implements Observer {
 	}
 	
 	public void update(Observable o, Object obj) {
+		mBattleWindow.setTurn(mPlayer.isMyTurn());
 		mBattleWindow.notifyComponents();
 		mBattleWindow.repaint();
+		
 		//TEST CODE
 		System.out.println("Move was made");
 	}
