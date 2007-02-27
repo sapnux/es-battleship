@@ -50,7 +50,7 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 					//Check to ensure that click is within legal game board
 					if(((gridX >= 0)&&(gridX < mNumCellsAcross))&&
 							((gridY >= 0)&&(gridY < mNumCellsAcross)))
-						mFController.makeMove(gridX, gridY);
+						mFController.makeMove(gridX, gridY);					
 				}
 			}
 		});
