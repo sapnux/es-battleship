@@ -5,6 +5,17 @@ public class Coordinates {
 	private int x;
 	private int y;
 	
+	/**
+	 * Creates a new Coordinates class with unintialized x and y coordinates.
+	 *
+	 */
+	public Coordinates() {}
+	
+	/**
+	 * Creates a new Coodinates class with x and y coordinates set.
+	 * @param x
+	 * @param y
+	 */
 	public Coordinates(int x, int y)
 	{
 		this.x = x;
@@ -44,18 +55,18 @@ public class Coordinates {
 	}
 	
 	/**
-	 * 
+	 * Override the equals(Object) method for the Coordinates class. 
 	 * @param coordinates
-	 * @return
+	 * @return 
 	 */
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
+		if(obj == null) { return false;}
 		Coordinates coordinates = (Coordinates)obj;
 		return this.x == coordinates.getX() && this.y == coordinates.getY();
 	}
 	
 	/**
-	 * 
+	 * Overrides the hashCode() for the Coordinates class.
 	 */
 	public int hashCode() {
 		int result = 17;
@@ -65,10 +76,9 @@ public class Coordinates {
 	}
 	
 	/**
-	 * 
+	 * Overrides the toString() implementation for the Coordinates class.
 	 */
-	public String toString()
-	{
+	public String toString() {
 		return "[" + this.x + "," + this.y + "]";
 	}
 }

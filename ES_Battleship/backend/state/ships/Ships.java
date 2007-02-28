@@ -1,5 +1,8 @@
 package backend.state.ships;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * Returns instance of each ship using the singleton pattern.
  */
@@ -69,5 +72,18 @@ public abstract class Ships {
 			submarine = new Submarine();
 		}
 		return submarine;
+	}
+
+	/*
+	 * Returns a list of all ship objects.
+	 */
+	public static List<IShip> GetAllShips() {
+		List<IShip> list = new ArrayList<IShip>();
+		list.add(GetAircraftCarrier());
+		list.add(GetBattleship());
+		list.add(GetCruiser());
+		list.add(GetPatrolBoat());
+		list.add(GetSubmarine());
+		return list;
 	}
 }
