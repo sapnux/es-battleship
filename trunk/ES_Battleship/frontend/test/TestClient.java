@@ -41,7 +41,7 @@ public class TestClient implements IClient {
 	public boolean move(int x, int y) {
 		//TEST CODE
 		boolean rValue = false;			
-		if((x%2 == 0)||(y%2 == 0)){
+		if(x<=4){
 			mPlayer.getOppBoard().setCoordinate(Constants.BOARD_HIT, x, y);
 			rValue = true;
 		} else {		

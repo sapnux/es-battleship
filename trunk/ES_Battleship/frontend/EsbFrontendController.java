@@ -42,6 +42,14 @@ public class EsbFrontendController implements Observer {
 		return mPlayer.getOppBoard().getAllHitCoordinates();
 	}
 	
+	public List<Coordinates> getPlayerMisses() { 
+		return mPlayer.getMyBoard().getAllMissedCoordinates();
+	}
+	
+	public List<Coordinates> getPlayerHits() {
+		return mPlayer.getMyBoard().getAllHitCoordinates();
+	}	
+	
 	public boolean makeMove(int x, int y) {
 		return mClient.move(x, y);
 	}
