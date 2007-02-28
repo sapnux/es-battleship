@@ -1,8 +1,11 @@
 package backend.state;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import backend.state.ships.IShip;
+import backend.state.ships.Ships;
 import backend.util.Logger;
-import java.util.*;
 
 /* Board Symbols:
  *	a = Aircraft Carrier (length of 5)
@@ -51,40 +54,42 @@ public class Board {
 	{
 		setCoordinate(Constants.BOARD_MISS, x, y);
 	}
+	
 	/**
-	 * 
+	 * Returns true if the coordinates are a HIT.
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public boolean isHit(int x, int y) {
-		if (board[x][y] == 'a' 
-		|| board[x][y] == 'b' 
-		|| board[x][y] == 'c'
-		|| board[x][y] == 'p'
-		|| board[x][y] == 's') {
-			return true;
-		} else {
-			return false;
+	public boolean isHit(int x, int y)
+	{
+		List<IShip> ships = Ships.GetAllShips();
+		for(int i = 0; i < ships.size(); i++)
+		{
+			IShip ship = ships.get(i);
+			if(this.board[x][y] == ship.getSymbol())
+			{
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Counts the number of hits. If the number of hits is wqual to the sum of
+	 * all ship sizes, then we can infer that the player has lost. This method
+	 * returns true if the current board has lost, true otherwise.
 	 */
 	public boolean hasLost()
 	{
-		/*
-		 * Aircraft		5
-		 * Battleship	4
-		 * Cruiser		3
-		 * PatrolBoat	2
-		 * Submarine	3
-		 * --------------
-		 * Total		17
-		 */
-		return getAllHitCoordinates().size() == 17;
+		int total = 0;		
+		List<IShip> ships = Ships.GetAllShips();
+		for(int i = 0; i < ships.size(); i++)
+		{
+			IShip ship = ships.get(i);
+			total += ship.getSize();
+		}
+		return (getAllHitCoordinates().size() == total);
 	}
 	
 	/**
@@ -110,7 +115,7 @@ public class Board {
 	}
 	
 	/**
-	 * Returns a all coordinates occupied by the given ship.
+	 * Returns a list of coordinates occupied by the given ship.
 	 * @param ship
 	 * @return 
 	 */
@@ -254,6 +259,19 @@ public class Board {
 		System.out.println("  0123456789");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public int length()
+	{
+		return this.board.length;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public String serialize() {
 
 		String string = "";
@@ -267,6 +285,11 @@ public class Board {
 		return string;
 	}
 	
+	/**
+	 * 
+	 * @param string
+	 * @return
+	 */
 	public static Board deserialize(String string)
 	{
 		Board board = new Board();
