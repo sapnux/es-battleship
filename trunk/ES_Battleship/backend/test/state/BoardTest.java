@@ -12,11 +12,11 @@ public class BoardTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		board = new Board();
-		board.add(Ships.GetAircraftCarrier(), 0, 0, Orientation.VERTICAL);
-		board.add(Ships.GetBattleship(), 1, 1, Orientation.HORIZONTAL);
-		board.add(Ships.GetCruiser(), 6, 4, Orientation.VERTICAL);
-		board.add(Ships.GetPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-		board.add(Ships.GetSubmarine(), 5, 5, Orientation.VERTICAL);
+		board.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
+		board.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
+		board.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
+		board.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+		board.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
 	}
 
 	public void testSetHit() {
@@ -96,9 +96,9 @@ public class BoardTest extends TestCase {
 
 	public void testAddIShipIntIntOrientation() {
 		Board board2 = new Board();
-		board2.add(Ships.GetPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+		board2.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
 		assertEquals("Incorrect ship placement", 
-				Ships.GetPatrolBoat().getSymbol(), board2.getCoordinate(6, 9));
+				Ships.getPatrolBoat().getSymbol(), board2.getCoordinate(6, 9));
 		assertEquals("Incorrect ship placement", 
 				Constants.BOARD_EMPTY, board2.getCoordinate(6, 6));
 		assertEquals("Incorrect ship placement", 
@@ -107,11 +107,14 @@ public class BoardTest extends TestCase {
 
 	public void testSerialize() {
 		String expected = "a*********abbbb*****a*********a*********a**************s********cspp******cs********c***************";
-		fail("Not yet implemented");
+		String actual = this.board.serialize();
+		assertEquals("Serialization failed", expected, actual);
 	}
 
 	public void testDeserialize() {
-		fail("Not yet implemented");
+		String temp = "a*********abbbb*****a*********a*********a**************s********cspp******cs********c***************";
+		Board board2 = Board.deserialize(temp);
+		assertEquals("Deserialization failed", this.board, board2);
 	}
 
 }

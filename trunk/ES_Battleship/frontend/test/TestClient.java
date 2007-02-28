@@ -14,11 +14,11 @@ public class TestClient implements IClient {
 	public TestClient(String aid, Board aBoard) {
 		mBoard = aBoard;
 		
-		mBoard.add(Ships.GetAircraftCarrier(), 0, 0, Orientation.VERTICAL);
-		mBoard.add(Ships.GetBattleship(), 1, 1, Orientation.HORIZONTAL);
-		mBoard.add(Ships.GetCruiser(), 6, 4, Orientation.VERTICAL);
-		mBoard.add(Ships.GetPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-		mBoard.add(Ships.GetSubmarine(), 5, 5, Orientation.VERTICAL);
+		mBoard.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
+		mBoard.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
+		mBoard.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
+		mBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+		mBoard.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
 		mBoard.print();
 		
 		mPlayer = new Player(aid, mBoard);
@@ -60,6 +60,11 @@ public class TestClient implements IClient {
 		//mPlayer.getMyBoard().setCoordinate(c, x, y);
 		
 		return rValue;
+	}
+	
+	public void waitForTurn()
+	{
+		//TODO: added to comply with IClient
 	}
 
 }

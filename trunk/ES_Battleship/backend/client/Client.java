@@ -112,7 +112,11 @@ public class Client implements IClient {
 		return player;
 	}
 	
-	public void listenForMessages() {
+	/*
+	 * Listens until a message is received from the server.
+	 * @see backend.client.IClient#waitForTurn()
+	 */
+	public void waitForTurn() {
 		String inputLine;
 		try {
 			while (listening && !player.isMyTurn() && (inputLine = in.readLine()) != null) {

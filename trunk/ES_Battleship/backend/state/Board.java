@@ -68,7 +68,7 @@ public class Board {
 			return true;
 		}
 		
-		List<IShip> ships = Ships.GetAllShips();
+		List<IShip> ships = Ships.getAllShips();
 		for(int i = 0; i < ships.size(); i++)
 		{
 			IShip ship = ships.get(i);
@@ -88,7 +88,7 @@ public class Board {
 	public boolean hasLost()
 	{
 		int total = 0;		
-		List<IShip> ships = Ships.GetAllShips();
+		List<IShip> ships = Ships.getAllShips();
 		for(int i = 0; i < ships.size(); i++)
 		{
 			IShip ship = ships.get(i);

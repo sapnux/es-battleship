@@ -6,27 +6,27 @@ import backend.state.ships.*;
 public class ShipsTest extends TestCase {
 
 	public void testGetAircraftCarrier() {
-		IShip ship =  Ships.GetAircraftCarrier();
+		IShip ship =  Ships.getAircraftCarrier();
 		assertEquals("Wrong ship class instance", AircraftCarrier.class, ship.getClass());
 	}
 
 	public void testGetBattleship() {
-		IShip ship =  Ships.GetBattleship();
+		IShip ship =  Ships.getBattleship();
 		assertEquals("Wrong ship class instance", Battleship.class, ship.getClass());
 	}
 
 	public void testGetCruiser() {
-		IShip ship =  Ships.GetCruiser();
+		IShip ship =  Ships.getCruiser();
 		assertEquals("Wrong ship class instance", Cruiser.class, ship.getClass());
 	}
 
 	public void testGetPatrolBoat() {
-		IShip ship =  Ships.GetPatrolBoat();
+		IShip ship =  Ships.getPatrolBoat();
 		assertEquals("Wrong ship class instance", PatrolBoat.class, ship.getClass());
 	}
 
 	public void testGetSubmarine() {
-		IShip ship =  Ships.GetSubmarine();
+		IShip ship =  Ships.getSubmarine();
 		assertEquals("Wrong ship class instance", Submarine.class, ship.getClass());
 	}
 
