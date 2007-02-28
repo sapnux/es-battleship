@@ -1,4 +1,4 @@
-package backend.state.ships.test;
+package backend.test.state.ships;
 
 import junit.framework.TestCase;
 import backend.state.ships.*;
