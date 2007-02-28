@@ -57,10 +57,11 @@ public class Coordinates {
 	/**
 	 * 
 	 */
-	public int hashCode()
-	{
-		//TODO: this is probably wrong
-		return super.hashCode();
+	public int hashCode() {
+		int result = 17;
+		result = 37*result + this.x;
+		result = 37*result + this.y;
+		return result;
 	}
 	
 	/**
