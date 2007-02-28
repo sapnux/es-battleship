@@ -63,6 +63,11 @@ public class Board {
 	 */
 	public boolean isHit(int x, int y)
 	{
+		if(this.board[x][y] == Constants.BOARD_HIT)
+		{
+			return true;
+		}
+		
 		List<IShip> ships = Ships.GetAllShips();
 		for(int i = 0; i < ships.size(); i++)
 		{
@@ -260,7 +265,8 @@ public class Board {
 	}
 
 	/**
-	 * 
+	 * Returns the length (size) of the game board. Assumes that the board
+	 * is square.
 	 * @return
 	 */
 	public int length()
