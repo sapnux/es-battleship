@@ -14,15 +14,15 @@ import backend.state.ships.Ships;
 
 public class SampleClient implements Observer
 {
-	private Client cl;
+	private IClient cl;
 	public SampleClient(String server, String port, String id) throws InterruptedException
 	{
 		Board board = new Board();
-		board.add(Ships.GetAircraftCarrier(), 0, 0, Orientation.VERTICAL);
-		board.add(Ships.GetBattleship(), 1, 1, Orientation.HORIZONTAL);
-		board.add(Ships.GetCruiser(), 6, 4, Orientation.VERTICAL);
-		board.add(Ships.GetPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-		board.add(Ships.GetSubmarine(), 5, 5, Orientation.VERTICAL);
+		board.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
+		board.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
+		board.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
+		board.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+		board.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
 		board.print();
 		
 		cl = new Client(id, board);
@@ -30,6 +30,9 @@ public class SampleClient implements Observer
 		cl.connect(server, port);	
 	}
 	
+	/**
+	 * This method is called each time the player's turn changes. 
+	 */
 	public void update(Observable o, Object obj)
 	{	
 		backend.util.Logger.LogInfo("myBoard:");
@@ -48,10 +51,7 @@ public class SampleClient implements Observer
 			System.exit(0);
 		}
 		
-		System.out.println("isMyTurn: " + cl.getPlayer().isMyTurn());
-		
-		boolean myTurn = cl.getPlayer().isMyTurn();
-		if(myTurn)
+		if(cl.getPlayer().isMyTurn())
 		{
 			try {
 				Thread.sleep(1000);
@@ -62,11 +62,15 @@ public class SampleClient implements Observer
 		else
 		{
 			System.out.println("It's not our turn. Waiting for our turn.");
-			cl.listenForMessages();
+			cl.waitForTurn();
 		}
-
 	}
 	
+	/**
+	 * Returns a random move (x,y) from all the empty coordinates remaining on
+	 * the game board.
+	 * @return
+	 */
 	private Coordinates makeMove()
 	{
 		List<Coordinates> list = cl.getPlayer().getOppBoard().getAllEmptyCoordinates();

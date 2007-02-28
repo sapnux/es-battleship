@@ -17,7 +17,7 @@ public abstract class Ships {
 	/*
 	 * Returns the instance of the Aircraft Carrier piece.
 	 */
-	public static IShip GetAircraftCarrier()
+	public static IShip getAircraftCarrier()
 	{
 		if(aircraft == null)
 		{
@@ -29,7 +29,7 @@ public abstract class Ships {
 	/*
 	 * Returns the instance of the Battleship piece.
 	 */
-	public static IShip GetBattleship()
+	public static IShip getBattleship()
 	{
 		if(battleship == null)
 		{
@@ -41,7 +41,7 @@ public abstract class Ships {
 	/*
 	 * Returns the instance of the Cruiser piece.
 	 */
-	public static IShip GetCruiser()
+	public static IShip getCruiser()
 	{
 		if(cruiser == null)
 		{
@@ -53,7 +53,7 @@ public abstract class Ships {
 	/*
 	 * Returns the instance of the Patrol Boat piece.
 	 */
-	public static IShip GetPatrolBoat()
+	public static IShip getPatrolBoat()
 	{
 		if(patrol == null)
 		{
@@ -65,7 +65,7 @@ public abstract class Ships {
 	/*
 	 * Returns the instance of the Submarine piece.
 	 */
-	public static IShip GetSubmarine()
+	public static IShip getSubmarine()
 	{
 		if(submarine == null)
 		{
@@ -77,13 +77,13 @@ public abstract class Ships {
 	/*
 	 * Returns a list of all ship objects.
 	 */
-	public static List<IShip> GetAllShips() {
+	public static List<IShip> getAllShips() {
 		List<IShip> list = new ArrayList<IShip>();
-		list.add(GetAircraftCarrier());
-		list.add(GetBattleship());
-		list.add(GetCruiser());
-		list.add(GetPatrolBoat());
-		list.add(GetSubmarine());
+		list.add(getAircraftCarrier());
+		list.add(getBattleship());
+		list.add(getCruiser());
+		list.add(getPatrolBoat());
+		list.add(getSubmarine());
 		return list;
 	}
 }
