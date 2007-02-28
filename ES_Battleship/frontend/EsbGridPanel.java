@@ -4,8 +4,14 @@
 package frontend;
 
 import java.awt.*;
+
 import javax.swing.JPanel;
+
+import backend.state.Coordinates;
+
 import java.awt.Dimension;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author cloud
@@ -16,6 +22,9 @@ public abstract class EsbGridPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	protected static final int mBoardSide = 400;
 	protected static final int mNumCellsAcross  = 10;
+	//stores the width of each grid cell by number of pixels
+	//used for resolving grid coordinates to screen coordinates & vice versa
+	protected int mCellSide;
 	/**
 	 * Background color can be set by children.
 	 */
@@ -25,6 +34,9 @@ public abstract class EsbGridPanel extends JPanel {
 	 */
 	protected Color mGridLineColor;
 		
+	protected List<Coordinates> mHitsList   = null;
+	protected List<Coordinates> mMissesList = null;
+	
 	/**
 	 * This is the default constructor
 	 */
@@ -39,6 +51,7 @@ public abstract class EsbGridPanel extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
+		mCellSide = mBoardSide/mNumCellsAcross;	
 		mBackgroundColor = Color.WHITE;
 		mGridLineColor = Color.BLACK;
 		//We add 1 to the board size so that the final gridlines are drawn in the x and y planes.
@@ -66,7 +79,7 @@ public abstract class EsbGridPanel extends JPanel {
 	 * @return The number of grid locations along one side of the (square) board.
 	 */
 	protected int getCellSide() {
-		return mBoardSide/mNumCellsAcross;
+		return mCellSide;
 	}
 	
 	/**
@@ -85,4 +98,35 @@ public abstract class EsbGridPanel extends JPanel {
 	 * its information outside of the Paint() method.
 	 */
 	public abstract void screenNotify();
+	
+	protected void drawHits(Graphics g) {
+		int dispX, dispY;
+		
+		Coordinates moveLoc;
+		Iterator<Coordinates> tHitsIterator = mHitsList.iterator();
+
+		g.setColor(Color.RED);
+		while(tHitsIterator.hasNext()){
+			moveLoc = (Coordinates) tHitsIterator.next();
+			dispX = (moveLoc.getX() * mCellSide)+1;
+			dispY = (moveLoc.getY() * mCellSide)+1;
+			
+			g.fillRect(dispX, dispY, mCellSide-1, mCellSide-1);
+		}
+	}
+	
+	protected void drawMisses(Graphics g) {
+		int dispX, dispY;
+		Coordinates moveLoc;		
+		
+		Iterator<Coordinates> tMissesIterator = mMissesList.iterator();
+		g.setColor(Color.WHITE);
+		while(tMissesIterator.hasNext()){
+			moveLoc = (Coordinates) tMissesIterator.next();
+			dispX = (moveLoc.getX() * mCellSide)+1;
+			dispY = (moveLoc.getY() * mCellSide)+1;
+			
+			g.fillRect(dispX, dispY, mCellSide-1, mCellSide-1);			
+		}		
+	}
 }

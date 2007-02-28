@@ -10,11 +10,6 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 	
 	private boolean mCanClick;
 	private EsbFrontendController mFController;
-	//stores the width of each grid cell by number of pixels
-	//used for resolving grid coordinates to screen coordinates & vice versa
-	private int mCellSide;
-	private List<Coordinates> mHitsList;
-	private List<Coordinates> mMissesList;
 	
 	public EsbOpponentGridPanel(EsbFrontendController aFController){
 		super();		
@@ -28,8 +23,7 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 		this.setBackground(mBackgroundColor);
 		//the default state of the game is to disable clicking so that the player
 		//cannot make moves.
-		this.setCanClick(false);
-		mCellSide = this.getCellSide();		
+		this.setCanClick(false);	
 		mHitsList = mFController.getOpponentHits();
 		mMissesList = mFController.getOpponentMisses();
 		
@@ -48,8 +42,10 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 							+ gridY);
 					
 					//Check to ensure that click is within legal game board
-					if(((gridX >= 0)&&(gridX < mNumCellsAcross))&&
-							((gridY >= 0)&&(gridY < mNumCellsAcross)))
+					if((((gridX >= 0)&&(gridX < mNumCellsAcross))&&
+							((gridY >= 0)&&(gridY < mNumCellsAcross))) &&
+							(true)&&(true))
+						//TODO: check to see if cell was already clicked
 						mFController.makeMove(gridX, gridY);					
 				}
 			}
@@ -71,30 +67,8 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 	}
 	
 	protected void drawFeatures(Graphics g){
-		int dispX, dispY;
-		Coordinates moveLoc;
-		
-		Iterator<Coordinates> tHitsIterator = mHitsList.iterator();
-		Iterator<Coordinates> tMissesIterator = mMissesList.iterator();
-		
-		g.setColor(Color.RED);
-		while(tHitsIterator.hasNext()){
-			moveLoc = (Coordinates) tHitsIterator.next();
-			dispX = (moveLoc.getX() * mCellSide)+1;
-			dispY = (moveLoc.getY() * mCellSide)+1;
-			
-			g.fillRect(dispX, dispY, mCellSide-1, mCellSide-1);
-		}
-		
-		g.setColor(Color.WHITE);
-		while(tMissesIterator.hasNext()){
-			moveLoc = (Coordinates) tMissesIterator.next();
-			dispX = (moveLoc.getX() * mCellSide)+1;
-			dispY = (moveLoc.getY() * mCellSide)+1;
-			
-			g.fillRect(dispX, dispY, mCellSide-1, mCellSide-1);			
-		}
-		
+		this.drawHits(g);
+		this.drawMisses(g);	
 	}
 	
 	public void screenNotify(){		
