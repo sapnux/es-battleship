@@ -160,9 +160,7 @@ public class Board {
 			{
 				if(this.board[i][j] == c)
 				{
-					Coordinates coordinates = new Coordinates();
-					coordinates.setX(i);
-					coordinates.setY(j);
+					Coordinates coordinates = new Coordinates(i,j);
 					list.add(coordinates);
 				}
 			}
