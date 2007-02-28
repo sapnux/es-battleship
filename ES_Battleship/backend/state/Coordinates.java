@@ -5,6 +5,12 @@ public class Coordinates {
 	private int x;
 	private int y;
 	
+	public Coordinates(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
+	}
+	
 	/**
 	 * Get the X coordinate.
 	 * @return
@@ -35,5 +41,33 @@ public class Coordinates {
 	 */
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	/**
+	 * 
+	 * @param coordinates
+	 * @return
+	 */
+	public boolean equals(Object obj)
+	{
+		Coordinates coordinates = (Coordinates)obj;
+		return this.x == coordinates.getX() && this.y == coordinates.getY();
+	}
+	
+	/**
+	 * 
+	 */
+	public int hashCode()
+	{
+		//TODO: this is probably wrong
+		return super.hashCode();
+	}
+	
+	/**
+	 * 
+	 */
+	public String toString()
+	{
+		return "[" + this.x + "," + this.y + "]";
 	}
 }
