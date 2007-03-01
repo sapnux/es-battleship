@@ -24,8 +24,7 @@ public class Board {
 	/*
 	 * Populate the board with empty asteriks. 
 	 */
-	public Board()
-	{
+	public Board() {
 		for(int i = 0; i < this.board.length; i++)
 		{
 			for(int j = 0; j < this.board.length; j++)
@@ -40,8 +39,7 @@ public class Board {
 	 * @param x
 	 * @param y
 	 */
-	public void setHit(int x, int y)
-	{
+	public void setHit(int x, int y) {
 		setCoordinate(Constants.BOARD_HIT, x, y);
 	}
 	
@@ -50,8 +48,7 @@ public class Board {
 	 * @param x
 	 * @param y
 	 */
-	public void setMiss(int x, int y)
-	{
+	public void setMiss(int x, int y) {
 		setCoordinate(Constants.BOARD_MISS, x, y);
 	}
 	
@@ -61,8 +58,7 @@ public class Board {
 	 * @param y
 	 * @return
 	 */
-	public boolean isHit(int x, int y)
-	{
+	public boolean isHit(int x, int y) {
 		if(this.board[x][y] == Constants.BOARD_HIT)
 		{
 			return true;
@@ -85,8 +81,7 @@ public class Board {
 	 * all ship sizes, then we can infer that the player has lost. This method
 	 * returns true if the current board has lost, true otherwise.
 	 */
-	public boolean hasLost()
-	{
+	public boolean hasLost() {
 		int total = 0;		
 		List<IShip> ships = Ships.getAllShips();
 		for(int i = 0; i < ships.size(); i++)
@@ -103,8 +98,7 @@ public class Board {
 	 * @param x
 	 * @param y
 	 */
-	public void setCoordinate(char c, int x, int y)
-	{
+	public void setCoordinate(char c, int x, int y) {
 		this.board[x][y] = c;
 	}
 	
@@ -114,8 +108,7 @@ public class Board {
 	 * @param y
 	 * @return character at coordinates x, y
 	 */
-	public char getCoordinate(int x, int y)
-	{
+	public char getCoordinate(int x, int y) {
 		return this.board[x][y];
 	}
 	
@@ -124,8 +117,7 @@ public class Board {
 	 * @param ship
 	 * @return 
 	 */
-	public List<Coordinates> getShipCoordinates(IShip ship)
-	{
+	public List<Coordinates> getShipCoordinates(IShip ship) {
 		return getCoordinatesByChar(ship.getSymbol());
 	}
 	
@@ -133,8 +125,7 @@ public class Board {
 	 * Returns a list of MISSED coordinates on the board.
 	 * @return
 	 */
-	public List<Coordinates> getAllMissedCoordinates()
-	{
+	public List<Coordinates> getAllMissedCoordinates() {
 		return getCoordinatesByChar(Constants.BOARD_MISS);
 	}
 	
@@ -142,8 +133,7 @@ public class Board {
 	 * Returns a list of HIT coordinates on the board.
 	 * @return
 	 */
-	public List<Coordinates> getAllHitCoordinates()
-	{
+	public List<Coordinates> getAllHitCoordinates() {
 		return getCoordinatesByChar(Constants.BOARD_HIT);
 	}
 	
@@ -151,8 +141,7 @@ public class Board {
 	 * Returns a list of EMPTY coordinates on the board.
 	 * @return
 	 */
-	public List<Coordinates> getAllEmptyCoordinates()
-	{
+	public List<Coordinates> getAllEmptyCoordinates() {
 		return getCoordinatesByChar(Constants.BOARD_EMPTY);
 	}
 	
@@ -161,8 +150,7 @@ public class Board {
 	 * @param c
 	 * @return
 	 */
-	private List<Coordinates> getCoordinatesByChar(char c)
-	{
+	private List<Coordinates> getCoordinatesByChar(char c) {
 		List<Coordinates> list = new ArrayList<Coordinates>();
 		for(int i = 0; i < this.board.length; i++)
 		{
@@ -176,6 +164,15 @@ public class Board {
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Returns the length (size) of the game board. Assumes that the board
+	 * is square.
+	 * @return
+	 */
+	public int length() {
+		return this.board.length;
 	}
 	
 	/**
@@ -239,8 +236,7 @@ public class Board {
 	/*
 	 * Prints out an ASCII version of the current board. Helpful for debugging.
 	 */
-	public void print()
-	{
+	public void print() {
 		System.out.println("  0123456789");
 		for(int i = 0; i < this.board.length; i++)
 		{
@@ -265,13 +261,28 @@ public class Board {
 	}
 
 	/**
-	 * Returns the length (size) of the game board. Assumes that the board
-	 * is square.
-	 * @return
+	 * 
+	 * @param myBoard
+	 * @param oppBoard
 	 */
-	public int length()
-	{
-		return this.board.length;
+	public static void print(Board myBoard, Board oppBoard) {
+		System.out.println("--- My Board --|-- Opp Board ---");
+		System.out.println("  0123456789   |   0123456789");
+		for(int i = 0; i < myBoard.length() && i < oppBoard.length(); i++)
+		{
+			System.out.print(i + " ");
+			for(int j = 0; j < myBoard.length(); j++)
+			{
+				System.out.print(myBoard.getCoordinate(i, j));
+			}
+			System.out.print(" " + i + " | " + i + " ");
+			for(int j = 0; j < oppBoard.length(); j++)
+			{
+				System.out.print(oppBoard.getCoordinate(i, j));
+			}
+			System.out.println(" " + i);
+		}
+		System.out.println("  0123456789   |   0123456789\n");
 	}
 	
 	/**
@@ -279,7 +290,6 @@ public class Board {
 	 * @return
 	 */
 	public String serialize() {
-
 		String string = "";
 		for(int i = 0; i < this.board.length; i++)
 		{
@@ -296,8 +306,7 @@ public class Board {
 	 * @param string
 	 * @return
 	 */
-	public static Board deserialize(String string)
-	{
+	public static Board deserialize(String string) {
 		Board board = new Board();
 		int strCursor = 0;
 		for (int x = 0; x < board.board.length; x++) {
