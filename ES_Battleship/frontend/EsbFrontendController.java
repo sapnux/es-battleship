@@ -1,7 +1,7 @@
 package frontend;
 
 import java.util.*;
-
+import frontend.state.ships.*;
 import backend.client.*;
 import backend.state.*;
 
@@ -18,11 +18,14 @@ public class EsbFrontendController implements Observer {
 	private IClient mClient;
 	private EsbBattleWindow mBattleWindow;
 	private Player mPlayer;
+	private List<CanDrawShip> mShipList;
+	
 	
 	public EsbFrontendController(IClient aClient) {
 		mClient = aClient;
 		mPlayer = mClient.getPlayer();
 		mPlayer.addObserver(this);
+		mShipList = new ArrayList<CanDrawShip>();
 	}
 
 	/**
@@ -48,7 +51,15 @@ public class EsbFrontendController implements Observer {
 	
 	public List<Coordinates> getPlayerHits() {
 		return mPlayer.getMyBoard().getAllHitCoordinates();
-	}	
+	}
+	
+	public List<CanDrawShip> getShips() {
+		return mShipList;
+	}
+
+	public void setShips(List<CanDrawShip> shipList) {
+		mShipList = shipList;
+	}
 	
 	public boolean makeMove(int x, int y) {
 		return mClient.move(x, y);
