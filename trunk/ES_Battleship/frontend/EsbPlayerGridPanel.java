@@ -2,10 +2,14 @@ package frontend;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.*;
+import backend.state.*;
+import frontend.state.ships.*;
 
 public class EsbPlayerGridPanel extends EsbGridPanel {
 	
 	private EsbFrontendController mFController;
+	private List<CanDrawShip> mShipsList;
 	
 	public EsbPlayerGridPanel(EsbFrontendController aFController){
 		super();
@@ -19,11 +23,27 @@ public class EsbPlayerGridPanel extends EsbGridPanel {
 
 		mHitsList = mFController.getPlayerHits();
 		mMissesList = mFController.getPlayerMisses();
+		mShipsList = mFController.getShips();
 	}
 	
 	protected void drawFeatures(Graphics g){
+		this.drawMyShips(g);
 		this.drawHits(g);
 		this.drawMisses(g);	
+	}
+	
+	protected void drawMyShips(Graphics g){
+		Iterator<CanDrawShip> tShipsIterator = mShipsList.iterator();
+		
+		try {
+			while(tShipsIterator.hasNext()){
+				if(!tShipsIterator.next().drawMe(g, this.mCellSide))
+					throw new Exception("Failure to draw CanDrawShip");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+		}
 	}
 	
 	public void screenNotify(){
