@@ -11,7 +11,6 @@ import backend.state.GameResult;
 import backend.state.Orientation;
 import backend.state.ships.Ships;
 
-
 public class SampleClient implements Observer
 {
 	private IClient cl;
@@ -23,7 +22,6 @@ public class SampleClient implements Observer
 		board.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
 		board.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
 		board.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
-		board.print();
 		
 		cl = new Client(id, board);
 		cl.getPlayer().addObserver(this);
@@ -35,23 +33,19 @@ public class SampleClient implements Observer
 	 */
 	public void update(Observable o, Object obj)
 	{	
-		backend.util.Logger.LogInfo("myBoard:");
-		cl.getPlayer().getMyBoard().print();
-
-		backend.util.Logger.LogInfo("oppBoard:");
-		cl.getPlayer().getOppBoard().print();
+		Board.print(cl.getPlayer().getMyBoard(), cl.getPlayer().getOppBoard());
 		
 		if (cl.getPlayer().getGameResult() == GameResult.WIN) {
-			System.out.println("You Win");
+			System.out.println("=*= YOU ARE THE WINNER =*=");
 			cl.disconnect();
 			System.exit(0);
 		} else if (cl.getPlayer().getGameResult() == GameResult.LOSS) {
-			System.out.println("You Lose");
+			System.out.println("=*= OOPS, YOU LOSE =*=");
 			cl.disconnect();
 			System.exit(0);
 		}
 		
-		if(cl.getPlayer().isMyTurn())
+		if (cl.getPlayer().isMyTurn())
 		{
 			try {
 				Thread.sleep(1000);

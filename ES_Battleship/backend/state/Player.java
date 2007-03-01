@@ -11,7 +11,7 @@ public class Player extends Observable {
 	private GameResult gameResult = GameResult.UNKNOWN;
 	
 	/**
-	 * 
+	 * Creates a new player object with the given player id and game board.
 	 * @param id
 	 * @param board
 	 */
@@ -22,15 +22,14 @@ public class Player extends Observable {
 	}
 
 	/**
-	 * 
+	 * Calls the setChanged() method on Observable.
 	 */
-	public void setChanged()
-	{
+	public void setChanged() {
 		super.setChanged();
 	}
 	
 	/**
-	 * 
+	 * Get this player's board where opponent shots and misses are recorded. 
 	 * @return
 	 */
 	public Board getMyBoard() {
@@ -38,7 +37,7 @@ public class Player extends Observable {
 	}
 
 	/**
-	 * 
+	 * Get the current Id of this player.
 	 * @return
 	 */
 	public String getId() {
@@ -46,29 +45,41 @@ public class Player extends Observable {
 	}
 
 	/**
-	 * 
+	 * Get opponent board where this player's shots and misses are recorded.
 	 * @return
 	 */
 	public Board getOppBoard() {
 		return this.oppBoard;
 	}
 	
+	/**
+	 * Get the current game result.
+	 * @return
+	 */
 	public GameResult getGameResult() {
 		return gameResult;
 	}
 
+	/**
+	 * Sets the current game result.
+	 * @param gameResult
+	 */
 	public void setGameResult(GameResult gameResult) {
 		this.gameResult = gameResult;
 	}
 
 	/**
-	 * 
+	 * Get whether or not it is this player's turn.
 	 * @return
 	 */
 	public boolean isMyTurn() {
 		return this.myTurn;
 	}
 	
+	/**
+	 * Set turn. True for this player, false for opponent.
+	 * @param myTurn
+	 */
 	public void setMyTurn(boolean myTurn) {
 		this.myTurn = myTurn;
 		setChanged();
