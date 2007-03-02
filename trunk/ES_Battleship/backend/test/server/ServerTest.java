@@ -15,5 +15,4 @@ public class ServerTest extends TestCase {
 	public void testMain() {
 		fail("Not yet implemented"); // TODO
 	}
-
 }
