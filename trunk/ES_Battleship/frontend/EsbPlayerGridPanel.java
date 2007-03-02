@@ -41,7 +41,6 @@ public class EsbPlayerGridPanel extends EsbGridPanel {
 					throw new Exception("Failure to draw CanDrawShip");
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
 		}
 	}

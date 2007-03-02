@@ -30,7 +30,7 @@ public class SubmarineCanDraw extends CanDrawShip {
 			width = aCellSide;			
 		}
 		
-		g.fillRoundRect(dispX, dispY, width, height, (aCellSide/2), (aCellSide/2));
+		g.fillRoundRect(dispX, dispY, width, height, (aCellSide), (aCellSide));
 		return true;
 	}
 }

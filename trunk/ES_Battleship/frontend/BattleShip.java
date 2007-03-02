@@ -19,25 +19,30 @@ public class BattleShip {
 			System.exit(-1);
 		}
 
+		//Common data between the two windows
+		Board theBoard = new Board();
+		List <CanDrawShip> shipList = new ArrayList<CanDrawShip>();
+		
 		//Fleet arrangement section
 		//--------------------------
+		EsbArrangmentWindow theAWindow = 
+			new EsbArrangmentWindow(theBoard, shipList);
+		theAWindow.setVisible(true);
 		
 		//TEST CODE
 		String playerID = "player1";
-		Board theBoard = new Board();
 		TestClient theClient = new TestClient(playerID, theBoard);
-		List <CanDrawShip> shipList = new ArrayList<CanDrawShip>();
 		
-		shipList.add(new AircraftCarrierCanDraw());
-		shipList.get(0).setPosition(0, 0, Orientation.VERTICAL);
-		shipList.add(new BattleshipCanDraw());
-		shipList.get(1).setPosition(1, 1, Orientation.HORIZONTAL);
-		shipList.add(new CruiserCanDraw());
-		shipList.get(2).setPosition(6, 4, Orientation.VERTICAL);
-		shipList.add(new PatrolBoatCanDraw());
-		shipList.get(3).setPosition(6, 9, Orientation.HORIZONTAL);
-		shipList.add(new SubmarineCanDraw());
-		shipList.get(4).setPosition(5, 5, Orientation.VERTICAL);
+//		shipList.add(new AircraftCarrierCanDraw());
+//		shipList.get(0).setPosition(0, 0, Orientation.VERTICAL);
+//		shipList.add(new BattleshipCanDraw());
+//		shipList.get(1).setPosition(1, 1, Orientation.HORIZONTAL);
+//		shipList.add(new CruiserCanDraw());
+//		shipList.get(2).setPosition(6, 4, Orientation.VERTICAL);
+//		shipList.add(new PatrolBoatCanDraw());
+//		shipList.get(3).setPosition(6, 9, Orientation.HORIZONTAL);
+//		shipList.add(new SubmarineCanDraw());
+//		shipList.get(4).setPosition(5, 5, Orientation.VERTICAL);
 		//--------------------------
 		
 		//Gameplay Section
@@ -46,7 +51,7 @@ public class BattleShip {
 		
 		theFController.setShips(shipList);
 		EsbBattleWindow theBWindow = new EsbBattleWindow(theFController);
-		theBWindow.setVisible(true);
+		theBWindow.setVisible(false);
 		//--------------------------
 	}
 
