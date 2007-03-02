@@ -34,8 +34,7 @@ public class ServerThread extends Thread {
 				case 0:
 					//format 0|<player id>|<10 rows>...
 					playerId = st.nextToken();
-					Server.serverConsole.write("ServerThread: READY(0) message received, " +
-							"player: " + playerId);
+					Server.serverConsole.write("Player " + playerId + " has connected.");
 					Server.gameEngine.addPlayer(playerId, Board.deserialize(st.nextToken()));
 					while (!Server.gameEngine.isGameReady()) continue;
 					oppOut = (PrintWriter) Server.outputters.get(getOtherThreadNum());
@@ -46,9 +45,8 @@ public class ServerThread extends Thread {
 					playerId = st.nextToken();
 					String x = st.nextToken();
 					String y = st.nextToken();
-					Server.serverConsole.write("ServerThread: MOVE(1) message received, " +
-							"player: "+ playerId + "coordinates: "+x+", "+y);
-					MoveResult moveResult = Server.gameEngine.move(playerId,x,y);
+					Server.serverConsole.write("Player " + playerId + " attacks [" + x +"," + y + "]");
+					MoveResult moveResult = Server.gameEngine.move(playerId, x, y);
 					if (moveResult == MoveResult.WIN) {
 						MsgUtils.sendGameOverMessage(myOut, x, y, "win");
 						MsgUtils.sendGameOverMessage(oppOut, x, y, "lose");

@@ -5,12 +5,13 @@ import backend.state.Board;
 import backend.state.Constants;
 import backend.state.Orientation;
 import backend.state.ships.Ships;
+import backend.util.BackendException;
 
 public class BoardTest extends TestCase {
 
 	private Board board;
 	
-	protected void setUp() throws Exception {
+	protected void setUp() throws BackendException {
 		board = new Board();
 		board.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
 		board.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
@@ -20,29 +21,28 @@ public class BoardTest extends TestCase {
 	}
 
 	public void testSetHit() {
-		for(int x = 0; x < this.board.length(); x++)
+		for(int y = 0; y < this.board.length(); y++)
 		{
-			for(int y = 0; y < this.board.length(); y++)
+			for(int x = 0; x < this.board.length(); x++)
 			{
-				board.setHit(x, y);
-				assertEquals("Hit did not register", Constants.BOARD_HIT, board.getCoordinate(x, y));
+				this.board.setHit(x, y);
+				assertEquals("Hit did not register", Constants.BOARD_HIT, this.board.getCoordinate(x, y));
 			}
 		}
 	}
 
 	public void testSetMiss() {
-		for(int x = 0; x < this.board.length(); x++)
+		for(int y = 0; y < this.board.length(); y++)
 		{
-			for(int y = 0; y < this.board.length(); y++)
+			for(int x = 0; x < this.board.length(); x++)
 			{
-				board.setMiss(x, y);
-				assertEquals("Miss did not register", Constants.BOARD_MISS, board.getCoordinate(x, y));
+				this.board.setMiss(x, y);
+				assertEquals("Miss did not register", Constants.BOARD_MISS, this.board.getCoordinate(x, y));
 			}
 		}
 	}
 
 	public void testIsHit() {
-		
 		assertEquals("Hit was not determined correctly", true, board.isHit(0, 0));
 		assertEquals("Hit was not determined correctly", true, board.isHit(0, 2));
 		
@@ -50,14 +50,14 @@ public class BoardTest extends TestCase {
 		assertEquals("Hit was not determined correctly", false, board.isHit(6, 6));
 		assertEquals("Hit was not determined correctly", false, board.isHit(6, 7));
 		
-		for(int x = 0; x < this.board.length(); x++)
+		for(int y = 0; y < this.board.length(); y++)
 		{
-			for(int y = 0; y < this.board.length(); y++)
+			for(int x = 0; x < this.board.length(); x++)
 			{
-				board.setHit(x, y);
-				assertEquals("Hit was not determined correctly", true, board.isHit(x, y));
-				board.setMiss(x, y);
-				assertEquals("Miss was not determined correctly", false, board.isHit(x, y));
+				this.board.setHit(x, y);
+				assertEquals("Hit was not determined correctly", true, this.board.isHit(x, y));
+				this.board.setMiss(x, y);
+				assertEquals("Miss was not determined correctly", false, this.board.isHit(x, y));
 			}
 		}
 	}
@@ -67,11 +67,25 @@ public class BoardTest extends TestCase {
 	}
 
 	public void testSetCoordinate() {
-		fail("Not yet implemented");
+		for(int y = 0; y < this.board.length(); y++)
+		{
+			for(int x = 0; x < this.board.length(); x++)
+			{
+				this.board.setCoordinate('!', x, y);
+				assertEquals('!', this.board.getCoordinate(x, y));
+			}
+		}
 	}
 
 	public void testGetCoordinate() {
-		fail("Not yet implemented");
+		Board board2 = new Board();
+		for(int y = 0; y < board2.length(); y++)
+		{
+			for(int x = 0; x < board2.length(); x++)
+			{
+				assertEquals(Constants.BOARD_EMPTY, board2.getCoordinate(x, y));
+			}
+		}
 	}
 
 	public void testGetShipCoordinates() {
@@ -94,7 +108,7 @@ public class BoardTest extends TestCase {
 		fail("Not yet implemented");
 	}
 
-	public void testAddIShipIntIntOrientation() {
+	public void testAddIShipIntIntOrientation() throws BackendException {
 		Board board2 = new Board();
 		board2.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
 		assertEquals("Incorrect ship placement", 
@@ -106,13 +120,13 @@ public class BoardTest extends TestCase {
 	}
 
 	public void testSerialize() {
-		String expected = "a*********abbbb*****a*********a*********a**************s********cspp******cs********c***************";
+		String expected = "a*********abbbb*****a*********a*********a*****c********sc********sc********s********************pp**";
 		String actual = this.board.serialize();
 		assertEquals("Serialization failed", expected, actual);
 	}
 
 	public void testDeserialize() {
-		String temp = "a*********abbbb*****a*********a*********a**************s********cspp******cs********c***************";
+		String temp = "a*********abbbb*****a*********a*********a*****c********sc********sc********s********************pp**";
 		Board board2 = Board.deserialize(temp);
 		assertEquals("Deserialization failed", this.board, board2);
 	}

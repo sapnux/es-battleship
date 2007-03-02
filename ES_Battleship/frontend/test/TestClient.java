@@ -1,10 +1,12 @@
 package frontend.test;
 
 import backend.client.IClient;
-import backend.state.*;
+import backend.state.Board;
+import backend.state.Constants;
+import backend.state.Orientation;
+import backend.state.Player;
 import backend.state.ships.Ships;
-import java.util.*;
-import frontend.test.TestOpponent;
+import backend.util.BackendException;
 
 public class TestClient implements IClient {
 
@@ -12,13 +14,16 @@ public class TestClient implements IClient {
 	private Board mBoard;
 	
 	public TestClient(String aid, Board aBoard) {
-		mBoard = aBoard;
-		
-		mBoard.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
-		mBoard.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
-		mBoard.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
-		mBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-		mBoard.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
+		try {
+			mBoard = aBoard;
+			mBoard.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
+			mBoard.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
+			mBoard.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
+			mBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+			mBoard.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
+		} catch(BackendException ex) {
+			// exception occurred use ex.getMessage() to get friendly error
+		}
 		mBoard.print();
 		
 		mPlayer = new Player(aid, mBoard);

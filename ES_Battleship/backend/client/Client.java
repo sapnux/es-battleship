@@ -21,39 +21,40 @@ public class Client implements IClient {
 	private PrintWriter out;
 	private boolean listening = true;
 
-	/*
-	 * 
-	 */
 	public Client(String id, Board board) {
-		player = new Player(id, board);
+		this.player = new Player(id, board);
 	}
-	
-	/*
+
+	/**
 	 * Open a connection with the server and port specified.
+	 * 
 	 * @see backend.IClient#connect(java.lang.String, java.lang.String)
 	 */
 	public void connect(String server, String port) {
 		SocketFactory sf = SocketFactory.getDefault();
 		try {
-			socket = sf.createSocket(server,Integer.parseInt(port));
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			socket = sf.createSocket(server, Integer.parseInt(port));
+			in = new BufferedReader(new InputStreamReader(socket
+					.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
-			MsgUtils.sendReadyMessage(out, player.getId(), player.getMyBoard());
-			
+			MsgUtils.sendReadyMessage(out, this.player.getId(), this.player
+					.getMyBoard());
+
 			String reply = in.readLine();
 			System.out.println(reply);
-	        StringTokenizer st = new StringTokenizer(reply,"|");
-	        if (Integer.parseInt(st.nextToken()) == 3) {
-	        	player.setMyTurn(Boolean.parseBoolean(st.nextToken()));
-	        }
+			StringTokenizer st = new StringTokenizer(reply, "|");
+			if (Integer.parseInt(st.nextToken()) == 3) {
+				this.player.setMyTurn(Boolean.parseBoolean(st.nextToken()));
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	/*
+	/**
 	 * Close any open connections with the server.
+	 * 
 	 * @see backend.IClient#disconnect()
 	 */
 	public void disconnect() {
@@ -67,36 +68,37 @@ public class Client implements IClient {
 		}
 	}
 
-	/*
+	/**
 	 * Sends coordinates of attack. Returns true if HIT, false otherwise.
+	 * 
 	 * @see backend.IClient#move(int, int)
 	 */
 	public boolean move(int x, int y) {
 		boolean isHit = false;
 		try {
-			MsgUtils.sendMoveMessage(out, player.getId(), x, y);
+			MsgUtils.sendMoveMessage(out, this.player.getId(), x, y);
 			String reply = in.readLine();
-	        System.out.println(reply);
-	        StringTokenizer st = new StringTokenizer(reply,"|");
-	        isHit = false;
-	        switch (Integer.parseInt(st.nextToken())) {
+			System.out.println(reply);
+			StringTokenizer st = new StringTokenizer(reply, "|");
+			isHit = false;
+			switch (Integer.parseInt(st.nextToken())) {
 			case 2:
-	        	isHit = Boolean.parseBoolean(st.nextToken());
-	        	if (isHit) {
-	        		player.getOppBoard().setHit(x,y);
-	        	} else {
-	        		player.getOppBoard().setMiss(x,y);
-	        	}
-	        	player.setMyTurn(isHit);
-	        	break;
-			case 5:
-				player.getOppBoard().setHit(x,y);
-				player.setGameResult(GameResult.WIN);
-				player.setChanged();
-				player.notifyObservers();
+				isHit = Boolean.parseBoolean(st.nextToken());
+				if (isHit) {
+					this.player.getOppBoard().setHit(x, y);
+				} else {
+					this.player.getOppBoard().setMiss(x, y);
+				}
+				this.player.setMyTurn(isHit);
 				break;
-	        }
-	        
+			case 5:
+				this.player.getOppBoard().setHit(x, y);
+				this.player.setGameResult(GameResult.WIN);
+				this.player.setChanged();
+				this.player.notifyObservers();
+				break;
+			}
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -104,47 +106,50 @@ public class Client implements IClient {
 		return isHit;
 	}
 
-	/*
+	/**
 	 * Returns the current instance of the player.
+	 * 
 	 * @see backend.IClient#getBoard()
 	 */
 	public Player getPlayer() {
-		return player;
+		return this.player;
 	}
-	
-	/*
+
+	/**
 	 * Listens until a message is received from the server.
+	 * 
 	 * @see backend.client.IClient#waitForTurn()
 	 */
 	public void waitForTurn() {
 		String inputLine;
 		try {
-			while (listening && !player.isMyTurn() && (inputLine = in.readLine()) != null) {
+			while (listening && !this.player.isMyTurn()
+					&& (inputLine = in.readLine()) != null) {
 				listening = true;
 				System.out.println(inputLine);
 				StringTokenizer st = new StringTokenizer(inputLine, "|");
-				int x,y;
+				int x, y;
 				switch (Integer.parseInt(st.nextToken())) {
 				case 4:
-					//format 4|<x coordinate>|<y coordinate>
+					// format 4|<x coordinate>|<y coordinate>
 					x = Integer.parseInt(st.nextToken());
 					y = Integer.parseInt(st.nextToken());
-					if (player.getMyBoard().isHit(x, y)) {
-						player.getMyBoard().setHit(x, y);
-						player.setMyTurn(false);
+					if (this.player.getMyBoard().isHit(x, y)) {
+						this.player.getMyBoard().setHit(x, y);
+						this.player.setMyTurn(false);
 					} else {
-						player.getMyBoard().setMiss(x, y);
-						player.setMyTurn(true);
+						this.player.getMyBoard().setMiss(x, y);
+						this.player.setMyTurn(true);
 						listening = false;
 					}
 					break;
 				case 5:
 					x = Integer.parseInt(st.nextToken());
 					y = Integer.parseInt(st.nextToken());
-					player.getMyBoard().setHit(x, y);
-					player.setGameResult(GameResult.LOSS);
-					player.setChanged();
-					player.notifyObservers();
+					this.player.getMyBoard().setHit(x, y);
+					this.player.setGameResult(GameResult.LOSS);
+					this.player.setChanged();
+					this.player.notifyObservers();
 					break;
 				}
 			}
@@ -153,9 +158,5 @@ public class Client implements IClient {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
-
-
-
-
