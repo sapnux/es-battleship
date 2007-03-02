@@ -44,4 +44,8 @@ public abstract class CanDrawShip {
 		g.fillRect(dispX, dispY, width, height);
 		return true;
 	}
+	
+	public String toString(){
+		return mShip.getName();
+	}
 }

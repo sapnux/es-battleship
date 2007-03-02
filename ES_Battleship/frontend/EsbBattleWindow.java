@@ -44,9 +44,10 @@ public class EsbBattleWindow extends JFrame {
 	 */
 	private void initialize() {
 		mPlayerPanel   = new EsbPlayerGridPanel(mFController);
-		mOpponentPanel = new EsbOpponentGridPanel(mFController); 
+		mOpponentPanel = new EsbOpponentGridPanel(mFController);
+		this.setResizable(false);		
 		this.setContentPane(getJContentPane());
-		this.setTitle("Battle Window");
+		this.setTitle("ES Battleship");
 		this.pack();
 	}
 
