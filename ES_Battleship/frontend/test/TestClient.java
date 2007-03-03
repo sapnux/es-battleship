@@ -70,7 +70,7 @@ public class TestClient implements IClient {
 	
 	public void waitForTurn()
 	{
-		//TODO: added to comply with IClient
+		//added to comply with IClient
 	}
 
 }

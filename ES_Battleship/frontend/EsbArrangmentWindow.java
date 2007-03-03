@@ -26,6 +26,7 @@ public class EsbArrangmentWindow extends JFrame {
 	private JList   mShipSelection          = null;
 	private Vector <CanDrawShip> mShipTypes = null;
 	private EsbFleetPanel mFleetPanel       = null;
+	private JFrame mLocalWindow             = this;
 	
 	private Board mPlayerBoard           = null;
 	private List <CanDrawShip> mShipList = null;
@@ -52,7 +53,7 @@ public class EsbArrangmentWindow extends JFrame {
 	private void initialize() {
 		this.initializeFleetPanel();		
 		this.initializeControlPanel();
-				
+		
 		this.setResizable(false);
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
@@ -87,7 +88,7 @@ public class EsbArrangmentWindow extends JFrame {
 				System.out.println(mSelectedShip);
 			}
 		});
-		
+
 		mReadyButton = new JButton("Ready");
 		mControlPanel.add(mReadyButton, BorderLayout.SOUTH);
 		mReadyButton.addActionListener(new ActionListener() {
@@ -103,12 +104,10 @@ public class EsbArrangmentWindow extends JFrame {
 				
 				theFController.setShips(mShipList);
 				EsbBattleWindow theBWindow = new EsbBattleWindow(theFController);
-				//TODO go up one more layer to get actual frame V
-				// Gets Frame from subcomponents and hides it
-				((JPanel)((JPanel)((JButton)ev.getSource()).getParent()).getParent()).getParent().setVisible(false);
-				theBWindow.setVisible(true);
 				
-//				mPlayerBoard.print();
+				// Gets Frame from subcomponents and hides it
+				mLocalWindow.setVisible(false);
+				theBWindow.setVisible(true);
 			}
 		});
 		mReadyButton.setVisible(true);
@@ -126,16 +125,24 @@ public class EsbArrangmentWindow extends JFrame {
 			private int mGrid2X = 0, mGrid2Y = 0;
 			private Orientation mOrientation;
 			private int mNumClicks           = 0;
+			private int mNumCellsAcross = mFleetPanel.getNumCellsAcross();
 			
 			public void mouseClicked(MouseEvent e){
 				if(mSelectedShip != null){
-					//TODO Sanity check clicks for > 9
+					//TODO Run tests for 3/3 placement bug on fix
+										
 					if(mNumClicks == 0){
 						mGrid1X = e.getX() / mCellSide;
 						mGrid1Y = e.getY() / mCellSide;
 
+						//Check to ensure that click is within legal game board
+						if( ((mGrid1X < 0) || (mGrid1X >= mNumCellsAcross)) ||
+						    ((mGrid1Y < 0) || (mGrid1Y >= mNumCellsAcross))    ) {
+							return;
+						}						
+						
 						//TEST CODE
-						System.out.println("First Placement Click: "+ mGrid1X +
+						System.out.println("First Placement Click: "+ mGrid1X + ", " +
 								mGrid1Y);
 						
 						mNumClicks = 1;	
@@ -145,12 +152,18 @@ public class EsbArrangmentWindow extends JFrame {
 						mGrid2Y = e.getY() / mCellSide;						
 						
 //						TEST CODE
-						System.out.println("Second Placement Click: "+ mGrid2X +
+						System.out.println("Second Placement Click: "+ mGrid2X + ", " +
 								mGrid2Y);
 						
 						//We want to throw out clicks on the same cell.
 						if((mGrid1X == mGrid2X)&&(mGrid1Y == mGrid2Y))
 							return;
+						
+						//Check to ensure that click is within legal game board
+						if( ((mGrid2X < 0) || (mGrid2X >= mNumCellsAcross)) ||
+						    ((mGrid2Y < 0) || (mGrid2Y >= mNumCellsAcross))    ) {
+							return;
+						}							
 						
 						int tNWx, tNWy;
 						
@@ -180,9 +193,12 @@ public class EsbArrangmentWindow extends JFrame {
 							
 							((JPanel)e.getSource()).repaint();	
 						} catch (BackendException e1) {
-							//TODO Make better error handling code.
+							
 							System.err.println(e1.getMessage());
-							mPlayerBoard.print();
+							mPlayerBoard.print();							
+							
+							JOptionPane.showMessageDialog(mLocalWindow, e1.getMessage(), 
+										"Error", JOptionPane.ERROR_MESSAGE);							
 						}
 
 						mNumClicks = 0;
@@ -199,6 +215,7 @@ public class EsbArrangmentWindow extends JFrame {
 		});
 	}
 		
+	
 	/**
 	 * This method initializes jContentPane
 	 * 

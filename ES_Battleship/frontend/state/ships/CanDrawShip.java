@@ -5,7 +5,6 @@ import backend.state.Orientation;
 import java.awt.*;
 
 public abstract class CanDrawShip {
-	//TODO Add code for color customization.
 	protected IShip mShip;
 	protected int mX = 0;
 	protected int mY = 0;
