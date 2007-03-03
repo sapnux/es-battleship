@@ -14,18 +14,19 @@ public class TestClient implements IClient {
 	private Board mBoard;
 	
 	public TestClient(String aid, Board aBoard) {
-		try {
-			mBoard = aBoard;
-			mBoard.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
-			mBoard.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
-			mBoard.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
-			mBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-			mBoard.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
-		} catch(BackendException ex) {
-			// exception occurred use ex.getMessage() to get friendly error
-		}
-		mBoard.print();
+//		try {
+//			mBoard = aBoard;
+//			mBoard.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
+//			mBoard.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
+//			mBoard.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
+//			mBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+//			mBoard.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
+//		} catch(BackendException ex) {
+//			// exception occurred use ex.getMessage() to get friendly error
+//		}
+//		mBoard.print();
 		
+		mBoard = aBoard;
 		mPlayer = new Player(aid, mBoard);
 	}
 	
