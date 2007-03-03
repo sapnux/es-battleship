@@ -14,7 +14,7 @@ public class MsgUtils {
 	}
 	
 	public static void sendReadyMessage(PrintWriter out, String pId, Board myBoard) {
-		String pack = "0|"+pId+"|"+myBoard.serialize();
+		String pack = "0|"+pId+"|"+myBoard.toString();
 		out.println(pack);
 	}
 
