@@ -9,7 +9,7 @@ public class Player extends Observable {
 	private Board oppBoard;
 	private boolean myTurn = false;
 	private GameResult gameResult = GameResult.UNKNOWN;
-	private Vector messages;
+	private Vector<String> messages;
 
 	/**
 	 * Creates a new player object with the given player id and game board.
@@ -21,7 +21,7 @@ public class Player extends Observable {
 		this.id = id;
 		this.myBoard = board;
 		this.oppBoard = new Board();
-		this.messages = new Vector();
+		this.messages = new Vector<String>();
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class Player extends Observable {
 	 * 
 	 * @return Vector of Strings
 	 */
-	public Vector getMessages() {
+	public Vector<String> getMessages() {
 		return messages;
 	}
 
@@ -120,7 +120,7 @@ public class Player extends Observable {
 	 */
 	public void printMessages() {
 		for (int i = 0; i < messages.size(); i++) {
-			System.out.println((String) messages.elementAt(i));
+			System.out.println(messages.elementAt(i));
 		}
 	}
 
