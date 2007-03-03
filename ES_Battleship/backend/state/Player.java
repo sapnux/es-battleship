@@ -3,16 +3,17 @@ package backend.state;
 import java.util.*;
 
 public class Player extends Observable {
-	
+
 	private String id;
 	private Board myBoard;
 	private Board oppBoard;
 	private boolean myTurn = false;
 	private GameResult gameResult = GameResult.UNKNOWN;
 	private Vector messages;
-	
+
 	/**
 	 * Creates a new player object with the given player id and game board.
+	 * 
 	 * @param id
 	 * @param board
 	 */
@@ -29,9 +30,10 @@ public class Player extends Observable {
 	public void setChanged() {
 		super.setChanged();
 	}
-	
+
 	/**
-	 * Get this player's board where opponent shots and misses are recorded. 
+	 * Get this player's board where opponent shots and misses are recorded.
+	 * 
 	 * @return
 	 */
 	public Board getMyBoard() {
@@ -40,6 +42,7 @@ public class Player extends Observable {
 
 	/**
 	 * Get the current Id of this player.
+	 * 
 	 * @return
 	 */
 	public String getId() {
@@ -48,14 +51,16 @@ public class Player extends Observable {
 
 	/**
 	 * Get opponent board where this player's shots and misses are recorded.
+	 * 
 	 * @return
 	 */
 	public Board getOppBoard() {
 		return this.oppBoard;
 	}
-	
+
 	/**
 	 * Get the current game result.
+	 * 
 	 * @return
 	 */
 	public GameResult getGameResult() {
@@ -64,6 +69,7 @@ public class Player extends Observable {
 
 	/**
 	 * Sets the current game result.
+	 * 
 	 * @param gameResult
 	 */
 	public void setGameResult(GameResult gameResult) {
@@ -72,14 +78,16 @@ public class Player extends Observable {
 
 	/**
 	 * Get whether or not it is this player's turn.
+	 * 
 	 * @return
 	 */
 	public boolean isMyTurn() {
 		return this.myTurn;
 	}
-	
+
 	/**
 	 * Set turn. True for this player, false for opponent.
+	 * 
 	 * @param myTurn
 	 */
 	public void setMyTurn(boolean myTurn) {
@@ -90,33 +98,35 @@ public class Player extends Observable {
 
 	/**
 	 * Returns Vector of message strings to be displayed
+	 * 
 	 * @return Vector of Strings
 	 */
 	public Vector getMessages() {
 		return messages;
 	}
-	
+
 	/**
 	 * Adds message to the Vector of message Strings to be displayed
+	 * 
 	 * @param message
 	 */
 	public void addMessage(String message) {
 		messages.add(message);
 	}
-	
+
 	/**
 	 * Prints contents of messages Vector to sysout
-	 *
+	 * 
 	 */
 	public void printMessages() {
-		for (int i=0; i<messages.size(); i++) {
-			System.out.println((String)messages.elementAt(i));
+		for (int i = 0; i < messages.size(); i++) {
+			System.out.println((String) messages.elementAt(i));
 		}
 	}
-	
+
 	/**
 	 * Empties the messages Vector
-	 *
+	 * 
 	 */
 	public void resetMessages() {
 		messages.clear();

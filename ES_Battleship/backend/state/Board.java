@@ -204,15 +204,18 @@ public class Board {
 	 */
 	public void add(IShip ship, int x, int y, Orientation orientation)
 			throws BackendException {
+
+		this.validate(ship, x, y, orientation);
+
 		if (orientation.equals(Orientation.HORIZONTAL)) {
 			// place ship horizontally
 			for (int i = x; i < x + ship.getSize(); i++) {
-				this.place(ship, i, y);
+				this.board[i][y] = ship.getSymbol();
 			}
 		} else {
 			// place ship vertically
 			for (int i = y; i < y + ship.getSize(); i++) {
-				this.place(ship, x, i);
+				this.board[x][i] = ship.getSymbol();
 			}
 		}
 	}
@@ -226,18 +229,39 @@ public class Board {
 	 * @param y
 	 * @throws BackendException
 	 */
-	private void place(IShip ship, int x, int y) throws BackendException {
-		if (x > this.board.length - 1 || y > this.board.length - 1) {
+	private void validate(IShip ship, int x, int y, Orientation orientation)
+			throws BackendException {
+
+		// ensure our coordinates are within the board boundary
+		if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length) {
+			throw new BackendException("The coordinates (" + x + "," + y
+					+ ") are out of range.");
+		}
+
+		// ensure placing this ship does not go out of bounds
+		int direction = orientation.equals(Orientation.HORIZONTAL) ? x : y;
+		if (direction + ship.getSize() >= this.board.length) {
 			throw new BackendException("The placement of the " + ship.getName()
 					+ " is out of bounds.");
 		}
 
-		if (this.board[x][y] == Constants.BOARD_EMPTY) {
-			this.board[x][y] = ship.getSymbol();
+		// ensure placing this ship only covers EMPTY board units
+		if (orientation.equals(Orientation.HORIZONTAL)) {
+			for (int i = x; i < x + ship.getSize(); i++) {
+				if (this.board[i][y] != Constants.BOARD_EMPTY) {
+					throw new BackendException("The coordinate (" + x + "," + y
+							+ ") is already occupied. Cannot place "
+							+ ship.getName() + ".");
+				}
+			}
 		} else {
-			throw new BackendException("The coordinate (" + x + "," + y
-					+ ") is already occupied. Cannot place " + ship.getName()
-					+ ".");
+			for (int i = y; i < y + ship.getSize(); i++) {
+				if (this.board[x][i] != Constants.BOARD_EMPTY) {
+					throw new BackendException("The coordinate (" + x + "," + y
+							+ ") is already occupied. Cannot place "
+							+ ship.getName() + ".");
+				}
+			}
 		}
 	}
 
@@ -286,10 +310,10 @@ public class Board {
 		if (obj == null) {
 			return false;
 		}
-		Board board2 = (Board) obj;
+		Board tmpBoard = (Board) obj;
 		for (int y = 0; y < this.board.length; y++) {
 			for (int x = 0; x < this.board.length; x++) {
-				if (this.board[x][y] != board2.getCoordinate(x, y)) {
+				if (this.board[x][y] != tmpBoard.getCoordinate(x, y)) {
 					return false;
 				}
 			}
@@ -301,7 +325,7 @@ public class Board {
 	 * 
 	 * @return
 	 */
-	public String serialize() {
+	public String toString() {
 		String string = "";
 		for (int y = 0; y < this.board.length; y++) {
 			for (int x = 0; x < this.board.length; x++) {

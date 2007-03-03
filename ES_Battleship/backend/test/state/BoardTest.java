@@ -44,17 +44,11 @@ public class BoardTest extends TestCase {
 	}
 
 	public void testIsHit() {
-		assertEquals("Hit was not determined correctly", true, board
-				.isHit(0, 0));
-		assertEquals("Hit was not determined correctly", true, board
-				.isHit(0, 2));
-
-		assertEquals("Hit was not determined correctly", false, board.isHit(0,
-				6));
-		assertEquals("Hit was not determined correctly", false, board.isHit(6,
-				6));
-		assertEquals("Hit was not determined correctly", false, board.isHit(6,
-				7));
+		assertEquals("Hit was not determined correctly", true, board.isHit(0, 0));
+		assertEquals("Hit was not determined correctly", true, board.isHit(0, 2));
+		assertEquals("Hit was not determined correctly", false, board.isHit(0,6));
+		assertEquals("Hit was not determined correctly", false, board.isHit(6,6));
+		assertEquals("Hit was not determined correctly", false, board.isHit(6,7));
 
 		for (int y = 0; y < this.board.length(); y++) {
 			for (int x = 0; x < this.board.length(); x++) {
@@ -128,9 +122,9 @@ public class BoardTest extends TestCase {
 				.getCoordinate(6, 7));
 	}
 
-	public void testSerialize() {
+	public void testToString() {
 		String expected = "a*********abbbb*****a*********a*********a*****c********sc********sc********s********************pp**";
-		String actual = this.board.serialize();
+		String actual = this.board.toString();
 		assertEquals("Serialization failed", expected, actual);
 	}
 
