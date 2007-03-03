@@ -94,24 +94,32 @@ public class EsbArrangmentWindow extends JFrame {
 		mReadyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				
+				//TODO Change TestClient to Client for real end-to-end testing
 				//TEST CODE
 				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
 				//--------------------------
 				
-				//Gameplay Section
+				//Initialize Game Play objects
 				EsbFrontendController theFController = 
 						new EsbFrontendController(theClient);
 				
 				theFController.setShips(mShipList);
 				EsbBattleWindow theBWindow = new EsbBattleWindow(theFController);
+				try {
+					theClient.connect(mParams[0], mParams[1]);
+				} catch (Exception e) {							
+					JOptionPane.showMessageDialog(mLocalWindow, e.getMessage(), 
+							"Error", JOptionPane.ERROR_MESSAGE);
+					System.exit(-1);
+				}				
 				
-				// Gets Frame from subcomponents and hides it
+				// Gets Frame from subcomponents and hides the arrangement window
 				mLocalWindow.setVisible(false);
 				theBWindow.setVisible(true);
 			}
 		});
 		mReadyButton.setVisible(true);
-		mReadyButton.setEnabled(!false);
+		mReadyButton.setEnabled(false);
 	}
 	
 	private void initializeFleetPanel(){
@@ -128,9 +136,7 @@ public class EsbArrangmentWindow extends JFrame {
 			private int mNumCellsAcross = mFleetPanel.getNumCellsAcross();
 			
 			public void mouseClicked(MouseEvent e){
-				if(mSelectedShip != null){
-					//TODO Run tests for 3/3 placement bug on fix
-										
+				if(mSelectedShip != null){										
 					if(mNumClicks == 0){
 						mGrid1X = e.getX() / mCellSide;
 						mGrid1Y = e.getY() / mCellSide;
@@ -206,10 +212,6 @@ public class EsbArrangmentWindow extends JFrame {
 						mShipSelection.clearSelection();
 						mShipSelection.setEnabled(true);
 					}
-					//TEST CODE				
-//					mSelectedShip.setPosition(0, 0, Orientation.HORIZONTAL);
-//					mShipList.add(mSelectedShip);
-//					((JPanel)e.getSource()).repaint();
 				}
 			}
 		});

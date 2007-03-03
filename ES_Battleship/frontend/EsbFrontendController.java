@@ -92,6 +92,10 @@ public class EsbFrontendController implements Observer {
 		return mPlayer.getGameResult();
 	}
 	
+	public void disconnect() throws Exception{
+		mClient.disconnect();
+	}
+	
 	public void update(Observable o, Object obj) {
 		mBattleWindow.setTurn(mPlayer.isMyTurn());
 		mBattleWindow.notifyComponents();

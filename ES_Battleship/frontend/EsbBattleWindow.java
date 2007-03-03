@@ -129,8 +129,16 @@ public class EsbBattleWindow extends JFrame {
 		if (GameResult.UNKNOWN != mFController.getGameResult()) {
 			JOptionPane.showMessageDialog(this,
 					(GameResult.WIN == mFController.getGameResult() ) ? "You Win!" : "You Lose!", 
-							"End of Game", JOptionPane.INFORMATION_MESSAGE);			
-		}
+							"End of Game", JOptionPane.INFORMATION_MESSAGE);
+			try {
+				mFController.disconnect();
+			} catch (Exception e) {							
+				JOptionPane.showMessageDialog(this, e.getMessage(), 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				System.exit(-1);
+			}
+			System.exit(0);
+		}		
 	}
 
 }
