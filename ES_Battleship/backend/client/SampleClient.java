@@ -43,13 +43,13 @@ public class SampleClient implements Observer {
 	 */
 	public void update(Observable o, Object obj) {
 		Board.print(cl.getPlayer().getMyBoard(), cl.getPlayer().getOppBoard());
+		cl.getPlayer().printMessages();
+		cl.getPlayer().resetMessages();
 
 		if (cl.getPlayer().getGameResult() == GameResult.WIN) {
-			System.out.println("[DONE] You are the WINNER!");
 			cl.disconnect();
 			System.exit(0);
 		} else if (cl.getPlayer().getGameResult() == GameResult.LOSS) {
-			System.out.println("[DONE] You have LOST!");
 			cl.disconnect();
 			System.exit(0);
 		}
@@ -60,11 +60,8 @@ public class SampleClient implements Observer {
 			} catch (InterruptedException ex) {
 			}
 			Coordinates move = makeMove();
-			System.out.println("[MOVE] You are attacking [" + move.getX() + ","
-					+ move.getY() + "].");
 			cl.move(move.getX(), move.getY());
 		} else {
-			System.out.println("[WAIT] Waiting for our turn.");
 			cl.waitForTurn();
 		}
 	}

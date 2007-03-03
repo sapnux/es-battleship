@@ -12,6 +12,7 @@ import javax.net.SocketFactory;
 import backend.state.Board;
 import backend.state.GameResult;
 import backend.state.Player;
+import backend.util.Logger;
 import backend.util.MsgUtils;
 
 public class Client implements IClient {
@@ -41,13 +42,13 @@ public class Client implements IClient {
 					.getMyBoard());
 
 			String reply = in.readLine();
-			System.out.println(reply);
+//			System.out.println(reply);
 			StringTokenizer st = new StringTokenizer(reply, "|");
 			if (Integer.parseInt(st.nextToken()) == 3) {
 				this.player.setMyTurn(Boolean.parseBoolean(st.nextToken()));
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -63,7 +64,7 @@ public class Client implements IClient {
 			in.close();
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -78,29 +79,35 @@ public class Client implements IClient {
 		try {
 			MsgUtils.sendMoveMessage(out, this.player.getId(), x, y);
 			String reply = in.readLine();
-			System.out.println(reply);
+//			System.out.println(reply);
 			StringTokenizer st = new StringTokenizer(reply, "|");
 			isHit = false;
 			switch (Integer.parseInt(st.nextToken())) {
 			case 2:
 				isHit = Boolean.parseBoolean(st.nextToken());
 				if (isHit) {
+					this.player.addMessage("You hit at: "+x+", " +y);
+					this.player.addMessage("Your turn");
 					this.player.getOppBoard().setHit(x, y);
 				} else {
+					this.player.addMessage("You missed at: "+x+", " +y);
+					this.player.addMessage("Opponent's turn");
 					this.player.getOppBoard().setMiss(x, y);
 				}
 				this.player.setMyTurn(isHit);
 				break;
 			case 5:
 				this.player.getOppBoard().setHit(x, y);
+				this.player.addMessage("You hit at: "+x+", " +y);
 				this.player.setGameResult(GameResult.WIN);
+				this.player.addMessage("[DONE] You are the WINNER!");
 				this.player.setChanged();
 				this.player.notifyObservers();
 				break;
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 		return isHit;
@@ -126,7 +133,7 @@ public class Client implements IClient {
 			while (listening && !this.player.isMyTurn()
 					&& (inputLine = in.readLine()) != null) {
 				listening = true;
-				System.out.println(inputLine);
+//				System.out.println(inputLine);
 				StringTokenizer st = new StringTokenizer(inputLine, "|");
 				int x, y;
 				switch (Integer.parseInt(st.nextToken())) {
@@ -136,9 +143,13 @@ public class Client implements IClient {
 					y = Integer.parseInt(st.nextToken());
 					if (this.player.getMyBoard().isHit(x, y)) {
 						this.player.getMyBoard().setHit(x, y);
+						this.player.addMessage("Opponent hit at: "+x+", " +y);
+						this.player.addMessage("Opponent's turn");
 						this.player.setMyTurn(false);
 					} else {
 						this.player.getMyBoard().setMiss(x, y);
+						this.player.addMessage("Opponent missed at: "+x+", " +y);
+						this.player.addMessage("Your turn");
 						this.player.setMyTurn(true);
 						listening = false;
 					}
@@ -147,14 +158,16 @@ public class Client implements IClient {
 					x = Integer.parseInt(st.nextToken());
 					y = Integer.parseInt(st.nextToken());
 					this.player.getMyBoard().setHit(x, y);
+					this.player.addMessage("Opponent hit at: "+x+", " +y);
 					this.player.setGameResult(GameResult.LOSS);
+					this.player.addMessage("[DONE] You have LOST!");
 					this.player.setChanged();
 					this.player.notifyObservers();
 					break;
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 	}
