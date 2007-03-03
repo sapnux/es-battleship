@@ -1,6 +1,7 @@
 package backend.test.state;
 
 import java.util.List;
+import java.util.Random;
 
 import junit.framework.TestCase;
 import backend.state.Board;
@@ -17,10 +18,11 @@ public class BoardTest extends TestCase {
 	protected void setUp() throws BackendException {
 		board = new Board();
 		board.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
-		board.add(Ships.getBattleship(), 1, 1, Orientation.HORIZONTAL);
-		board.add(Ships.getCruiser(), 6, 4, Orientation.VERTICAL);
 		board.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-		board.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
+	}
+	
+	protected void tearDown() throws BackendException {
+		board.reset();
 	}
 
 	public void testSetHit() {
@@ -43,13 +45,12 @@ public class BoardTest extends TestCase {
 		}
 	}
 
-	public void testIsHit() {
+	public void testIsHit() throws BackendException {
 		assertEquals("Hit was not determined correctly", true, board.isHit(0, 0));
 		assertEquals("Hit was not determined correctly", true, board.isHit(0, 2));
 		assertEquals("Hit was not determined correctly", false, board.isHit(0,6));
 		assertEquals("Hit was not determined correctly", false, board.isHit(6,6));
 		assertEquals("Hit was not determined correctly", false, board.isHit(6,7));
-
 		for (int y = 0; y < this.board.length(); y++) {
 			for (int x = 0; x < this.board.length(); x++) {
 				this.board.setHit(x, y);
@@ -63,7 +64,13 @@ public class BoardTest extends TestCase {
 	}
 
 	public void testHasLost() {
-		fail("Not yet implemented");
+		Board tmpBoard = new Board();
+		//Make 17 HIT moves
+		for (int i=1; i<=17; i++) {
+			Coordinates tmpCoords = makeMove(tmpBoard);
+			tmpBoard.setHit(tmpCoords.getX(), tmpCoords.getY());
+		}
+		assertEquals("Losing condition not determined correctly", true, tmpBoard.hasLost());
 	}
 
 	public void testSetCoordinate() {
@@ -106,32 +113,74 @@ public class BoardTest extends TestCase {
 	public void testGetAllEmptyCoordinates() {
 		fail("Not yet implemented");
 	}
-
-	public void testAddIShipCoordinatesOrientation() {
+	
+	public void testLength() {
 		fail("Not yet implemented");
+	}
+
+	public void testAddIShipCoordinatesOrientation() throws BackendException {
+		Board tmpBoard = new Board();
+		Coordinates tmpCoordinates = new Coordinates(5,5);
+		tmpBoard.add(Ships.getSubmarine(), tmpCoordinates, Orientation.HORIZONTAL);
+		assertEquals("Incorrect ship placement", Ships.getSubmarine()
+				.getSymbol(), tmpBoard.getCoordinate(5,5));
+		assertEquals("Incorrect ship placement", Ships.getSubmarine()
+				.getSymbol(), tmpBoard.getCoordinate(6,5));
+		assertEquals("Incorrect ship placement", Ships.getSubmarine()
+				.getSymbol(), tmpBoard.getCoordinate(7,5));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY,
+				tmpBoard.getCoordinate(4, 5));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
+				tmpBoard.getCoordinate(8, 5));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
+				tmpBoard.getCoordinate(6, 4));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
+				tmpBoard.getCoordinate(6, 6));
+//		t
+//		tmpBoard.add(Ships.getPatrolBoat(), tmpCoordinates, Orientation.HORIZONTAL);
 	}
 
 	public void testAddIShipIntIntOrientation() throws BackendException {
 		Board tmpBoard = new Board();
-		tmpBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
-		assertEquals("Incorrect ship placement", Ships.getPatrolBoat()
-				.getSymbol(), tmpBoard.getCoordinate(6, 9));
-		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, tmpBoard
-				.getCoordinate(6, 6));
-		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, tmpBoard
-				.getCoordinate(6, 7));
+		tmpBoard.add(Ships.getSubmarine(), 5, 5, Orientation.HORIZONTAL);
+		assertEquals("Incorrect ship placement", Ships.getSubmarine()
+				.getSymbol(), tmpBoard.getCoordinate(5,5));
+		assertEquals("Incorrect ship placement", Ships.getSubmarine()
+				.getSymbol(), tmpBoard.getCoordinate(6,5));
+		assertEquals("Incorrect ship placement", Ships.getSubmarine()
+				.getSymbol(), tmpBoard.getCoordinate(7,5));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY,
+				tmpBoard.getCoordinate(4, 5));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
+				tmpBoard.getCoordinate(8, 5));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
+				tmpBoard.getCoordinate(6, 4));
+		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
+				tmpBoard.getCoordinate(6, 6));
 	}
 
-	public void testToString() {
-		String expected = "a*********abbbb*****a*********a*********a*****c********sc********sc********s********************pp**";
+	public void testToString() throws BackendException {
+		String expected = "a*********a*********a*********a*********a*******************************************************pp**";
 		String actual = this.board.toString();
 		assertEquals("Serialization failed", expected, actual);
 	}
 
-	public void testDeserialize() {
-		String tmpString = "a*********abbbb*****a*********a*********a*****c********sc********sc********s********************pp**";
+	public void testDeserialize() throws BackendException {
+		String tmpString = "a*********a*********a*********a*********a*******************************************************pp**";
 		Board tmpBoard = Board.deserialize(tmpString);
 		assertEquals("Deserialization failed", this.board, tmpBoard);
 	}
 
+	/**
+	 * Returns a random move (x,y) from all the empty coordinates remaining on
+	 * the game board.
+	 * 
+	 * @return
+	 */
+	private Coordinates makeMove(Board board) {
+		List<Coordinates> list = board.getAllEmptyCoordinates();
+		Random random = new Random();
+		int index = random.nextInt(list.size()); // nextInt returns [0, size)
+		return list.get(index);
+	}
 }

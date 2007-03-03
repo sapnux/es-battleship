@@ -25,11 +25,7 @@ public class Board {
 	 * Populate the board with empty asteriks.
 	 */
 	public Board() {
-		for (int y = 0; y < this.board.length; y++) {
-			for (int x = 0; x < this.board.length; x++) {
-				this.board[x][y] = Constants.BOARD_EMPTY;
-			}
-		}
+		reset();
 	}
 
 	/**
@@ -350,5 +346,13 @@ public class Board {
 			}
 		}
 		return board;
+	}
+	
+	public void reset() {
+		for (int y = 0; y < this.board.length; y++) {
+			for (int x = 0; x < this.board.length; x++) {
+				this.board[x][y] = Constants.BOARD_EMPTY;
+			}
+		}
 	}
 }

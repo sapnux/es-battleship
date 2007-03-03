@@ -1,5 +1,6 @@
 package backend.test.state;
 
+import backend.test.state.ships.AllShipsTests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -9,6 +10,7 @@ public class AllStateTests {
 		TestSuite suite = new TestSuite("Tests for backend.state");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(BoardTest.class);
+		suite.addTest(AllShipsTests.suite());
 		//$JUnit-END$
 		return suite;
 	}
