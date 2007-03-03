@@ -8,5 +8,6 @@ public class BattleshipCanDraw extends CanDrawShip {
 
 	public BattleshipCanDraw(){
 		super(new Battleship());
+		mShipColor = Color.magenta;
 	}
 }

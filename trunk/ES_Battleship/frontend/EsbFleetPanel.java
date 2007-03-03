@@ -3,6 +3,8 @@ package frontend;
 import java.awt.Graphics;
 import java.util.*;
 
+import javax.swing.JOptionPane;
+
 import frontend.state.ships.*;
 
 public class EsbFleetPanel extends EsbGridPanel {
@@ -33,6 +35,8 @@ public class EsbFleetPanel extends EsbGridPanel {
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			JOptionPane.showMessageDialog(this, e.getMessage(), 
+					"Error", JOptionPane.ERROR_MESSAGE);			
 		}
 	}
 

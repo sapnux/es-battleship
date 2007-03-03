@@ -3,6 +3,9 @@ package frontend;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.*;
+
+import javax.swing.JOptionPane;
+
 import backend.state.*;
 import frontend.state.ships.*;
 
@@ -40,8 +43,10 @@ public class EsbPlayerGridPanel extends EsbGridPanel {
 				if(!tShipsIterator.next().drawMe(g, this.mCellSide))
 					throw new Exception("Failure to draw CanDrawShip");
 			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
+		} catch (Exception e) {			
+			System.err.println(e.getMessage());			
+			JOptionPane.showMessageDialog(this, e.getMessage(), 
+					"Error", JOptionPane.ERROR_MESSAGE);			
 		}
 	}
 	

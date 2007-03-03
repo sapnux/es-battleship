@@ -78,8 +78,12 @@ public abstract class EsbGridPanel extends JPanel {
 	 * Returns the width of each cell in pixels.
 	 * @return The number of grid locations along one side of the (square) board.
 	 */
-	protected int getCellSide() {
+	public int getCellSide() {
 		return mCellSide;
+	}
+	
+	public int getNumCellsAcross() {
+		return mNumCellsAcross;
 	}
 	
 	/**
