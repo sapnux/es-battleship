@@ -92,30 +92,64 @@ public class BoardTest extends TestCase {
 	}
 
 	public void testGetShipCoordinates() {
-		fail("Not yet implemented");
+		List<Coordinates> list = board.getShipCoordinates(Ships.getAircraftCarrier());
+		for (int i=0; i<list.size(); i++) {
+			Coordinates coordinates = list.get(i);
+			int x = coordinates.getX();
+			int y = coordinates.getY();
+			assertEquals("Ship not at coordinates", Ships.getAircraftCarrier().getSymbol(), 
+					this.board.getCoordinate(x, y));
+		}
 	}
 
 	public void testGetAllMissedCoordinates() {
-		List<Coordinates> list = this.board.getAllMissedCoordinates();
-		assertEquals(100, list.size()); //TODO: fix this unit test, currently broken
+		//Make 15 MISS moves
+		Board tmpBoard = new Board();
+		for (int i=1; i<=15; i++) {
+			Coordinates tmpCoords = makeMove(tmpBoard);
+			tmpBoard.setMiss(tmpCoords.getX(), tmpCoords.getY());
+		}
+		List<Coordinates> list = tmpBoard.getAllMissedCoordinates();
+		assertEquals(15, list.size());
 		for (int index = 0; index < list.size(); index++) {
 			Coordinates coordinates = list.get(index);
 			int x = coordinates.getX();
 			int y = coordinates.getY();
-			assertEquals(Constants.BOARD_MISS, this.board.getCoordinate(x, y));
+			assertEquals(Constants.BOARD_MISS, tmpBoard.getCoordinate(x, y));
 		}
 	}
 
 	public void testGetAllHitCoordinates() {
-		fail("Not yet implemented");
+		//Make 15 HIT moves
+		Board tmpBoard = new Board();
+		for (int i=1; i<=15; i++) {
+			Coordinates tmpCoords = makeMove(tmpBoard);
+			tmpBoard.setHit(tmpCoords.getX(), tmpCoords.getY());
+		}
+		List<Coordinates> list = tmpBoard.getAllHitCoordinates();
+		assertEquals(15, list.size());
+		for (int index = 0; index < list.size(); index++) {
+			Coordinates coordinates = list.get(index);
+			int x = coordinates.getX();
+			int y = coordinates.getY();
+			assertEquals(Constants.BOARD_HIT, tmpBoard.getCoordinate(x, y));
+		}
 	}
 
 	public void testGetAllEmptyCoordinates() {
-		fail("Not yet implemented");
+		Board tmpBoard = new Board();
+		List<Coordinates> list = tmpBoard.getAllEmptyCoordinates();
+		assertEquals(100, list.size());
+		for (int index = 0; index < list.size(); index++) {
+			Coordinates coordinates = list.get(index);
+			int x = coordinates.getX();
+			int y = coordinates.getY();
+			assertEquals(Constants.BOARD_EMPTY, tmpBoard.getCoordinate(x, y));
+		}
 	}
 	
 	public void testLength() {
-		fail("Not yet implemented");
+		assertEquals("length() return incorrect", 10, board.length());
 	}
 
 	public void testAddIShipCoordinatesOrientation() throws BackendException {
@@ -136,8 +170,7 @@ public class BoardTest extends TestCase {
 				tmpBoard.getCoordinate(6, 4));
 		assertEquals("Incorrect ship placement", Constants.BOARD_EMPTY, 
 				tmpBoard.getCoordinate(6, 6));
-//		t
-//		tmpBoard.add(Ships.getPatrolBoat(), tmpCoordinates, Orientation.HORIZONTAL);
+		//TODO:  Exception testing
 	}
 
 	public void testAddIShipIntIntOrientation() throws BackendException {
@@ -159,6 +192,13 @@ public class BoardTest extends TestCase {
 				tmpBoard.getCoordinate(6, 6));
 	}
 
+	public void testEquals() throws BackendException {
+		Board testBoard = new Board();
+		testBoard.add(Ships.getAircraftCarrier(), 0, 0, Orientation.VERTICAL);
+		testBoard.add(Ships.getPatrolBoat(), 6, 9, Orientation.HORIZONTAL);
+		assertEquals("equals() implementation incorrect", testBoard, board);
+	}
+	
 	public void testToString() throws BackendException {
 		String expected = "a*********a*********a*********a*********a*******************************************************pp**";
 		String actual = this.board.toString();
@@ -171,6 +211,12 @@ public class BoardTest extends TestCase {
 		assertEquals("Deserialization failed", this.board, tmpBoard);
 	}
 
+	public void testReset() throws BackendException {
+		board.reset();
+		List<Coordinates> emptyCoords = board.getAllEmptyCoordinates();
+		assertEquals("reset() did not clear the board", emptyCoords.size(), 100);
+	}
+	
 	/**
 	 * Returns a random move (x,y) from all the empty coordinates remaining on
 	 * the game board.

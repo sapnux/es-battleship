@@ -48,10 +48,6 @@ public class PlayerTest extends TestCase {
 		fail("Not yet implemented");
 	}
 
-	public void testPrintMessages() {
-		fail("Not yet implemented");
-	}
-
 	public void testResetMessages() {
 		fail("Not yet implemented");
 	}
