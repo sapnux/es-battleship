@@ -1,43 +1,51 @@
 package backend.test.state;
 
 import junit.framework.TestCase;
+import backend.state.Coordinates;
 
 public class CoordinatesTest extends TestCase {
 
-	public void testHashCode() {
-		fail("Not yet implemented");
+	private Coordinates coordinates;
+	
+	protected void setUp() {
+		coordinates = new Coordinates(5,6);
 	}
-
-	public void testCoordinates() {
-		fail("Not yet implemented");
+	
+	public void testHashCode() {
+		assertEquals("Bad hashCode", 23464, coordinates.hashCode());
 	}
 
 	public void testCoordinatesIntInt() {
-		fail("Not yet implemented");
+		Coordinates testCoords = new Coordinates(2,7);
+		assertEquals("Bad coordinate initialization", 2, testCoords.getX());
+		assertEquals("Bad coordinate initialization", 7, testCoords.getY());
 	}
 
 	public void testGetX() {
-		fail("Not yet implemented");
+		assertEquals("Bad coordinate initialization", 5, coordinates.getX());
 	}
 
 	public void testSetX() {
-		fail("Not yet implemented");
+		coordinates.setX(7);
+		assertEquals("Coordinates set incorrectly", 7, coordinates.getX());
 	}
 
 	public void testGetY() {
-		fail("Not yet implemented");
+		assertEquals("Bad coordinate initialization", 6, coordinates.getY());
 	}
 
 	public void testSetY() {
-		fail("Not yet implemented");
+		coordinates.setY(9);
+		assertEquals("Coordinates set incorrectly", 9, coordinates.getY());
 	}
 
 	public void testEqualsObject() {
-		fail("Not yet implemented");
+		Coordinates testCoords = new Coordinates(5,6);
+		assertEquals("equals() implementation incorrect", coordinates, testCoords); 
 	}
 
 	public void testToString() {
-		fail("Not yet implemented");
+		assertEquals("toString() incorrect", "[5,6]", coordinates.toString());
 	}
 
 }
