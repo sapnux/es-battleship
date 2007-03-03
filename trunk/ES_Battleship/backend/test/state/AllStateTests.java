@@ -9,8 +9,8 @@ public class AllStateTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Tests for backend.state");
 		//$JUnit-BEGIN$
-		suite.addTestSuite(BoardTest.class);
 		suite.addTest(AllShipsTests.suite());
+		suite.addTestSuite(BoardTest.class);
 		suite.addTestSuite(PlayerTest.class);
 		suite.addTestSuite(CoordinatesTest.class);
 		//$JUnit-END$
