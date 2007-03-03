@@ -7,7 +7,7 @@ import backend.state.*;
 public class TestOpponent implements Runnable {
 
 	private Player mPlayer = null;	
-	private int mMovesTillEndGame = 5;
+//	private int mMovesTillEndGame = 5;
 	
 	public TestOpponent(Player aPlayer)
 	{
@@ -53,8 +53,8 @@ public class TestOpponent implements Runnable {
 				mPlayer.addMessage("Hit at " + tRandXCoord + ", " + tRandYCoord);				
 				rValue = false;			
 			}
-			mMovesTillEndGame--;
-			if (0 == mMovesTillEndGame) {
+//			mMovesTillEndGame--;
+			if (5 <= tPlayerBoard.getAllMissedCoordinates().size()) {
 				mPlayer.setGameResult(GameResult.WIN);
 				mPlayer.addMessage("FrontEnd says END OF GAME");
 			}			
