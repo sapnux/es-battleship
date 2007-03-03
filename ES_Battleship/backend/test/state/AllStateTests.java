@@ -11,6 +11,8 @@ public class AllStateTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(BoardTest.class);
 		suite.addTest(AllShipsTests.suite());
+		suite.addTestSuite(PlayerTest.class);
+		suite.addTestSuite(CoordinatesTest.class);
 		//$JUnit-END$
 		return suite;
 	}
