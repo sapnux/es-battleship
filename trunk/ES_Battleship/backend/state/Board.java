@@ -240,7 +240,7 @@ public class Board {
 
 		// ensure placing this ship does not go out of bounds
 		int direction = orientation.equals(Orientation.HORIZONTAL) ? x : y;
-		if (direction + ship.getSize() >= this.board.length) {
+		if (direction + ship.getSize() > this.board.length) {
 			throw new BackendException("The placement of the " + ship.getName()
 					+ " is out of bounds.");
 		}
