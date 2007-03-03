@@ -71,7 +71,7 @@ public class EsbBattleWindow extends JFrame {
 			
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new GridBagLayout());
-			jContentPane.setBackground(Color.white);
+			jContentPane.setBackground(Color.DARK_GRAY);
 			jContentPane.setVisible(true);
 			jContentPane.add(mPlayerPanel,  gridBagConstraints);
 			

@@ -23,7 +23,7 @@ public class TestOpponent implements Runnable {
 		while(!rValue){
 
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(500);
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}

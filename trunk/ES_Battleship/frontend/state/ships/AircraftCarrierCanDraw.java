@@ -8,5 +8,6 @@ public class AircraftCarrierCanDraw extends CanDrawShip {
 	
 	public AircraftCarrierCanDraw() {
 		super(new AircraftCarrier());
+		mShipColor = Color.orange;
 	}
 }

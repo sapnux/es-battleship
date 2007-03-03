@@ -9,8 +9,10 @@ import java.awt.event.*;
 import java.util.List;
 
 import backend.state.*;
+import backend.util.BackendException;
 import frontend.state.*;
 import frontend.state.ships.*;
+import frontend.test.TestClient;
 
 import java.util.*;
 
@@ -28,14 +30,17 @@ public class EsbArrangmentWindow extends JFrame {
 	private Board mPlayerBoard           = null;
 	private List <CanDrawShip> mShipList = null;
 	private CanDrawShip mSelectedShip    = null;
+	private String[] mParams             = null;
 
 	/**
 	 * This is the default constructor
 	 */
-	public EsbArrangmentWindow(Board aBoard, List <CanDrawShip> aShipList) {
+	public EsbArrangmentWindow(Board aBoard, List <CanDrawShip> aShipList,
+							   String[] aParams) {
 		super();
 		mPlayerBoard = aBoard;
 		mShipList    = aShipList;
+		mParams = aParams;
 		initialize();
 	}
 
@@ -51,23 +56,7 @@ public class EsbArrangmentWindow extends JFrame {
 		this.setResizable(false);
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
-		this.pack();
-		
-//		this.setVisible(true);
-//		try {
-//			Thread.sleep(3000);
-//			
-//			CanDrawShip[] tShipTypes = { 
-//					 new AircraftCarrierCanDraw(),
-//					 new BattleshipCanDraw()};
-//
-//			mShipSelection.setListData(tShipTypes);	
-//			
-//			
-//		} catch (Exception e) {
-//			System.err.println(e.getMessage());
-//		}
-		
+		this.pack();		
 	}
 
 	private void initializeControlPanel() {
@@ -101,6 +90,27 @@ public class EsbArrangmentWindow extends JFrame {
 		
 		mReadyButton = new JButton("Ready");
 		mControlPanel.add(mReadyButton, BorderLayout.SOUTH);
+		mReadyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				
+				//TEST CODE
+				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
+				//--------------------------
+				
+				//Gameplay Section
+				EsbFrontendController theFController = 
+						new EsbFrontendController(theClient);
+				
+				theFController.setShips(mShipList);
+				EsbBattleWindow theBWindow = new EsbBattleWindow(theFController);
+				//TODO go up one more layer to get actual frame V
+				// Gets Frame from subcomponents and hides it
+				((JPanel)((JPanel)((JButton)ev.getSource()).getParent()).getParent()).getParent().setVisible(false);
+				theBWindow.setVisible(true);
+				
+//				mPlayerBoard.print();
+			}
+		});
 		mReadyButton.setVisible(true);
 		mReadyButton.setEnabled(false);
 	}
@@ -111,17 +121,84 @@ public class EsbArrangmentWindow extends JFrame {
 		mFleetPanel.setBackground(Color.BLUE);
 		
 		mFleetPanel.addMouseListener(new MouseAdapter(){
+			private int mCellSide = mFleetPanel.getCellSide();
+			private int mGrid1X = 0, mGrid1Y = 0;
+			private int mGrid2X = 0, mGrid2Y = 0;
+			private Orientation mOrientation;
+			private int mNumClicks           = 0;
+			
 			public void mouseClicked(MouseEvent e){
 				if(mSelectedShip != null){
-					mSelectedShip.setPosition(0, 0, Orientation.HORIZONTAL);
-					mShipList.add(mSelectedShip);
-					((JPanel)e.getSource()).repaint();
+					//TODO Sanity check clicks for > 9
+					if(mNumClicks == 0){
+						mGrid1X = e.getX() / mCellSide;
+						mGrid1Y = e.getY() / mCellSide;
+
+						//TEST CODE
+						System.out.println("First Placement Click: "+ mGrid1X +
+								mGrid1Y);
+						
+						mNumClicks = 1;	
+						mShipSelection.setEnabled(false);
+					} else if(mNumClicks == 1){
+						mGrid2X = e.getX() / mCellSide;
+						mGrid2Y = e.getY() / mCellSide;						
+						
+//						TEST CODE
+						System.out.println("Second Placement Click: "+ mGrid2X +
+								mGrid2Y);
+						
+						//We want to throw out clicks on the same cell.
+						if((mGrid1X == mGrid2X)&&(mGrid1Y == mGrid2Y))
+							return;
+						
+						int tNWx, tNWy;
+						
+						if(mGrid1X == mGrid2X){
+							tNWx = mGrid1X;
+							tNWy = Math.min(mGrid1Y, mGrid2Y);
+							mOrientation = Orientation.VERTICAL;
+						} else if(mGrid1Y == mGrid2Y){
+							tNWy = mGrid1Y;
+							tNWx = Math.min(mGrid1X, mGrid2X);
+							mOrientation = Orientation.HORIZONTAL;
+						} else //this was a diagonal series of clicks, throw it out
+							return;	
+						
+						try {
+							mPlayerBoard.add(mSelectedShip.getIShip(), tNWx, tNWy, mOrientation);						
+							mSelectedShip.setPosition(tNWx, tNWy, mOrientation);
+							mShipList.add(mSelectedShip);	
+							
+							// Refresh JList with remaining ships
+							mShipTypes.remove(mShipSelection.getSelectedIndex());
+							mShipSelection.setListData(mShipTypes);
+							
+							if (mShipTypes.isEmpty()) {
+								mReadyButton.setEnabled(true);
+							}
+							
+							((JPanel)e.getSource()).repaint();	
+						} catch (BackendException e1) {
+							//TODO Make better error handling code.
+							System.err.println(e1.getMessage());
+							mPlayerBoard.print();
+						}
+
+						mNumClicks = 0;
+						mSelectedShip = null;
+						mShipSelection.clearSelection();
+						mShipSelection.setEnabled(true);
+					}
+					//TEST CODE				
+//					mSelectedShip.setPosition(0, 0, Orientation.HORIZONTAL);
+//					mShipList.add(mSelectedShip);
+//					((JPanel)e.getSource()).repaint();
 				}
 			}
 		});
 	}
-	
-	
+		
 	/**
 	 * This method initializes jContentPane
 	 * 
