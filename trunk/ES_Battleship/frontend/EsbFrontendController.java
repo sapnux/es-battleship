@@ -1,6 +1,7 @@
 package frontend;
 
 import java.util.*;
+
 import frontend.state.ships.*;
 import backend.client.*;
 import backend.state.*;
@@ -65,10 +66,36 @@ public class EsbFrontendController implements Observer {
 		return mClient.move(x, y);
 	}
 	
+	/**
+	 * Returns Vector of message strings to be displayed
+	 * 
+	 * @return Vector of Strings
+	 */
+	public Vector<String> getMessages() {
+		return mPlayer.getMessages();
+	}
+	
+	/**
+	 * Empties the messages Vector
+	 * 
+	 */
+	public void resetMessages() {
+		mPlayer.resetMessages();
+	}
+	
+	/**
+	 * Get the current game result.
+	 * 
+	 * @return
+	 */
+	public GameResult getGameResult() {
+		return mPlayer.getGameResult();
+	}
+	
 	public void update(Observable o, Object obj) {
 		mBattleWindow.setTurn(mPlayer.isMyTurn());
 		mBattleWindow.notifyComponents();
-		mBattleWindow.repaint();
+		mBattleWindow.repaint();		
 		
 		//TEST CODE
 		System.out.println("Move was made");

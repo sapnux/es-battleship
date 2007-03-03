@@ -7,6 +7,7 @@ import backend.state.*;
 public class TestOpponent implements Runnable {
 
 	private Player mPlayer = null;	
+	private int mMovesTillEndGame = 5;
 	
 	public TestOpponent(Player aPlayer)
 	{
@@ -45,11 +46,18 @@ public class TestOpponent implements Runnable {
 
 			if (Constants.BOARD_EMPTY == tCellValue) {	
 				tPlayerBoard.setMiss(tRandXCoord, tRandYCoord);
+				mPlayer.addMessage("Miss at " + tRandXCoord + ", " + tRandYCoord);
 				rValue = true;
 			} else {
 				tPlayerBoard.setHit(tRandXCoord, tRandYCoord);
+				mPlayer.addMessage("Hit at " + tRandXCoord + ", " + tRandYCoord);				
 				rValue = false;			
 			}
+			mMovesTillEndGame--;
+			if (0 == mMovesTillEndGame) {
+				mPlayer.setGameResult(GameResult.WIN);
+				mPlayer.addMessage("FrontEnd says END OF GAME");
+			}			
 			
 			System.out.println("Opponent's move was: " 
 					+ tRandXCoord + " " + tRandYCoord);
