@@ -10,6 +10,7 @@ import java.util.List;
 
 import backend.state.*;
 import backend.util.BackendException;
+import backend.client.*;
 import frontend.state.*;
 import frontend.state.ships.*;
 import frontend.test.TestClient;
@@ -57,6 +58,7 @@ public class EsbArrangmentWindow extends JFrame {
 		this.setResizable(false);
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.pack();		
 	}
 
@@ -84,8 +86,8 @@ public class EsbArrangmentWindow extends JFrame {
 				}
 				
 				mSelectedShip = (CanDrawShip)(((JList)e.getSource()).getSelectedValue());
-				//TEST CODE
-				System.out.println(mSelectedShip);
+//				//TEST CODE
+//				System.out.println(mSelectedShip);
 			}
 		});
 
@@ -96,7 +98,8 @@ public class EsbArrangmentWindow extends JFrame {
 				
 				//TODO Change TestClient to Client for real end-to-end testing
 				//TEST CODE
-				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
+//				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
+				Client theClient = new Client(mParams[2], mPlayerBoard);
 				//--------------------------
 				
 				//Initialize Game Play objects
@@ -148,8 +151,8 @@ public class EsbArrangmentWindow extends JFrame {
 						}						
 						
 						//TEST CODE
-						System.out.println("First Placement Click: "+ mGrid1X + ", " +
-								mGrid1Y);
+//						System.out.println("First Placement Click: "+ mGrid1X + ", " +
+//								mGrid1Y);
 						
 						mNumClicks = 1;	
 						mShipSelection.setEnabled(false);
@@ -158,8 +161,8 @@ public class EsbArrangmentWindow extends JFrame {
 						mGrid2Y = e.getY() / mCellSide;						
 						
 //						TEST CODE
-						System.out.println("Second Placement Click: "+ mGrid2X + ", " +
-								mGrid2Y);
+//						System.out.println("Second Placement Click: "+ mGrid2X + ", " +
+//								mGrid2Y);
 						
 						//We want to throw out clicks on the same cell.
 						if((mGrid1X == mGrid2X)&&(mGrid1Y == mGrid2Y))
@@ -173,6 +176,9 @@ public class EsbArrangmentWindow extends JFrame {
 						
 						int tNWx, tNWy;
 						
+						/* Resolve the orientation of the two clicks relative to
+						 * each other so we can determine the direction of the ship.
+						 */ 
 						if(mGrid1X == mGrid2X){
 							tNWx = mGrid1X;
 							tNWy = Math.min(mGrid1Y, mGrid2Y);
@@ -184,6 +190,8 @@ public class EsbArrangmentWindow extends JFrame {
 						} else //this was a diagonal series of clicks, throw it out
 							return;	
 						
+						/* Add the ship to the board given the coordinates entered
+						 * above.*/
 						try {
 							mPlayerBoard.add(mSelectedShip.getIShip(), tNWx, tNWy, mOrientation);						
 							mSelectedShip.setPosition(tNWx, tNWy, mOrientation);

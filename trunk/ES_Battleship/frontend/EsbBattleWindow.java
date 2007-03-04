@@ -10,6 +10,8 @@ import javax.swing.*;
 import backend.state.GameResult;
 
 import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
 
 /**
@@ -37,9 +39,6 @@ public class EsbBattleWindow extends JFrame {
 		this.mFController.setBattleWindow(this);
 		
 		initialize();
-		
-		//TEST CODE
-		mOpponentPanel.setCanClick(true);
 	}
 
 	/**
@@ -55,6 +54,7 @@ public class EsbBattleWindow extends JFrame {
 		this.setResizable(false);		
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);		
 		this.pack();
 	}
 

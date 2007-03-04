@@ -33,6 +33,7 @@ public class TestClient implements IClient {
 	public void connect(String server, String port) {
 		// We will leave this blank for test purposes.
 
+		mPlayer.setMyTurn(true);
 	}
 
 	public void disconnect() {
