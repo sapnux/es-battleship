@@ -59,6 +59,11 @@ public class EsbArrangmentWindow extends JFrame {
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
 //		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+            	System.exit(0);
+            }
+        });
 		this.pack();		
 	}
 
