@@ -22,8 +22,6 @@ public class Client implements IClient, Runnable {
 	private PrintWriter out;
 	private boolean connected;
 	private boolean listening = true;
-	
-	//TEST CODE
 	private String mServer, mPort;
 
 	public Client(String id, Board board) {
@@ -43,7 +41,6 @@ public class Client implements IClient, Runnable {
 	public void run(){
 		SocketFactory sf = SocketFactory.getDefault();
 		
-		//connect to server
 		try {
 			socket = sf.createSocket(mServer, Integer.parseInt(mPort));
 			in = new BufferedReader(new InputStreamReader(socket
@@ -103,7 +100,6 @@ public class Client implements IClient, Runnable {
 		try {
 			MsgUtils.sendMoveMessage(out, this.player.getId(), x, y);
 			String reply = in.readLine();
-//			System.out.println(reply);
 			StringTokenizer st = new StringTokenizer(reply, "|");
 			isHit = false;
 			switch (Integer.parseInt(st.nextToken())) {
@@ -157,7 +153,6 @@ public class Client implements IClient, Runnable {
 			listening = true;
 			while (listening && !this.player.isMyTurn()
 					&& (inputLine = in.readLine()) != null) {
-//				System.out.println(inputLine);
 				StringTokenizer st = new StringTokenizer(inputLine, "|");
 				int x, y;
 				switch (Integer.parseInt(st.nextToken())) {
