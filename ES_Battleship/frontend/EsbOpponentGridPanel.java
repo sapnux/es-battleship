@@ -36,10 +36,10 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 					gridY = e.getY() / mCellSide;
 
 					//TEST CODE
-					System.out.println("click detected " 
-							+ gridX 
-							+ " " 
-							+ gridY);
+//					System.out.println("click detected " 
+//							+ gridX 
+//							+ " " 
+//							+ gridY);
 					
 					//Check to ensure that click is within legal game board
 					if((((gridX >= 0)&&(gridX < mNumCellsAcross))&&

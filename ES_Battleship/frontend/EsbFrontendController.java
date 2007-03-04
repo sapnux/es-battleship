@@ -102,6 +102,6 @@ public class EsbFrontendController implements Observer {
 		mBattleWindow.repaint();		
 		
 		//TEST CODE
-		System.out.println("Move was made");
+//		System.out.println("Move was made");
 	}
 }
