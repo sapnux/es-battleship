@@ -58,7 +58,7 @@ public class EsbArrangmentWindow extends JFrame {
 		this.setResizable(false);
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
-		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+//		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.pack();		
 	}
 
@@ -100,6 +100,8 @@ public class EsbArrangmentWindow extends JFrame {
 				//TEST CODE
 //				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
 				Client theClient = new Client(mParams[2], mPlayerBoard);
+				Thread tClientThread = new Thread(theClient);
+				
 				//--------------------------
 				
 				//Initialize Game Play objects
@@ -110,6 +112,7 @@ public class EsbArrangmentWindow extends JFrame {
 				EsbBattleWindow theBWindow = new EsbBattleWindow(theFController);
 				try {
 					theClient.connect(mParams[0], mParams[1]);
+					tClientThread.start();
 				} catch (Exception e) {							
 					JOptionPane.showMessageDialog(mLocalWindow, e.getMessage(), 
 							"Error", JOptionPane.ERROR_MESSAGE);
