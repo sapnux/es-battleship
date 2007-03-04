@@ -126,6 +126,7 @@ public class EsbArrangmentWindow extends JFrame {
 		});
 		mReadyButton.setVisible(true);
 		mReadyButton.setEnabled(false);
+//		mReadyButton.setEnabled(true);
 	}
 	
 	private void initializeFleetPanel(){

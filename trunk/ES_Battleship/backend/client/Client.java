@@ -20,6 +20,7 @@ public class Client implements IClient, Runnable {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
+	private boolean connected;
 	private boolean listening = true;
 	
 	//TEST CODE
@@ -41,6 +42,8 @@ public class Client implements IClient, Runnable {
 
 	public void run(){
 		SocketFactory sf = SocketFactory.getDefault();
+		
+		//connect to server
 		try {
 			socket = sf.createSocket(mServer, Integer.parseInt(mPort));
 			in = new BufferedReader(new InputStreamReader(socket
@@ -50,14 +53,26 @@ public class Client implements IClient, Runnable {
 					.getMyBoard());
 
 			String reply = in.readLine();
-//			System.out.println(reply);
 			StringTokenizer st = new StringTokenizer(reply, "|");
 			if (Integer.parseInt(st.nextToken()) == 3) {
 				this.player.setMyTurn(Boolean.parseBoolean(st.nextToken()));
 			}
+			this.connected = true;
 		} catch (Exception e) {
 			Logger.LogError(e.getMessage());
 			e.printStackTrace();
+		}
+		
+		while(this.connected) {
+			if (!this.player.isMyTurn()) {
+				this.waitForTurn();
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Logger.LogError(e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -71,6 +86,7 @@ public class Client implements IClient, Runnable {
 			out.close();
 			in.close();
 			socket.close();
+			this.connected = false;
 		} catch (IOException e) {
 			Logger.LogError(e.getMessage());
 			e.printStackTrace();
@@ -138,9 +154,9 @@ public class Client implements IClient, Runnable {
 	public void waitForTurn() {
 		String inputLine;
 		try {
+			listening = true;
 			while (listening && !this.player.isMyTurn()
 					&& (inputLine = in.readLine()) != null) {
-				listening = true;
 //				System.out.println(inputLine);
 				StringTokenizer st = new StringTokenizer(inputLine, "|");
 				int x, y;

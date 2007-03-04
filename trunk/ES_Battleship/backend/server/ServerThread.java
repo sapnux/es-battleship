@@ -36,7 +36,10 @@ public class ServerThread extends Thread {
 					playerId = st.nextToken();
 					Server.serverConsole.write("Player " + playerId + " has connected.");
 					Server.gameEngine.addPlayer(playerId, Board.deserialize(st.nextToken()));
-					while (!Server.gameEngine.isGameReady()) continue;
+					while (!Server.gameEngine.isGameReady()){
+						Thread.sleep(2000);
+						continue;
+					}
 					oppOut = (PrintWriter) Server.outputters.get(getOtherThreadNum());
 					MsgUtils.sendTurnMessage(myOut, Server.gameEngine.isMyTurn(playerId));
 					break;
@@ -49,9 +52,11 @@ public class ServerThread extends Thread {
 					MoveResult moveResult = Server.gameEngine.move(playerId, x, y);
 					if (moveResult == MoveResult.WIN) {
 						MsgUtils.sendGameOverMessage(myOut, x, y, "win");
+						Thread.sleep(1000);
 						MsgUtils.sendGameOverMessage(oppOut, x, y, "lose");
 					} else {
 						MsgUtils.sendIsHitMessage(myOut, moveResult);
+						Thread.sleep(1000);
 						MsgUtils.sendMoveNotifyMessage(oppOut, x, y);
 					}
 					break;
@@ -63,6 +68,9 @@ public class ServerThread extends Thread {
 			sock.close();
 
 		} catch (IOException e) {
+			Server.serverConsole.write("ServerThread: " + e.getMessage());
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			Server.serverConsole.write("ServerThread: " + e.getMessage());
 			e.printStackTrace();
 		}
