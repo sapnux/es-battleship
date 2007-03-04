@@ -54,7 +54,7 @@ public class EsbBattleWindow extends JFrame {
 		this.setResizable(false);		
 		this.setContentPane(getJContentPane());
 		this.setTitle("ES Battleship");
-		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);		
+//		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);		
 		this.pack();
 	}
 

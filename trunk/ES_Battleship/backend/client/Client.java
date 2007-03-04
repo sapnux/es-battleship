@@ -15,12 +15,15 @@ import backend.state.Player;
 import backend.util.Logger;
 import backend.util.MsgUtils;
 
-public class Client implements IClient {
+public class Client implements IClient, Runnable {
 	private Player player;
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
 	private boolean listening = true;
+	
+	//TEST CODE
+	private String mServer, mPort;
 
 	public Client(String id, Board board) {
 		this.player = new Player(id, board);
@@ -32,9 +35,14 @@ public class Client implements IClient {
 	 * @see backend.IClient#connect(java.lang.String, java.lang.String)
 	 */
 	public void connect(String server, String port) {
+		mServer = server;
+		mPort = port;
+	}
+
+	public void run(){
 		SocketFactory sf = SocketFactory.getDefault();
 		try {
-			socket = sf.createSocket(server, Integer.parseInt(port));
+			socket = sf.createSocket(mServer, Integer.parseInt(mPort));
 			in = new BufferedReader(new InputStreamReader(socket
 					.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
@@ -52,7 +60,7 @@ public class Client implements IClient {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Close any open connections with the server.
 	 * 
