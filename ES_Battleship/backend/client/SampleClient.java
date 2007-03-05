@@ -30,10 +30,11 @@ public class SampleClient implements Observer {
 			Logger.LogError(ex.getMessage());
 		}
 		board.print();
-
+		
 		cl = new Client(id, board);
 		cl.getPlayer().addObserver(this);
 		cl.connect(server, port);
+		cl.signalReadiness();
 	}
 
 	/**

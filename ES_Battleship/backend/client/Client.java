@@ -39,6 +39,22 @@ public class Client implements IClient, Runnable {
 	}
 
 	public void run(){
+		signalReadiness();
+		
+		while(this.connected) {
+			if (!this.player.isMyTurn()) {
+				this.waitForTurn();
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Logger.LogError(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void signalReadiness() {
 		SocketFactory sf = SocketFactory.getDefault();
 		
 		try {
@@ -58,18 +74,6 @@ public class Client implements IClient, Runnable {
 		} catch (Exception e) {
 			Logger.LogError(e.getMessage());
 			e.printStackTrace();
-		}
-		
-		while(this.connected) {
-			if (!this.player.isMyTurn()) {
-				this.waitForTurn();
-			}
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				Logger.LogError(e.getMessage());
-				e.printStackTrace();
-			}
 		}
 	}
 	
