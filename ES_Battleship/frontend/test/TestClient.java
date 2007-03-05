@@ -74,4 +74,8 @@ public class TestClient implements IClient {
 		//added to comply with IClient
 	}
 
+	public void signalReadiness() {
+//		added to comply with IClient
+	}
+
 }
