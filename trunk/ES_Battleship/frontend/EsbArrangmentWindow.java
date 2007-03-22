@@ -33,6 +33,7 @@ public class EsbArrangmentWindow extends JFrame {
 	private List <CanDrawShip> mShipList = null;
 	private CanDrawShip mSelectedShip    = null;
 	private String[] mParams             = null;
+	private int mNumClicks               = 0;
 
 	/**
 	 * This is the default constructor
@@ -64,6 +65,17 @@ public class EsbArrangmentWindow extends JFrame {
             	System.exit(0);
             }
         });
+
+		((JPanel) getContentPane()).registerKeyboardAction(new ActionListener() {
+			  public void actionPerformed(ActionEvent actionEvent) {
+//					TEST CODE
+//					System.out.println("'Esc' typed");					
+					clearClicks();				     
+				  }
+				}, 
+				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		
 		this.pack();		
 	}
 
@@ -93,6 +105,7 @@ public class EsbArrangmentWindow extends JFrame {
 				mSelectedShip = (CanDrawShip)(((JList)e.getSource()).getSelectedValue());
 //				//TEST CODE
 //				System.out.println(mSelectedShip);
+				//TODO create JUnit code to test
 			}
 		});
 
@@ -101,7 +114,7 @@ public class EsbArrangmentWindow extends JFrame {
 		mReadyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				
-				//TODO Change TestClient to Client for real end-to-end testing
+				//TODO create JUnit code to test
 				//TEST CODE
 //				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
 				Client theClient = new Client(mParams[2], mPlayerBoard);
@@ -144,12 +157,12 @@ public class EsbArrangmentWindow extends JFrame {
 			private int mGrid1X = 0, mGrid1Y = 0;
 			private int mGrid2X = 0, mGrid2Y = 0;
 			private Orientation mOrientation;
-			private int mNumClicks           = 0;
 			private int mNumCellsAcross = mFleetPanel.getNumCellsAcross();
 			
 			public void mouseClicked(MouseEvent e){
 				if(mSelectedShip != null){										
 					if(mNumClicks == 0){
+						//TODO create JUnit code to test
 						mGrid1X = e.getX() / mCellSide;
 						mGrid1Y = e.getY() / mCellSide;
 
@@ -163,9 +176,11 @@ public class EsbArrangmentWindow extends JFrame {
 //						System.out.println("First Placement Click: "+ mGrid1X + ", " +
 //								mGrid1Y);
 						
+						mFleetPanel.setReticle(mGrid1X, mGrid1Y);
 						mNumClicks = 1;	
 						mShipSelection.setEnabled(false);
 					} else if(mNumClicks == 1){
+						//TODO create JUnit code to test
 						mGrid2X = e.getX() / mCellSide;
 						mGrid2Y = e.getY() / mCellSide;						
 						
@@ -224,14 +239,29 @@ public class EsbArrangmentWindow extends JFrame {
 										"Error", JOptionPane.ERROR_MESSAGE);							
 						}
 
-						mNumClicks = 0;
-						mSelectedShip = null;
-						mShipSelection.clearSelection();
-						mShipSelection.setEnabled(true);
+						clearClicks();
 					}
 				}
 			}
 		});
+	}
+	
+	
+	/**
+	 * This method is called when we need to reset the state
+	 * of the board to just after the last ship was placed.  If
+	 * no ships have yet been placed, we default to the initial
+	 * state of the board.
+	 * */
+	protected void clearClicks(){
+		mNumClicks = 0;
+		mSelectedShip = null;
+		mShipSelection.clearSelection();
+		mShipSelection.setEnabled(true);
+		mFleetPanel.clearReticle();
+		
+		//TEST CODE
+//		System.out.println("clearClicks called");
 	}
 		
 	
