@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Packaging Generator" default="_packaging_generation_">
+<target name="_packaging_generation_" depends="N65540"/>
+<target name="N65540" description="SimpleMessage.jar">
+<jar destfile="SimpleMessage.jar" manifest="src/META-INF/MANIFEST.MF">
+<zipfileset dir="src/META-INF" prefix="META-INF">
+<include name="ejb-jar.xml"/>
+</zipfileset>
+<zipfileset dir="src/META-INF" prefix="META-INF">
+<include name="jboss.xml"/>
+</zipfileset>
+<zipfileset dir="src/META-INF" prefix="META-INF">
+<include name="jbosscmp-jdbc.xml"/>
+</zipfileset>
+<zipfileset dir="bin" includes="**/*.class"/>
+</jar>
+</target>
+</project>
