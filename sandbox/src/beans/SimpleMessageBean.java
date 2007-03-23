@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -42,32 +41,19 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 
 @MessageDriven(mappedName = "jms/Topic", activationConfig = {
 	 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Topic"),
 	 @ActivationConfigProperty(propertyName="destination", propertyValue="topic/myTopic"),
 })
-
 public class SimpleMessageBean implements MessageListener {
     static final Logger logger = Logger.getLogger("SimpleMessageBean");
     @Resource(mappedName="ConnectionFactory")
-    private ConnectionFactory cf;
+    private transient ConnectionFactory cf = null;
 
     public SimpleMessageBean() {
-    }
-
-    public void ejbCreate() {
-        logger.info("In ReplyMsgBean.ejbCreate()");
-
-        try {
-            Context initial = new InitialContext();
-            cf = (ConnectionFactory) initial.lookup("java:comp/env/jms/MyConnectionFactory");
-        } catch (Exception ex) {
-            logger.severe("ReplyMsgBean.ejbCreate: Exception: " + ex.toString());
-        }
+    	logger.info("In SimpleMessageBean.SimpleMessageBean()");
     }
     
     public void onMessage(Message inMessage) {
@@ -80,27 +66,30 @@ public class SimpleMessageBean implements MessageListener {
         try {
             if (inMessage instanceof TextMessage) {
                 msg = (TextMessage) inMessage;
-                logger.info("ReplyMsgBean: Received message: " + msg.getText());
+                logger.info("SimpleMessageBean: Received message: " + msg.getText());
                 con = cf.createConnection();
                 ses = con.createSession(true, 0);
 
                 producer = ses.createProducer((Topic) msg.getJMSReplyTo());
-                replyMsg = ses.createTextMessage("ReplyMsgBean " +
+                replyMsg = ses.createTextMessage("SimpleMessageBean " +
                         "processed message: " + msg.getText());
                 replyMsg.setJMSCorrelationID(msg.getJMSMessageID());
                 replyMsg.setIntProperty("id", msg.getIntProperty("id"));
                 producer.send(replyMsg);
+                logger.info("Sent reply to " + producer.getDestination().toString());
                 con.close();
             } else {
                 logger.warning("Message of wrong type: " +
                     inMessage.getClass().getName());
             }
         } catch (JMSException e) {
-            logger.severe("ReplyMsgBean.onMessage: JMSException: " +
+            logger.severe("SimpleMessageBean.onMessage: JMSException: " +
                 e.toString());
         } catch (Throwable te) {
-            logger.severe("ReplyMsgBean.onMessage: Exception: " +
+            logger.severe("SimpleMessageBean.onMessage: Exception: " +
                 te.toString());
+            te.printStackTrace();
         }
     }
+
 }

@@ -121,7 +121,7 @@ public class SimpleMessageClient {
 
             int id = 1;
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 2; i++) {
                 Thread.sleep(1500);
                 message.setJMSReplyTo(replyTopic);
                 message.setIntProperty("id", id);
