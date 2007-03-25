@@ -11,6 +11,7 @@ import java.util.List;
 import backend.state.*;
 import backend.util.BackendException;
 import backend.client.*;
+import backend.constants.Orientation;
 import frontend.state.*;
 import frontend.state.ships.*;
 import frontend.test.TestClient;

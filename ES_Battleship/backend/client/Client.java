@@ -9,8 +9,8 @@ import java.util.StringTokenizer;
 
 import javax.net.SocketFactory;
 
+import backend.constants.GameResult;
 import backend.state.Board;
-import backend.state.GameResult;
 import backend.state.Player;
 import backend.util.Logger;
 import backend.util.MsgUtils;

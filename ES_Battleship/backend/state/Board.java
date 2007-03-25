@@ -3,6 +3,8 @@ package backend.state;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.constants.Constants;
+import backend.constants.Orientation;
 import backend.state.ships.IShip;
 import backend.state.ships.Ships;
 import backend.util.BackendException;

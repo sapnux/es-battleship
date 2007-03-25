@@ -3,7 +3,7 @@ package frontend.state.ships;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import backend.state.Orientation;
+import backend.constants.Orientation;
 import backend.state.ships.*;
 
 public class SubmarineCanDraw extends CanDrawShip {

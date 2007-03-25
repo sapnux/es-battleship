@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 import junit.framework.TestCase;
+import backend.constants.Constants;
+import backend.constants.Orientation;
 import backend.state.Board;
-import backend.state.Constants;
 import backend.state.Coordinates;
-import backend.state.Orientation;
 import backend.state.ships.Ships;
 import backend.util.BackendException;
 

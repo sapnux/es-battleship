@@ -2,6 +2,8 @@ package frontend.test;
 
 import java.util.Random;
 
+import backend.constants.Constants;
+import backend.constants.GameResult;
 import backend.state.*;
 
 public class TestOpponent implements Runnable {

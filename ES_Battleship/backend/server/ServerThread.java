@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 
+import backend.constants.MoveResult;
 import backend.state.Board;
-import backend.state.MoveResult;
 import backend.util.MsgUtils;
 
 public class ServerThread extends Thread {

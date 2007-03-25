@@ -1,7 +1,9 @@
 package backend.engine;
 
+import java.util.Map;
+
+import backend.constants.MoveResult;
 import backend.state.Board;
-import backend.state.MoveResult;
 import backend.state.Player;
 
 public class GameEngine {
@@ -9,6 +11,7 @@ public class GameEngine {
 	private Player player1 = null;
 	private Player player2 = null;
 	String whoMoves = null;
+	private Map queueMap;
 	
 	public GameEngine() {
 		resetGame();

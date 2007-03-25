@@ -1,7 +1,7 @@
 package frontend.state.ships;
 
+import backend.constants.Orientation;
 import backend.state.ships.*;
-import backend.state.Orientation;
 import java.awt.*;
 
 public abstract class CanDrawShip {

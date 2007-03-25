@@ -2,8 +2,8 @@ package backend.util;
 
 import java.io.PrintWriter;
 
+import backend.constants.MoveResult;
 import backend.state.Board;
-import backend.state.MoveResult;
 
 public class MsgUtils {
 	

@@ -7,7 +7,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import backend.state.GameResult;
+import backend.constants.GameResult;
 
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
