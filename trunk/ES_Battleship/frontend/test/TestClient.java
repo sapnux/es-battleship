@@ -1,9 +1,9 @@
 package frontend.test;
 
 import backend.client.IClient;
+import backend.constants.Constants;
+import backend.constants.Orientation;
 import backend.state.Board;
-import backend.state.Constants;
-import backend.state.Orientation;
 import backend.state.Player;
 import backend.state.ships.Ships;
 import backend.util.BackendException;

@@ -5,10 +5,10 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
+import backend.constants.GameResult;
+import backend.constants.Orientation;
 import backend.state.Board;
 import backend.state.Coordinates;
-import backend.state.GameResult;
-import backend.state.Orientation;
 import backend.state.ships.Ships;
 import backend.util.BackendException;
 import backend.util.Logger;

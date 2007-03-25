@@ -1,4 +1,4 @@
-package backend.state;
+package backend.constants;
 
 public abstract class Constants {
 	public static char BOARD_MISS = 'm';

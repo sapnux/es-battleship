@@ -2,6 +2,8 @@ package backend.state;
 
 import java.util.*;
 
+import backend.constants.GameResult;
+
 public class Player extends Observable {
 
 	private String id;
