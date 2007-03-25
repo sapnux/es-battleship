@@ -27,197 +27,88 @@ package client;
  */
 
 
-import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TemporaryTopic;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueReceiver;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
 import javax.jms.TextMessage;
-import javax.jms.Topic;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import EDU.oswego.cs.dl.util.concurrent.CountDown;
+
 
 public class SimpleMessageClient {
-    static Object waitUntilDone = new Object();
-    static SortedSet outstandingRequests = Collections.synchronizedSortedSet(new TreeSet());
+    static final int N = 2;
+    static CountDown done = new CountDown(N);
 
-    public static void main(String[] args) {
-        InitialContext ic = null;
-        ConnectionFactory cf = null; // App Server
-        Connection con = null;
-        Session pubSession = null;
-        MessageProducer producer = null;
-        Topic pTopic = null;
-        TemporaryTopic replyTopic = null;
-        Session subSession = null;
-        MessageConsumer consumer = null;
-        TextMessage message = null;
-
-        /*
-         * Create a JNDI API InitialContext object.
-         */
-        try {
-            ic = new InitialContext();
-        } catch (NamingException e) {
-            System.err.println("Could not create JNDI API " + "context: " + e.toString());
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        /*
-         * Look up connection factories and topic.  If any do not
-         * exist, exit.
-         */
-        try {
-            cf = (ConnectionFactory) ic.lookup("ConnectionFactory");
-            pTopic = (Topic) ic.lookup("topic/myTopic");
-        } catch (NamingException e) {
-            System.err.println("JNDI API lookup failed: " + e.toString());
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        try {
-            // Create a connection.
-            con = cf.createConnection();
-
-            // Create session for producer.
-            pubSession = con.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            // Create temporary topic for replies.
-            replyTopic = pubSession.createTemporaryTopic();
-
-            // Create sessions for consumer.
-            subSession = con.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            /*
-             * Create a consumer, set message listener, and
-             * start connection.
-             */
-            consumer = subSession.createConsumer(replyTopic);
-            consumer.setMessageListener(new ReplyListener(outstandingRequests));
-            con.start();
-
-            // Create a producer.
-            producer = pubSession.createProducer(pTopic);
-
-            /*
-             * Create and send a set of messages at 1.5-second intervals.  For
-             * each message, set the JMSReplyTo message header to
-             * a reply topic, and set an id property.  Add the
-             * message ID to the list of outstanding requests for
-             * the message listener.
-             */
-            message = pubSession.createTextMessage();
-
-            int id = 1;
-
-            for (int i = 0; i < 2; i++) {
-                Thread.sleep(1500);
-                message.setJMSReplyTo(replyTopic);
-                message.setIntProperty("id", id);
-                message.setText("text: id=" + id + " to remote app server");
-
-                try {
-                    producer.send(message);
-                    System.out.println("Sent message: " + message.getText());
-                    outstandingRequests.add(message.getJMSMessageID());
-                } catch (Exception e) {
-                    System.err.println("Exception: Caught " + "failed send to connection factory");
-                    e.printStackTrace();
-                }
-
-                id++;
-                Thread.sleep(1500);
+    QueueConnection conn;
+    QueueSession session;
+    static Queue client1Que;
+    Queue serverQue;
+    
+    public static class ClientListener implements MessageListener {
+        public void onMessage(Message msg)
+        {
+            done.release();
+            TextMessage tm = (TextMessage) msg;
+            try {
+                System.out.println("onMessage, recv text="+tm.getText());
+            } catch(Throwable t) {
+                t.printStackTrace();
             }
-
-            /*
-             * Wait for replies.
-             */
-            System.out.println("Waiting for " + outstandingRequests.size() + " message(s) " + "from remote app server");
-
-            while (outstandingRequests.size() > 0) {
-                synchronized (waitUntilDone) {
-                    waitUntilDone.wait();
-                }
-            }
-            System.out.println("Finished");
-        } catch (Exception e) {
-            System.err.println("Exception occurred: " + e.toString());
-            e.printStackTrace();
-        } finally {
-            System.out.println("Closing connection");
-
-            if (con != null) {
-                try {
-                    con.close();
-                } catch (Exception e) {
-                    System.err.println("Error closing " + "connection: " +
-                        e.toString());
-                }
-            }
-            System.exit(0);
         }
     }
     
-    static class ReplyListener implements MessageListener {
-        SortedSet outstandingRequests = null;
+    public void sendRecvAsync(String textBase)
+        throws JMSException, NamingException, InterruptedException {
+        System.out.println("Begin sendRecvAsync");
 
-        /**
-         * Constructor for ReplyListener class.
-         *
-         * @param outstandingRequests   set of outstanding
-         *                              requests
-         */
-        ReplyListener(SortedSet outstandingRequests) {
-            this.outstandingRequests = outstandingRequests;
+        InitialContext iniCtx = new InitialContext();
+        Object tmp = iniCtx.lookup("ConnectionFactory");
+        QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
+        conn = qcf.createQueueConnection();
+        client1Que = (Queue) iniCtx.lookup(QueueNames.CLIENT_TWO);
+        serverQue = (Queue) iniCtx.lookup(QueueNames.SERVER);
+        session = conn.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+        conn.start();
+
+        // Set the async listener for queA
+        QueueReceiver recv = session.createReceiver(client1Que);
+        recv.setMessageListener(new ClientListener());
+
+        // Send a few text msgs to queB
+        QueueSender send = session.createSender(serverQue);
+
+        for(int m = 0; m < N; m ++) {
+            TextMessage tm = session.createTextMessage(textBase+"#"+m);
+            tm.setJMSReplyTo(client1Que);
+            send.send(tm);
+            System.out.println("sendRecvAsync, sent text=" + tm.getText());
         }
-
-        /**
-         * onMessage method, which displays the contents of the
-         * id property and text and uses the JMSCorrelationID to
-         * remove from the list of outstanding requests the
-         * message to which this message is a reply.  If this is
-         * the last message, it notifies the client.
-         *
-         * @param message     the incoming message
-         */
-        public void onMessage(Message message) {
-            TextMessage tmsg = (TextMessage) message;
-            String txt = null;
-            int id = 0;
-            String correlationID = null;
-
-            try {
-                id = tmsg.getIntProperty("id");
-                txt = tmsg.getText();
-                correlationID = tmsg.getJMSCorrelationID();
-            } catch (JMSException e) {
-                System.err.println("ReplyListener.onMessage: " +
-                    "JMSException: " + e.toString());
-            }
-
-            System.out.println("ReplyListener: Received " + "message: id=" +
-                id + ", text=" + txt);
-            outstandingRequests.remove(correlationID);
-
-            if (outstandingRequests.size() == 0) {
-                synchronized (waitUntilDone) {
-                    waitUntilDone.notify();
-                }
-            } else {
-                System.out.println("ReplyListener: Waiting " + "for " +
-                    outstandingRequests.size() + " message(s)");
-            }
-        }
+        System.out.println("End sendRecvAsync");
     }
-} // class
+    
+    public void stop() throws JMSException {
+        conn.stop();
+        session.close();
+        conn.close();
+    }
+    
+    public static void main(String args[]) throws Exception {
+        System.out.println("Begin SendRecvClient,now=" + 
+                           System.currentTimeMillis());
+        SimpleMessageClient client = new SimpleMessageClient();
+        client.sendRecvAsync("A text msg");
+        client.done.acquire();
+        client.stop();
+        System.exit(0);
+        System.out.println("End SendRecvClient");
+    }
+	
+}

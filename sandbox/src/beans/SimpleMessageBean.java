@@ -32,52 +32,37 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
 import javax.jms.TextMessage;
-import javax.jms.Topic;
 
 
-@MessageDriven(mappedName = "jms/Topic", activationConfig = {
-	 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Topic"),
-	 @ActivationConfigProperty(propertyName="destination", propertyValue="topic/myTopic"),
+@MessageDriven(mappedName = "jms/Queue", activationConfig = {
+	 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue"),
+	 @ActivationConfigProperty(propertyName="destination", propertyValue="queue/D"),
 })
 public class SimpleMessageBean implements MessageListener {
     static final Logger logger = Logger.getLogger("SimpleMessageBean");
+    
     @Resource(mappedName="ConnectionFactory")
-    private transient ConnectionFactory cf = null;
-
-    public SimpleMessageBean() {
-    	logger.info("In SimpleMessageBean.SimpleMessageBean()");
-    }
+    private QueueConnectionFactory qcf;
     
     public void onMessage(Message inMessage) {
-        TextMessage msg = null;
-        Connection con = null;
-        Session ses = null;
-        MessageProducer producer = null;
-        TextMessage replyMsg = null;
+        TextMessage msg;
 
         try {
             if (inMessage instanceof TextMessage) {
                 msg = (TextMessage) inMessage;
-                logger.info("SimpleMessageBean: Received message: " + msg.getText());
-                con = cf.createConnection();
-                ses = con.createSession(true, 0);
-
-                producer = ses.createProducer((Topic) msg.getJMSReplyTo());
-                replyMsg = ses.createTextMessage("SimpleMessageBean " +
-                        "processed message: " + msg.getText());
-                replyMsg.setJMSCorrelationID(msg.getJMSMessageID());
-                replyMsg.setIntProperty("id", msg.getIntProperty("id"));
-                producer.send(replyMsg);
-                logger.info("Sent reply to " + producer.getDestination().toString());
-                con.close();
+                logger.info("SimpleMessageBean: Received message: " 
+                		+ msg.getText());             
+                String replyTopicStr = sendReply(msg);
+                logger.info("Sent reply to " + replyTopicStr);
             } else {
                 logger.warning("Message of wrong type: " +
                     inMessage.getClass().getName());
@@ -85,11 +70,27 @@ public class SimpleMessageBean implements MessageListener {
         } catch (JMSException e) {
             logger.severe("SimpleMessageBean.onMessage: JMSException: " +
                 e.toString());
+            e.printStackTrace();
         } catch (Throwable te) {
             logger.severe("SimpleMessageBean.onMessage: Exception: " +
                 te.toString());
             te.printStackTrace();
         }
     }
+    
+    public String sendReply(TextMessage msg) throws JMSException{
+
+    	Queue queue = (Queue)msg.getJMSReplyTo();
+    	QueueConnection connect = qcf.createQueueConnection();
+	    QueueSession session = connect.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+	    QueueSender sender = session.createSender(queue);
+	    TextMessage replyMsg = session.createTextMessage("SimpleMessageBean " +
+                "processed message: " + msg.getText());
+	    sender.send(replyMsg);
+	    String ret = sender.getDestination().toString();
+	    connect.close();
+	    
+	    return ret;
+	}
 
 }
