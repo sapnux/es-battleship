@@ -3,6 +3,10 @@ package frontend.state.ships;
 import backend.constants.Orientation;
 import backend.state.ships.*;
 import java.awt.*;
+import java.awt.image.*;
+import java.io.*;
+
+import javax.imageio.*;
 
 public abstract class CanDrawShip {
 	protected IShip mShip;
@@ -10,13 +14,26 @@ public abstract class CanDrawShip {
 	protected int mY = 0;
 	protected Orientation mOrientation = null;
 	protected Color mShipColor;
+	protected boolean mDrawDefault = false;
+	protected BufferedImage mHImage = null, mVImage = null;
 	
 	public CanDrawShip(){
 	}
 	
-	public CanDrawShip(IShip aShip){
+	public CanDrawShip(IShip aShip, String aHFileName, String aVFileName){
 		mShip = aShip;
 		mShipColor = Color.GRAY;
+		
+		try {
+			java.net.URL tHFile = getClass().getClassLoader().getResource(aHFileName);
+			java.net.URL tVFile = getClass().getClassLoader().getResource(aVFileName);
+			mHImage = ImageIO.read(tHFile);
+			mVImage = ImageIO.read(tVFile);
+		} catch (IOException e) {
+			mDrawDefault = true;
+			//TEST CODE
+			System.out.println(e.getMessage());
+		}		
 	}
 	
 	public IShip getIShip(){
@@ -30,6 +47,13 @@ public abstract class CanDrawShip {
 	}
 	
 	public boolean drawMe(Graphics g, int aCellSide){
+		if(mDrawDefault)
+			return drawByDefault(g, aCellSide);
+		else
+			return drawByImage(g, aCellSide);
+	}
+	
+	protected boolean drawByDefault(Graphics g, int aCellSide){
 		if(aCellSide == 0)
 			return false;
 		
@@ -48,6 +72,21 @@ public abstract class CanDrawShip {
 		}
 		
 		g.fillRect(dispX, dispY, width, height);
+		return true;
+	}
+	
+	protected boolean drawByImage(Graphics g, int aCellSide){
+		if(aCellSide == 0)
+			return false;
+
+		int dispX = mX * aCellSide + 1;
+		int dispY = mY * aCellSide + 1;
+		
+		if(this.mOrientation == Orientation.HORIZONTAL)
+			g.drawImage(mHImage, dispX, dispY, null);
+		else
+			g.drawImage(mVImage, dispX, dispY, null);
+			
 		return true;
 	}
 	

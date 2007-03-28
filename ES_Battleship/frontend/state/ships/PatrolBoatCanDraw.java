@@ -7,7 +7,9 @@ import backend.state.ships.*;
 public class PatrolBoatCanDraw extends CanDrawShip {
 
 	public PatrolBoatCanDraw(){
-		super(new PatrolBoat());
+		super(new PatrolBoat(), 
+				"frontend/images/PTBoatH.gif",
+				"frontend/images/PTBoatV.gif");
 		mShipColor = Color.pink;
 	}
 }
