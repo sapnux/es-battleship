@@ -9,10 +9,12 @@ import backend.state.ships.*;
 public class SubmarineCanDraw extends CanDrawShip {
 
 	public SubmarineCanDraw(){
-		super(new Submarine());
+		super(new Submarine(), 
+				"frontend/images/SubmarineH.gif",
+				"frontend/images/SubmarineV.gif");
 	}
 	
-	public boolean drawMe(Graphics g, int aCellSide){
+	public boolean drawByDefault(Graphics g, int aCellSide){
 		if(aCellSide == 0)
 			return false;
 		

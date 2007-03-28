@@ -7,7 +7,9 @@ import backend.state.ships.*;
 public class BattleshipCanDraw extends CanDrawShip {
 
 	public BattleshipCanDraw(){
-		super(new Battleship());
+		super(new Battleship(), 
+				"frontend/images/BattleShipH.gif",
+				"frontend/images/BattleShipV.gif");
 		mShipColor = Color.magenta;
 	}
 }

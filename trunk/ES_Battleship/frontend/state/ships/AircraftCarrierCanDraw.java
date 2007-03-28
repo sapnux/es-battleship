@@ -7,7 +7,9 @@ import backend.state.*;
 public class AircraftCarrierCanDraw extends CanDrawShip {
 	
 	public AircraftCarrierCanDraw() {
-		super(new AircraftCarrier());
+		super(new AircraftCarrier(), 
+				"frontend/images/AircraftCarrierH.gif",
+				"frontend/images/AircraftCarrierV.gif");
 		mShipColor = Color.orange;
 	}
 }
