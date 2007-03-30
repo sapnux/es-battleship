@@ -37,7 +37,11 @@ public class EsbArrangmentWindow extends JFrame {
 	private int mNumClicks               = 0;
 
 	/**
-	 * This is the default constructor
+	 * Default constructor for the fleet arrangement window
+	 * @param aBoard Empty board object that is populated by this object and passed to Battle Window
+	 * @param aShipList Empty list of ships that is populated by this object and passed to Battle Window
+	 * @param aParams Contains the IP address & Port of the server, and the player's name respectively.
+	 * 			Used to connect to the server.
 	 */
 	public EsbArrangmentWindow(Board aBoard, List <CanDrawShip> aShipList,
 							   String[] aParams) {
@@ -82,6 +86,7 @@ public class EsbArrangmentWindow extends JFrame {
 
 	private void initializeControlPanel() {
 		mControlPanel = new JPanel();
+		mControlPanel.setName("Control Panel");
 		mControlPanel.setPreferredSize(new Dimension(150, 400));
 		mControlPanel.setSize(new Dimension(150, 400));
 		mControlPanel.setLayout(new BorderLayout());
@@ -150,6 +155,7 @@ public class EsbArrangmentWindow extends JFrame {
 	
 	private void initializeFleetPanel(){
 		mFleetPanel = new EsbFleetPanel(this.mShipList);
+		mFleetPanel.setName("Fleet Panel");
 		mFleetPanel.setSize(new Dimension(400, 400));
 		mFleetPanel.setBackground(Color.BLUE);
 		
