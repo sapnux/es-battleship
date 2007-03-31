@@ -25,6 +25,7 @@ public class EsbArrangmentWindow extends JFrame {
 	private JPanel  jContentPane            = null;
 	private JPanel  mControlPanel           = null;
 	private JButton mReadyButton            = null;
+	private JButton mCancelShipButton       = null;
 	private JList   mShipSelection          = null;
 	private Vector <CanDrawShip> mShipTypes = null;
 	private EsbFleetPanel mFleetPanel       = null;
@@ -32,7 +33,7 @@ public class EsbArrangmentWindow extends JFrame {
 	
 	private Board mPlayerBoard           = null;
 	private List <CanDrawShip> mShipList = null;
-	private CanDrawShip mSelectedShip    = null;
+	private CanDrawShip mSelectedShip    = null;  //  @jve:decl-index=0:
 	private String[] mParams             = null;
 	private int mNumClicks               = 0;
 
@@ -71,15 +72,15 @@ public class EsbArrangmentWindow extends JFrame {
             }
         });
 
-		((JPanel) getContentPane()).registerKeyboardAction(new ActionListener() {
-			  public void actionPerformed(ActionEvent actionEvent) {
-//					TEST CODE
+//		((JPanel) getContentPane()).registerKeyboardAction(new ActionListener() {
+//			  public void actionPerformed(ActionEvent actionEvent) {
+////					TEST CODE
 //					System.out.println("'Esc' typed");					
-					clearClicks();				     
-				  }
-				}, 
-				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
+//					clearClicks();				     
+//				  }
+//				}, 
+//				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
+//				JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
 		this.pack();		
 	}
@@ -89,7 +90,18 @@ public class EsbArrangmentWindow extends JFrame {
 		mControlPanel.setName("Control Panel");
 		mControlPanel.setPreferredSize(new Dimension(150, 400));
 		mControlPanel.setSize(new Dimension(150, 400));
-		mControlPanel.setLayout(new BorderLayout());
+		mControlPanel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.anchor = GridBagConstraints.NORTH;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.gridheight = 1;
+		gridBagConstraints.gridwidth  = 1;
+		//gridBagConstraints.insets = new Insets(10, 10, 10, 10);	
 		
 		mShipTypes = new Vector<CanDrawShip>(); 
 		mShipTypes.add(new AircraftCarrierCanDraw());
@@ -99,24 +111,52 @@ public class EsbArrangmentWindow extends JFrame {
 		mShipTypes.add(new SubmarineCanDraw());
 		
 		mShipSelection = new JList(mShipTypes);
-		mControlPanel.add(mShipSelection, BorderLayout.NORTH);
+		mControlPanel.add(mShipSelection, gridBagConstraints);
 		mShipSelection.setVisible(true);
 		mShipSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		mShipSelection.addListSelectionListener(new ListSelectionListener(){
-			public void valueChanged(ListSelectionEvent e){
-				if ((!e.getValueIsAdjusting()) || (e.getFirstIndex() == -1)) {
-					return;
-				}
-				
-				mSelectedShip = (CanDrawShip)(((JList)e.getSource()).getSelectedValue());
-//				//TEST CODE
+//		mShipSelection.addListSelectionListener(new ListSelectionListener(){
+//			public void valueChanged(ListSelectionEvent e){
+//				if ((!e.getValueIsAdjusting()) || (e.getFirstIndex() == -1)) {
+//					return;
+//				}
+//				
+//				mSelectedShip = (CanDrawShip)(((JList)e.getSource()).getSelectedValue());
+////				//TEST CODE
 //				System.out.println(mSelectedShip);
-				//TODO create JUnit code to test
+//				//TODO create JUnit code to test
+//			}
+//		});
+
+		mCancelShipButton = new JButton("Cancel Selection");
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 1;
+		gridBagConstraints.weightx = 0.0;
+		gridBagConstraints.weighty = 0.0;
+		//gridBagConstraints.anchor = GridBagConstraints.NORTH;
+		//gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.gridheight = 1;
+		gridBagConstraints.gridwidth  = 1;
+		mControlPanel.add(mCancelShipButton, gridBagConstraints);
+		mCancelShipButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				// TEST CODE
+				//System.out.println("Cancel Selection Pressed");
+				clearClicks();
 			}
 		});
-
+		mCancelShipButton.setVisible(true);
+		mCancelShipButton.setEnabled(true);		
+		
 		mReadyButton = new JButton("Ready");
-		mControlPanel.add(mReadyButton, BorderLayout.SOUTH);
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 2;
+		gridBagConstraints.weightx = 0.0;
+		gridBagConstraints.weighty = 0.0;
+		//gridBagConstraints.anchor = GridBagConstraints.NORTH;
+		//gridBagConstraints.fill = GridBagConstraints.BOTH;
+		gridBagConstraints.gridheight = 1;
+		gridBagConstraints.gridwidth  = 1;
+		mControlPanel.add(mReadyButton, gridBagConstraints);
 		mReadyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				
@@ -150,7 +190,8 @@ public class EsbArrangmentWindow extends JFrame {
 		});
 		mReadyButton.setVisible(true);
 		mReadyButton.setEnabled(false);
-//		mReadyButton.setEnabled(true);
+		// TEST CODE - comment back out when done
+		//mReadyButton.setEnabled(true);
 	}
 	
 	private void initializeFleetPanel(){
@@ -167,9 +208,13 @@ public class EsbArrangmentWindow extends JFrame {
 			private int mNumCellsAcross = mFleetPanel.getNumCellsAcross();
 			
 			public void mouseClicked(MouseEvent e){
-				if(mSelectedShip != null){										
+				// TEST CODE
+				//System.out.println("Got a click! " + e.getX() + " " + e.getY());
+				
+				if(!mShipSelection.isSelectionEmpty()){//(mSelectedShip != null){										
 					if(mNumClicks == 0){
 						//TODO create JUnit code to test
+						mSelectedShip = (CanDrawShip) mShipSelection.getSelectedValue();
 						mGrid1X = e.getX() / mCellSide;
 						mGrid1Y = e.getY() / mCellSide;
 
@@ -181,7 +226,7 @@ public class EsbArrangmentWindow extends JFrame {
 						
 						//TEST CODE
 //						System.out.println("First Placement Click: "+ mGrid1X + ", " +
-//								mGrid1Y);
+//								mGrid1Y + " " + mCellSide);
 						
 						mFleetPanel.setReticle(mGrid1X, mGrid1Y);
 						mNumClicks = 1;	
@@ -280,6 +325,7 @@ public class EsbArrangmentWindow extends JFrame {
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
+			jContentPane.setName("Content Pane");
 			jContentPane.setLayout(new GridBagLayout());
 		}
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();

@@ -16,6 +16,10 @@ public class EsbFleetPanel extends EsbGridPanel {
 		mShipsList = aShipsList;
 	}
 	
+	public Coordinates getReticle() {
+		return mReticle;
+	}
+	
 	public void setReticle(int aGridX, int aGridY){
 		mReticle = new Coordinates(aGridX, aGridY);
 		repaint();
