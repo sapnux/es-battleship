@@ -284,8 +284,9 @@ public class EsbArrangmentWindow extends JFrame {
 							((JPanel)e.getSource()).repaint();	
 						} catch (BackendException e1) {
 							
-							System.err.println(e1.getMessage());
-							mPlayerBoard.print();							
+							// TEST CODE
+							//System.err.println(e1.getMessage());
+							//mPlayerBoard.print();							
 							
 							JOptionPane.showMessageDialog(mLocalWindow, e1.getMessage(), 
 										"Error", JOptionPane.ERROR_MESSAGE);							
