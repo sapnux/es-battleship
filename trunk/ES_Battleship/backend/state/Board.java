@@ -247,7 +247,7 @@ public class Board {
 		if (orientation.equals(Orientation.HORIZONTAL)) {
 			for (int i = x; i < x + ship.getSize(); i++) {
 				if (this.board[i][y] != Constants.BOARD_EMPTY) {
-					throw new BackendException("The coordinate (" + x + "," + y
+					throw new BackendException("The coordinate (" + i + "," + y
 							+ ") is already occupied. Cannot place "
 							+ ship.getName() + ".");
 				}
@@ -255,7 +255,7 @@ public class Board {
 		} else {
 			for (int i = y; i < y + ship.getSize(); i++) {
 				if (this.board[x][i] != Constants.BOARD_EMPTY) {
-					throw new BackendException("The coordinate (" + x + "," + y
+					throw new BackendException("The coordinate (" + x + "," + i
 							+ ") is already occupied. Cannot place "
 							+ ship.getName() + ".");
 				}
