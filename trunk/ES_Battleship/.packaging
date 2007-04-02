@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configurations>
+<archive destination="" exploded="false" name="ServerBean.jar" used="true">
+<folder excludes="" includes="**/*.class" location="backend/server" name="server" prefix="" project="" projectLocation="backend/server" used="true"/>
+<file location="backend/server/META-INF/MANIFEST.MF" name="MANIFEST.MF" prefix="META-INF" project="" projectLocation="backend/server/META-INF/MANIFEST.MF" used="true"/>
+</archive>
+</configurations>
