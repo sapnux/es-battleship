@@ -30,7 +30,8 @@ public class EsbBattleWindow extends JFrame {
 	private JTextArea mMessageArea              = null;
 	
 	/**
-	 * This is the default constructor
+	 * Default Constructor
+	 * @param aFController This is an object that facilitates communication with the system's backend.
 	 */
 	public EsbBattleWindow(EsbFrontendController aFController) {
 		super();

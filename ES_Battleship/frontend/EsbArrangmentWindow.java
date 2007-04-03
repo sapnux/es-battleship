@@ -169,6 +169,7 @@ public class EsbArrangmentWindow extends JFrame {
 				//--------------------------
 				
 				//Initialize Game Play objects
+				//TODO move call to "connect" into frontendController
 				EsbFrontendController theFController = 
 						new EsbFrontendController(theClient);
 				
