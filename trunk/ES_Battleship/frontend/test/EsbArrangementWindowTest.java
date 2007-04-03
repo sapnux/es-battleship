@@ -233,18 +233,61 @@ public class EsbArrangementWindowTest extends TestCase {
 	}
 	
 	public void testPlaceShips(){
-						
-		// Place Aircraft Carrier
-		String[] tShipNames = {"Battleship", "Cruiser", "Patrol Boat", "Submarine"};
-		placeShip("Aircraft Carrier", tShipNames, 200, 0, 240, 0);	
-		
+		ArrayList<String> tShipNames = new ArrayList<String>(mShipNames.length);
+		for (int tIdx=0; tIdx<mShipNames.length; tIdx++)
+			tShipNames.add(mShipNames[tIdx]);
 
-		//Add Aircraft Carrier to test board
+		// Place Aircraft Carrier
+		String tCurrShip = tShipNames.remove(0);
+		placeShip(tCurrShip, tShipNames.toArray(new String[1]), 200, 0, 240, 0);
+
+		// Place Battleship
+		tCurrShip = tShipNames.remove(0);
+		placeShip(tCurrShip, tShipNames.toArray(new String[1]), 360, 240, 360, 280);
+
+		// Place Cruiser
+		tCurrShip = tShipNames.remove(0);
+		placeShip(tCurrShip, tShipNames.toArray(new String[1]), 120, 120, 120, 160);
+
+		// Place Patrol Boat
+		tCurrShip = tShipNames.remove(0);
+		placeShip(tCurrShip, tShipNames.toArray(new String[1]), 160, 160, 200, 160);
+
+		// Place Submarine
+		tCurrShip = tShipNames.remove(0);
+		placeShip(tCurrShip, null, 240, 360, 280, 360);
+		
+		//Add ships to test board
 		try {
 			mTestBoard.add(new AircraftCarrier(), 5, 0, Orientation.HORIZONTAL);
+			mTestBoard.add(new Battleship(), 9, 6, Orientation.VERTICAL);
+			mTestBoard.add(new Cruiser(), 3, 3, Orientation.VERTICAL);
+			mTestBoard.add(new PatrolBoat(), 4, 4, Orientation.HORIZONTAL);
+			mTestBoard.add(new Submarine(), 6, 9, Orientation.HORIZONTAL);
 		} catch (BackendException e) {
 			fail("problem adding ship to board");
 		}
+		
+		//Compare test board to the board produced by simulating clicking.
+		for(int i=0; i<10; i++){
+			for(int j=0; j<10; j++)
+				assertEquals(mBoard.getCoordinate(i, j), mTestBoard.getCoordinate(i, j));
+		}
+		
+		UISpecAssert.assertTrue(mReadyButton.isEnabled());
+		
+		// Bring up next window
+		Window tBattleWindow = WindowInterceptor.run(new Trigger() {
+			public void run() {
+				mReadyButton.click();
+			}
+		});
+		
+		UISpecAssert.assertFalse(mTestWin.isVisible());
+		UISpecAssert.assertTrue(tBattleWindow.isVisible());
+		assertEquals(tBattleWindow.getTitle(),
+					 "ES Battleship");
+		
 	}
 	
 	protected void placeShip(String aShipType, String[] aShipList,
@@ -253,7 +296,7 @@ public class EsbArrangementWindowTest extends TestCase {
 		mShipListBox.selectIndex(0);
 		UISpecAssert.assertTrue(mShipListBox.selectionEquals(aShipType));
 		
-		//Place Patrol Boat near the middle of the board.
+		//Place the ship on the board.
 		Mouse.doDoubleClickInRectangle(mRightPanel, 
 				new Rectangle(aFirstX, aFirstY, 39, 39));		
 		UISpecAssert.assertFalse(mShipListBox.isEnabled());
@@ -262,12 +305,18 @@ public class EsbArrangementWindowTest extends TestCase {
 		Mouse.doDoubleClickInRectangle(mRightPanel, 
 				new Rectangle(aSecondX, aSecondY, 39, 39));
 		
-		//Check that Patrol Boat was successfully placed
+		//Check that the ship was successfully placed
 		UISpecAssert.assertTrue(mShipListBox.isEnabled());
 		assertNull(((EsbFleetPanel)mRightPanel.getAwtComponent()).getReticle());
-		//Patrol Boat should no longer be in the ship list box
-		assertEquals(mShipListBox.getSize(), aShipList.length);
-		UISpecAssert.assertTrue(mShipListBox.contentEquals(aShipList));
+		//The placed ship should no longer be in the ship list box
+		if(aShipList == null){
+			assertEquals(mShipListBox.getSize(), 0);
+			UISpecAssert.assertTrue(mShipListBox.isEmpty());
+		}
+		else{
+			assertEquals(mShipListBox.getSize(), aShipList.length);
+			UISpecAssert.assertTrue(mShipListBox.contentEquals(aShipList));
+		}
 	}
 	
 	public void testErrorOutofBounds() {
@@ -395,7 +444,75 @@ public class EsbArrangementWindowTest extends TestCase {
 					return window.getButton("OK").triggerClick(); // return a trigger that will close it
 				}
 			}).run();			
-		}				
+		}//end loop				
+	}
+	/**
+	 * This is necessary because the other ship types were
+	 * made to overlap the Patrol Boat, but it was impossible
+	 * to make that happen for the Patrol Boat itself in 
+	 * the general testShipOverlap code.*/
+	public void testPatrolBoatOverlap(){
+
+		//Select Aircraft Carrier
+		mShipListBox.selectIndex(0);
+		UISpecAssert.assertTrue(mShipListBox.selectionEquals("Aircraft Carrier"));
+		
+		//Place AC near the middle of the board.
+		Mouse.doDoubleClickInRectangle(mRightPanel, 
+				new Rectangle(160, 160, 39, 39));		
+		UISpecAssert.assertFalse(mShipListBox.isEnabled());
+		assertTrue(((EsbFleetPanel)mRightPanel.getAwtComponent()).getReticle().equals(
+				new Coordinates(160/40, 160/40)));
+		Mouse.doDoubleClickInRectangle(mRightPanel, 
+				new Rectangle(200, 160, 39, 39));
+		
+		// Select the Patrol Boat
+		mShipListBox.selectIndex(2);
+		UISpecAssert.assertTrue(mShipListBox.selectionEquals("Patrol Boat"));
+		
+		// first click - vertical
+		Mouse.doDoubleClickInRectangle(mRightPanel, 
+				new Rectangle(160, 120, 39, 39));	
+
+		WindowInterceptor.init(new Trigger() {
+			public void run() {
+				// second click - vertical
+				Mouse.doDoubleClickInRectangle(mRightPanel,
+						new Rectangle(160, 200, 39, 39));
+			}
+		}).process(new WindowHandler() {
+			public Trigger process(Window window) {
+				String tMessage = (String) (window
+						.getTextBox("OptionPane.label").getText());
+				assertEquals(tMessage, "The coordinate (4,4) is already occupied. Cannot place "
+						+ "Patrol Boat.");
+				return window.getButton("OK").triggerClick(); // return a trigger that will close it
+			}
+		}).run();
+		
+		// Select the Patrol Boat
+		mShipListBox.selectIndex(2);
+		UISpecAssert.assertTrue(mShipListBox.selectionEquals("Patrol Boat"));
+		
+		// first click - horizontal
+		Mouse.doDoubleClickInRectangle(mRightPanel, 
+				new Rectangle(120, 160, 39, 39));	
+			
+		WindowInterceptor.init(new Trigger() {
+			public void run() {
+				// second click - horizontal
+				Mouse.doDoubleClickInRectangle(mRightPanel,
+						new Rectangle(160, 160, 39, 39));
+			}
+		}).process(new WindowHandler() {
+			public Trigger process(Window window) {
+				String tMessage = (String) (window
+						.getTextBox("OptionPane.label").getText());
+				assertEquals(tMessage, "The coordinate (4,4) is already occupied. Cannot place "
+						+ "Patrol Boat.");
+				return window.getButton("OK").triggerClick(); // return a trigger that will close it
+			}
+		}).run();
 	}
 	
 }
