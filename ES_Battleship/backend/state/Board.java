@@ -16,8 +16,8 @@ import backend.util.BackendException;
  *	p = Patrol Boat (length of 2)
  *	s = Submarine (length of 3)
  *	x = shot was a HIT [See Constants.java]
- *  m = shot was a MISS [See Constants.java]
- *  * = empty unit [See Constants.java]
+ *	m = shot was a MISS [See Constants.java]
+ *	* = empty unit [See Constants.java]
  */
 
 public class Board {
@@ -27,7 +27,7 @@ public class Board {
 	 * Populate the board with empty asteriks.
 	 */
 	public Board() {
-		reset();
+		this.reset();
 	}
 
 	/**
@@ -350,6 +350,10 @@ public class Board {
 		return board;
 	}
 	
+	/**
+	 * Populates the entire board with 'empty' units.
+	 *
+	 */
 	public void reset() {
 		for (int y = 0; y < this.board.length; y++) {
 			for (int x = 0; x < this.board.length; x++) {

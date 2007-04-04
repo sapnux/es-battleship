@@ -2,14 +2,12 @@ package backend.server;
 
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.Queue;
 import javax.naming.NamingException;
 
 import backend.util.JMSMsgUtils;
@@ -20,21 +18,20 @@ import backend.util.JMSMsgUtils;
 })
 public class ServerBean implements MessageListener {
 	
-    static final Logger logger = Logger.getLogger("ServerBean");
+    private static final Logger logger = Logger.getLogger("ServerBean");
+    private static JMSMsgUtils msgUtil;
     
-    private JMSMsgUtils msgUtil;
-    
-    public ServerBean() throws NamingException, JMSException{
-    	msgUtil = new JMSMsgUtils();
-    }
+    public ServerBean() throws NamingException, JMSException {
+		if (msgUtil == null) {
+			msgUtil = new JMSMsgUtils();
+		}
+	}
 
-
-    
     public void onMessage(Message inMessage) {
         try {
             if (inMessage instanceof MapMessage) {
                 MapMessage msg = (MapMessage) inMessage;
-                logger.info("ServerBean: Received message: " + msg.getString("header") + " from " + msg.getJMSReplyTo());
+                logger.info("ServerBean: " + msg.getJMSTimestamp() + " Type: " + msg.getString("header") + " FROM " + msg.getJMSReplyTo());
                 String destStr = msg.getString("destination");
                 msgUtil.forwardMessage(destStr, msg);
                 logger.info("Forwarded to: " + destStr);

@@ -20,16 +20,16 @@ public class JMSMsgUtils {
 
 	private Context iniCtx;
 	private QueueConnectionFactory qcf;
-	private QueueConnection connect;
-	private QueueSession session;
+	private QueueConnection queueConnection;
+	private QueueSession queueSession;
 	
 	public JMSMsgUtils() throws NamingException, JMSException {
         iniCtx = new InitialContext();
         Object tmp = iniCtx.lookup("ConnectionFactory");
         qcf = (QueueConnectionFactory) tmp;
-        connect = qcf.createQueueConnection();
-        session = connect.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
-		connect.start();
+        queueConnection = qcf.createQueueConnection();
+        queueSession = queueConnection.createQueueSession(false, 0);
+		queueConnection.start();
 	}
 	
 	//Getters for various Queues
@@ -49,63 +49,97 @@ public class JMSMsgUtils {
 		return (Queue) iniCtx.lookup(QueueNames.GAME_ENGINE);
 	}
 	
-	//Method to forward message to Destination
-	public void forwardMessage(String destStr, MapMessage message) throws NamingException, JMSException {
-		QueueSender sender = session.createSender(lookupQueueByName(destStr));
+	/**
+	 * Forwards messages to the destination queue.
+	 * 
+	 * @param destStr
+	 * @param message
+	 * @throws NamingException
+	 * @throws JMSException
+	 */
+	public void forwardMessage(String destStr, MapMessage message)
+			throws NamingException, JMSException {
+		QueueSender sender = queueSession.createSender(lookupQueueByName(destStr));
 		sender.send(message);
+		sender.close();
 	}
 	
+	/**
+	 * 
+	 * @param destStr
+	 * @return
+	 * @throws NamingException
+	 */
 	private Queue lookupQueueByName(String destStr) throws NamingException {
-		Queue ret = null;
 		if (destStr.equals(QueueNames.CLIENT_ONE)) {
-			ret = getClientOneQueue();
+			return this.getClientOneQueue();
 		} else if (destStr.equals(QueueNames.CLIENT_TWO)) {
-			ret = getClientTwoQueue();
+			return this.getClientTwoQueue();
 		} else if (destStr.equals(QueueNames.GAME_ENGINE)) {
-			ret = getGameEngineQueue();
+			return this.getGameEngineQueue();
 		} else if (destStr.equals(QueueNames.SERVER)) {
-			ret = getServerQueue();
+			return this.getServerQueue();
 		}
-		return ret;
+		return null;
 	}
 
 	//Messages from Clients to Server
-	public void sendTestMessage (String dest) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	public void sendTestMessage(String dest) throws Exception {
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setInt("header", MsgHeader.READY);
 	    msg.setString("destination", dest);
 	    msg.setString("body", "test");
 	    sender.send(msg);
+	    sender.close();
 	}
 	
+	/***
+	 * 
+	 * @param source
+	 * @param dest
+	 * @param pId
+	 * @param myBoard
+	 * @throws Exception
+	 */
 	public void sendReadyMessage(String source, String dest, String pId, Board myBoard) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.READY);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
 	    msg.setString("board", myBoard.toString());
 	    sender.send(msg);
+	    sender.close();
 	}
 
+	/**
+	 * 
+	 * @param source
+	 * @param dest
+	 * @param pId
+	 * @param x
+	 * @param y
+	 * @throws Exception
+	 */
 	public void sendMoveMessage (String source, String dest, String pId, int x, int y) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_INFO);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
 	    msg.setInt("x", x);
-	    msg.setInt("x", y);
+	    msg.setInt("y", y);
 	    sender.send(msg);
+	    sender.close();
 	}
 	
 	//Messages from GameEngine to Clients
 	public void sendIsHitMessage (String source, String dest, String pId, MoveResult moveResult) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_RESULT);
 	    msg.setString("destination", dest);
@@ -116,24 +150,26 @@ public class JMSMsgUtils {
 			msg.setBoolean("isHit", false);
 		}
 	    sender.send(msg);
+	    sender.close();
 	}
 	
 	public void sendTurnMessage (String source, String dest, String pId, boolean turn) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.TURN_INFO);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
 	    msg.setBoolean("isMyTurn", turn);
 	    sender.send(msg);
-	    connect.stop();
-	    connect.close();
+	    sender.close();
+	    queueConnection.stop();
+	    queueConnection.close();
 	}
 	
 	public void sendMoveNotifyMessage(String source, String dest, String pId, String x, String y) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_NOTICE);
 	    msg.setString("destination", dest);
@@ -141,13 +177,14 @@ public class JMSMsgUtils {
 	    msg.setInt("x", Integer.parseInt(x));
 	    msg.setInt("x", Integer.parseInt(y));
 	    sender.send(msg);
-	    connect.stop();
-	    connect.close();
+	    sender.close();
+	    queueConnection.stop();
+	    queueConnection.close();
 	}
 
 	public void sendGameOverMessage(String source, String dest, String pId, String x, String y, String result) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
@@ -156,28 +193,31 @@ public class JMSMsgUtils {
 	    msg.setInt("x", Integer.parseInt(y));
 	    msg.setString("result", result);
 	    sender.send(msg);
+	    sender.close();
 	}
 
 	public void sendErrorMessage(String source, String dest, String pId, String errorMsg) throws Exception {
-	    QueueSender sender = session.createSender(getServerQueue());
-	    MapMessage msg = session.createMapMessage();
+	    QueueSender sender = queueSession.createSender(getServerQueue());
+	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
 	    msg.setString("errorMsg", errorMsg);
 	    sender.send(msg);
+	    sender.close();
 	}
 
 	//Other
 	public void stop() throws JMSException {
-        connect.stop();
-        session.close();
-        connect.close();
+		System.out.println("stopping everything");
+        queueConnection.stop();
+        queueSession.close();
+        queueConnection.close();
 	}
 	
 	public QueueSession getSession() throws JMSException {
-		return session;
+		return this.queueSession;
 	}
 
 }
