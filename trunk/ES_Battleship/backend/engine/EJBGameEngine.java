@@ -1,7 +1,6 @@
 package backend.engine;
 
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -11,11 +10,9 @@ import javax.jms.QueueReceiver;
 import javax.naming.NamingException;
 
 import backend.constants.MoveResult;
-import backend.constants.QueueNames;
 import backend.state.Board;
 import backend.state.Player;
 import backend.util.JMSMsgUtils;
-import backend.util.MsgUtils;
 
 public class EJBGameEngine {
 	
@@ -25,7 +22,7 @@ public class EJBGameEngine {
 	private Vector playerQueues;
     
     private JMSMsgUtils msgUtil;
-	private static boolean isGameActive;
+	private static boolean isGameActive = false;
 	
     private class PlayerQMap {
 		private String playerId;
@@ -52,22 +49,23 @@ public class EJBGameEngine {
     
     public class GameEngineListener implements MessageListener {
 
-    	public void onMessage(Message msg) {
-    		String playerId = "";
-    		try {
+		public void onMessage(Message msg) {
+			String playerId = "";
+			try {
 				playerId = ((MapMessage) msg).getString("playerId");
-//				msgUtil.sendTestMessage(((MapMessage) msg).getString("destination"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-    		System.out.println("Received message from " + playerId);
-    	}
+			System.out.println("Received message from " + playerId);
+		}
 
-    }
+	}
+
 	public EJBGameEngine() throws NamingException, JMSException {
-		msgUtil = new JMSMsgUtils();
-        QueueReceiver recv = msgUtil.getSession().createReceiver(msgUtil.getGameEngineQueue());
-        recv.setMessageListener(new GameEngineListener());
+		this.msgUtil = new JMSMsgUtils();
+		QueueReceiver recv = msgUtil.getSession().createReceiver(
+				msgUtil.getGameEngineQueue());
+		recv.setMessageListener(new GameEngineListener());
 		resetGame();
 	}
 
@@ -77,20 +75,25 @@ public class EJBGameEngine {
 	 * @param board New player's board
 	 */
 	public void addPlayer(String pId, Board board) {
-		if (player1 == null) {
-			player1 = new Player(pId, board);
-		} else if (player2 == null) {
-			player2 = new Player(pId, board);
+		if (this.player1 == null) {
+			this.player1 = new Player(pId, board);
+		} else if (this.player2 == null) {
+			this.player2 = new Player(pId, board);
 		} else {
 			throw new RuntimeException("Game full");
 		}
 	}
+	
 	/**
 	 * Updates player's representation of opponent's board with a hit or a miss,
 	 * and returns whether the move was a hit or a miss
-	 * @param pId Player id
-	 * @param x x-coordinate of the move
-	 * @param y y-coordinate of the move
+	 * 
+	 * @param pId
+	 *            Player id
+	 * @param x
+	 *            x-coordinate of the move
+	 * @param y
+	 *            y-coordinate of the move
 	 * @return true if move is a hit
 	 */
 	public MoveResult move(String pId, String x, String y) {
@@ -98,7 +101,7 @@ public class EJBGameEngine {
 		Player thisMovePlayer = getPlayer(pId);
 		int xCoord = Integer.parseInt(x);
 		int yCoord = Integer.parseInt(y);
-		
+
 		if (oppBoard.isHit(xCoord, yCoord)) {
 			thisMovePlayer.getOppBoard().setHit(xCoord, yCoord);
 			if (thisMovePlayer.getOppBoard().hasLost()) {
@@ -118,10 +121,10 @@ public class EJBGameEngine {
 	 * @return revealed board of the opponent
 	 */
 	private Board getOpponentBoard(String pId) {
-		if (pId.equals(player1.getId())) {
-			return player2.getMyBoard();
-		} else if (pId.equals(player2.getId())){
-			return player1.getMyBoard();
+		if (pId.equals(this.player1.getId())) {
+			return this.player2.getMyBoard();
+		} else if (pId.equals(this.player2.getId())){
+			return this.player1.getMyBoard();
 		} else {
 			throw new RuntimeException("No such player");
 		}
@@ -129,39 +132,42 @@ public class EJBGameEngine {
 
 	/**
 	 * Determines if both players are connected and initialized
+	 * 
 	 * @return true if both players are connected and initialized
 	 */
 	public boolean isGameReady() {
-		return player1 != null &&player2 != null;
+		return this.player1 != null && this.player2 != null;
 	}
 
 	/**
 	 * Obtain Player reference for a given ID
-	 * @param pId Player's ID
+	 * 
+	 * @param pId
+	 *            Player's ID
 	 * @return Player reference
 	 */
 	private Player getPlayer(String pId) {
-		if (pId.equals(player1.getId())) {
-			return player1;
-		} else if (pId.equals(player2.getId())){
-			return player2;
+		if (pId.equals(this.player1.getId())) {
+			return this.player1;
+		} else if (pId.equals(this.player2.getId())) {
+			return this.player2;
 		} else {
 			throw new RuntimeException("No such player");
 		}
 	}
 	
 	public boolean isMyTurn(String playerId) {
-		return playerId.equals(player1.getId());
+		return playerId.equals(this.player1.getId());
 	}
 
 	public void resetGame() {
 		isGameActive = true;
-		player1=null;
-		player2=null;
+		this.player1 = null;
+		this.player2 = null;
 	}
 	
 	public void closeConnections() throws JMSException {
-		msgUtil.stop();
+		this.msgUtil.stop();
 	}
 	
     public static void main(String args[]) throws Exception {
@@ -169,7 +175,7 @@ public class EJBGameEngine {
                            System.currentTimeMillis());
         EJBGameEngine engine = new EJBGameEngine();
         while (isGameActive) {
-        	Thread.sleep(1000);
+        	Thread.sleep(10000);
         }
         engine.closeConnections();
         System.exit(0);

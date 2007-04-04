@@ -33,7 +33,6 @@ public class ServerConsole extends JFrame implements ActionListener {
 	
 	public ServerConsole () {
 		
-		final JFrame thisWindow = this;
 		GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         
