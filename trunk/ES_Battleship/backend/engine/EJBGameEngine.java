@@ -56,7 +56,7 @@ public class EJBGameEngine {
     		String playerId = "";
     		try {
 				playerId = ((MapMessage) msg).getString("playerId");
-				msgUtil.sendTestMessage(((MapMessage) msg).getString("destination"));
+//				msgUtil.sendTestMessage(((MapMessage) msg).getString("destination"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
