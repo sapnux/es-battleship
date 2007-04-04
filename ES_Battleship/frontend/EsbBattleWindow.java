@@ -92,7 +92,9 @@ public class EsbBattleWindow extends JFrame {
 			gridBagConstraints.gridwidth  = 1;	
 			gridBagConstraints.insets = new Insets(10, 10, 10, 10);
 			
-			mPlayerPanel.setVisible(true);		
+			mPlayerPanel.setName("Player Grid");
+			mPlayerPanel.setVisible(true);
+			mOpponentPanel.setName("Opponent Grid");
 			mOpponentPanel.setVisible(true);
 			
 
