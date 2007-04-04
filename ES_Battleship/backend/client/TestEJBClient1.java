@@ -15,7 +15,7 @@ import backend.state.ships.Ships;
 import backend.util.JMSMsgUtils;
 
 public class TestEJBClient1 {
-    static final int N = 3;
+    static final int N = 1;
 
 	private JMSMsgUtils msgUtil;
     
@@ -49,9 +49,7 @@ public class TestEJBClient1 {
 		board.add(Ships.getSubmarine(), 5, 5, Orientation.VERTICAL);
 
         for(int m = 0; m < N; m ++) {
-            MapMessage msg = msgUtil.getSession().createMapMessage();
-            msg.setJMSReplyTo(msgUtil.getClientOneQueue());
-            msgUtil.sendReadyMessage(QueueNames.GAME_ENGINE, "test_client1", board);
+            msgUtil.sendReadyMessage(QueueNames.CLIENT_ONE, QueueNames.GAME_ENGINE, "test_client1", board);
             System.out.println("sendRecvAsync, sent msg");
         }
         System.out.println("End sendRecvAsync");

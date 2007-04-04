@@ -79,9 +79,10 @@ public class JMSMsgUtils {
 	    sender.send(msg);
 	}
 	
-	public void sendReadyMessage(String dest, String pId, Board myBoard) throws Exception {
+	public void sendReadyMessage(String source, String dest, String pId, Board myBoard) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.READY);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
@@ -89,9 +90,10 @@ public class JMSMsgUtils {
 	    sender.send(msg);
 	}
 
-	public void sendMoveMessage (String dest, String pId, int x, int y) throws Exception {
+	public void sendMoveMessage (String source, String dest, String pId, int x, int y) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_INFO);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
@@ -101,9 +103,10 @@ public class JMSMsgUtils {
 	}
 	
 	//Messages from GameEngine to Clients
-	public void sendIsHitMessage (String dest, String pId, MoveResult moveResult) throws Exception {
+	public void sendIsHitMessage (String source, String dest, String pId, MoveResult moveResult) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_RESULT);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
@@ -115,9 +118,10 @@ public class JMSMsgUtils {
 	    sender.send(msg);
 	}
 	
-	public void sendTurnMessage (String dest, String pId, boolean turn) throws Exception {
+	public void sendTurnMessage (String source, String dest, String pId, boolean turn) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.TURN_INFO);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
@@ -127,9 +131,10 @@ public class JMSMsgUtils {
 	    connect.close();
 	}
 	
-	public void sendMoveNotifyMessage (String dest, String pId, String x, String y) throws Exception {
+	public void sendMoveNotifyMessage(String source, String dest, String pId, String x, String y) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_NOTICE);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
@@ -140,9 +145,10 @@ public class JMSMsgUtils {
 	    connect.close();
 	}
 
-	public void sendGameOverMessage(String dest, String pId, String x, String y, String result) throws Exception {
+	public void sendGameOverMessage(String source, String dest, String pId, String x, String y, String result) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
@@ -152,9 +158,10 @@ public class JMSMsgUtils {
 	    sender.send(msg);
 	}
 
-	public void sendErrorMessage(String dest, String pId, String errorMsg) throws Exception {
+	public void sendErrorMessage(String source, String dest, String pId, String errorMsg) throws Exception {
 	    QueueSender sender = session.createSender(getServerQueue());
 	    MapMessage msg = session.createMapMessage();
+	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);

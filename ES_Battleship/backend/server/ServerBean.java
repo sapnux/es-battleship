@@ -31,11 +31,9 @@ public class ServerBean implements MessageListener {
 
     
     public void onMessage(Message inMessage) {
-    	MapMessage msg = (MapMessage) inMessage;
-    	
         try {
             if (inMessage instanceof MapMessage) {
-                msg = (MapMessage) inMessage;
+                MapMessage msg = (MapMessage) inMessage;
                 logger.info("ServerBean: Received message: " + msg.getString("header") + " from " + msg.getJMSReplyTo());
                 String destStr = msg.getString("destination");
                 msgUtil.forwardMessage(destStr, msg);
