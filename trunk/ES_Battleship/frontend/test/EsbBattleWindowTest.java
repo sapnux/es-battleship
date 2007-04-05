@@ -81,14 +81,21 @@ public class EsbBattleWindowTest extends TestCase {
 				new Rectangle(0, 0, 39, 39));
 		assertTrue((mClient.getLastClick().getX() == 0)
 				&&(mClient.getLastClick().getY() == 0));
+		mClient.clearLastClick();
 		
 		//test clicking each cell.
 		for(int i=0; i<400; i+=40){
-			for(int j=0; j<400; j+=40){
+			for(int j=0; j<400; j+=40){				
+				Mouse.doDoubleClickInRectangle(mOpponentGrid, 
+						new Rectangle(i, j, 39, 39));
+				assertFalse((mClient.getLastClick().getX() == (i/40))
+						&&(mClient.getLastClick().getY() == (j/40)));
+
+				mClient.setMyTurn(true);				
 				Mouse.doDoubleClickInRectangle(mOpponentGrid, 
 						new Rectangle(i, j, 39, 39));
 				assertTrue((mClient.getLastClick().getX() == (i/40))
-						&&(mClient.getLastClick().getY() == (j/40)));
+						&&(mClient.getLastClick().getY() == (j/40)));	
 			}//for j
 		}//for i
 	}
@@ -126,6 +133,60 @@ public class EsbBattleWindowTest extends TestCase {
 					new Rectangle(0, 0, 39, 39));
 			assertTrue((mClient.getLastClick().getX() == 0)
 					&&(mClient.getLastClick().getY() == 0));
+		}
+	}
+	
+	public void testMessageBox(){
+		int count = 1;
+		String[] tMessageSequence = {
+			"Message 1", 
+			"Message 2", 
+			"Message 3",
+			"Message 4", 
+			"Message 5",
+			"Message 6"};
+		String tTestString = "";
+		//Buffering one line
+		mClient.sendMessage(tMessageSequence[0]);
+		UISpecAssert.assertTrue(mMessageBox.textIsEmpty());
+		mClient.setMyTurn(true);
+		tTestString = tTestString + count + ">  " + tMessageSequence[0] + "\n";
+		assertEquals(mMessageBox.getText(), tTestString);
+	
+		//Buffering 2 Lines
+		mClient.sendMessage(tMessageSequence[1]);
+		mClient.sendMessage(tMessageSequence[2]);
+		//	didn't update test string yet... == to last time
+		assertEquals(mMessageBox.getText(), tTestString);
+		mClient.setMyTurn(false);
+		count++;
+		tTestString = tTestString + count + ">  " + tMessageSequence[1] + "\n";
+		count++;
+		tTestString = tTestString + count + ">  " + tMessageSequence[2] + "\n";
+		assertEquals(mMessageBox.getText(), tTestString);
+
+		//Buffering 3 Lines
+		mClient.sendMessage(tMessageSequence[3]);
+		mClient.sendMessage(tMessageSequence[4]);
+		mClient.sendMessage(tMessageSequence[5]);
+		//	didn't update test string yet... == to last time
+		assertEquals(mMessageBox.getText(), tTestString);
+		mClient.setMyTurn(false);
+		count++;
+		tTestString = tTestString + count + ">  " + tMessageSequence[3] + "\n";
+		count++;
+		tTestString = tTestString + count + ">  " + tMessageSequence[4] + "\n";
+		count++;
+		tTestString = tTestString + count + ">  " + tMessageSequence[5] + "\n";
+		assertEquals(mMessageBox.getText(), tTestString);
+		
+		//test in a short loop
+		for(int i=0; i<6; i++){
+			mClient.sendMessage(tMessageSequence[i]);
+			mClient.setMyTurn(true);
+			count++;
+			tTestString = tTestString + count + ">  " + tMessageSequence[i] + "\n";
+			assertEquals(mMessageBox.getText(), tTestString);
 		}
 	}
 	
@@ -173,6 +234,6 @@ public class EsbBattleWindowTest extends TestCase {
 	 * DONE Test enabling/disabling clicks.
 	 * CANCEL Test that opponent hits, misses, and player hits, misses are populated correctly
 	 * CANCEL Test Win/Lose
-	 * Test Message Box
+	 * DONE Test Message Box
 	 * */
 }

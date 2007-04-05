@@ -47,6 +47,10 @@ public class TestClientAuto implements IClient {
 	public void setWinLose(backend.constants.GameResult aResult){
 		mPlayer.setGameResult(aResult);		
 	}
+	
+	public void sendMessage(String aMessage){
+		mPlayer.addMessage(aMessage);
+	}
 
 	public boolean move(int x, int y) {
 		mLastClick.setX(x);
