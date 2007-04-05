@@ -31,17 +31,27 @@ public class TestClientAuto implements IClient {
 		return mPlayer;
 	}
 	
-	public void enableOpponentGrid(){
-		mPlayer.setMyTurn(true);
+	public void setMyTurn(boolean aMyTurn){
+		mPlayer.setMyTurn(aMyTurn);
 	}
 	
 	public Coordinates getLastClick(){
 		return mLastClick;
 	}
+	
+	public void clearLastClick(){
+		mLastClick.setX(-1);
+		mLastClick.setY(-1);
+	}
+	
+	public void setWinLose(backend.constants.GameResult aResult){
+		mPlayer.setGameResult(aResult);		
+	}
 
 	public boolean move(int x, int y) {
 		mLastClick.setX(x);
 		mLastClick.setY(y);
+		
 		
 		return false;
 	}
