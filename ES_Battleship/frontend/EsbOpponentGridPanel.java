@@ -45,8 +45,10 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 					if((((gridX >= 0)&&(gridX < mNumCellsAcross))&&
 						((gridY >= 0)&&(gridY < mNumCellsAcross))) &&
 						(!mHitsList.contains(new Coordinates(gridX, gridY))) &&
-						(!mMissesList.contains(new Coordinates(gridX, gridY))))
+						(!mMissesList.contains(new Coordinates(gridX, gridY)))){
+						((EsbOpponentGridPanel) e.getSource()).setCanClick(false);
 						mFController.makeMove(gridX, gridY);					
+					}
 				}
 			}
 		});
@@ -58,10 +60,13 @@ public class EsbOpponentGridPanel extends EsbGridPanel  {
 	 * @param aCanClick True if it has become the player's turn to make a move, false otherwise.
 	 */
 	public void setCanClick(boolean aCanClick){
-		if(aCanClick)
+		if(aCanClick){
 			mGridLineColor = Color.BLACK;
-		else
+			this.setOpaque(true);
+		}else{
 			mGridLineColor = Color.GRAY;
+			this.setOpaque(false);
+		}
 		
 		mCanClick = aCanClick;
 	}
