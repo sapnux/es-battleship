@@ -2,15 +2,19 @@ package frontend;
 
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.*;
 import javax.swing.JOptionPane;
 import frontend.state.ships.*;
 import backend.state.*;
+import backend.constants.*;
 
 public class EsbFleetPanel extends EsbGridPanel {
 
 	protected List <CanDrawShip> mShipsList = null;
 	protected Coordinates mReticle          = null;
+	protected Rectangle mGuide              = null;
+	protected boolean mDrawGuide            = false;
 	
 	public EsbFleetPanel(List <CanDrawShip> aShipsList){
 		mShipsList = aShipsList;
@@ -25,9 +29,24 @@ public class EsbFleetPanel extends EsbGridPanel {
 		repaint();
 	}
 	
+	public void setGuide(Rectangle aGuide){
+		mGuide = aGuide;
+		repaint();
+	}
+	
+	public void setDrawGuide(boolean aDrawGuide){
+		mDrawGuide = aDrawGuide;
+		repaint();
+	}
+	
 	public void clearReticle(){
 		mReticle = null;
 		repaint();
+	}
+	
+	public void clearGuide(){
+		mGuide            = null;
+		mDrawGuide        = false;	
 	}
 	
 	@Override
@@ -61,6 +80,10 @@ public class EsbFleetPanel extends EsbGridPanel {
 			
 			g.setColor(Color.ORANGE);
 			g.drawRect(tDispX, tDispY, this.mCellSide, this.mCellSide);
+		}
+		if(mDrawGuide){
+			g.setColor(Color.RED);
+			g.drawRect(mGuide.x, mGuide.y, mGuide.width, mGuide.height);
 		}
 	}
 

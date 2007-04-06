@@ -297,7 +297,67 @@ public class EsbArrangmentWindow extends JFrame {
 					}
 				}
 			}
-		});
+		}); //add MouseListener
+		
+		mFleetPanel.addMouseMotionListener(new MouseMotionAdapter(){
+			private int mCellSide = mFleetPanel.getCellSide();
+			private int mRecentGridX      = -1;
+			private int mRecentGridY      = -1;
+			private Coordinates mRefPoint = null;			
+			
+			public void mouseMoved(MouseEvent e){				
+				if(mNumClicks == 1){
+					int tGridX, tGridY;
+					boolean cellChanged = false;
+					
+					if((tGridX = e.getX()/mCellSide) != mRecentGridX)
+						cellChanged = true;
+					if((tGridY = e.getY()/mCellSide) != mRecentGridY)
+						cellChanged = true;
+					//if the mouse is in the same cell, don't change anything
+					if(!cellChanged)
+						return;
+					else{
+						mRefPoint = mFleetPanel.getReticle();
+						mRecentGridX = tGridX;
+						mRecentGridY = tGridY;
+					}
+					
+					//if mouse is on top of reticle cell, don't draw and exit
+					if((tGridX == mRefPoint.getX())&&(tGridY == mRefPoint.getY())){
+						mFleetPanel.setDrawGuide(false);
+						return;
+					}
+					
+					int tNWx, tNWy;
+					Rectangle tGuide;
+					//Guide should be horizontal
+					if(tGridX == mRefPoint.getX()){
+						tNWx = tGridX * mCellSide;
+						tNWy = Math.min(tGridY, mRefPoint.getY()) * mCellSide;
+						tGuide = new Rectangle(tNWx, tNWy, 
+								mCellSide,
+								mSelectedShip.getIShip().getSize() * mCellSide);
+					}
+					//Guide should be vertical
+					else if(tGridY == mRefPoint.getY()){
+						tNWy = tGridY * mCellSide;
+						tNWx = Math.min(tGridX, mRefPoint.getX()) * mCellSide;
+						tGuide = new Rectangle(tNWx, tNWy, 
+								mSelectedShip.getIShip().getSize() * mCellSide,
+								mCellSide);
+					} 
+//					//diagonal orientation, don't draw and exit
+					else{ 
+						mFleetPanel.setDrawGuide(false);
+						return;	
+					}
+					
+					mFleetPanel.setGuide(tGuide);
+					mFleetPanel.setDrawGuide(true);
+				}//numclicks == 1
+			}//mousemoved
+		});//add MouseMotionListener
 	}
 	
 	
@@ -313,6 +373,7 @@ public class EsbArrangmentWindow extends JFrame {
 		mShipSelection.clearSelection();
 		mShipSelection.setEnabled(true);
 		mFleetPanel.clearReticle();
+		mFleetPanel.clearGuide();
 		
 		//TEST CODE
 //		System.out.println("clearClicks called");
