@@ -167,30 +167,30 @@ public class JMSMsgUtils {
 	    queueConnection.close();
 	}
 	
-	public void sendMoveNotifyMessage(String source, String dest, String pId, String x, String y) throws Exception {
+	public void sendMoveNotifyMessage(String source, String dest, String pId, int x, int y) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_NOTICE);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
-	    msg.setInt("x", Integer.parseInt(x));
-	    msg.setInt("x", Integer.parseInt(y));
+	    msg.setInt("x", x);
+	    msg.setInt("y", y);
 	    sender.send(msg);
 	    sender.close();
 	    queueConnection.stop();
 	    queueConnection.close();
 	}
 
-	public void sendGameOverMessage(String source, String dest, String pId, String x, String y, String result) throws Exception {
+	public void sendGameOverMessage(String source, String dest, String pId, int x, int y, String result) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
-	    msg.setInt("x", Integer.parseInt(x));
-	    msg.setInt("x", Integer.parseInt(y));
+	    msg.setInt("x", x);
+	    msg.setInt("y", y);
 	    msg.setString("result", result);
 	    sender.send(msg);
 	    sender.close();
