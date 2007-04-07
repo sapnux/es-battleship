@@ -17,7 +17,7 @@ import backend.util.BackendException;
 import backend.util.Logger;
 
 public class SampleEJBClient implements Observer {
-	private IEJBClient cl;
+	private IEJBClient client;
 
 	public SampleEJBClient(String queueName, String playerId)
 			throws InterruptedException, JMSException, NamingException {
@@ -34,9 +34,9 @@ public class SampleEJBClient implements Observer {
 		}
 		board.print();
 		
-		cl = new EJBClient(queueName, playerId, board);
-		cl.getPlayer().addObserver(this);
-		cl.signalReadiness();
+		this.client = new EJBClient(queueName, playerId, board);
+		this.client.getPlayer().addObserver(this);
+		this.client.signalReadiness();
 	}
 
 	/**
@@ -45,26 +45,27 @@ public class SampleEJBClient implements Observer {
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
 	public void update(Observable o, Object obj) {
-		Board.print(cl.getPlayer().getMyBoard(), cl.getPlayer().getOppBoard());
-		cl.getPlayer().printMessages();
-		cl.getPlayer().resetMessages();
+		// output some pretty board diagrams
+		Board.print(this.client.getPlayer().getMyBoard(), this.client.getPlayer().getOppBoard());
+		this.client.getPlayer().printMessages();
+		this.client.getPlayer().resetMessages();
 
-		if (cl.getPlayer().getGameResult() != GameResult.UNKNOWN) {
+		// check if the game is over
+		if (this.client.getPlayer().getGameResult() != GameResult.UNKNOWN) {
 			System.exit(0);
 		}
 
-		if (cl.getPlayer().isMyTurn()) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ex) {
-			}
-			Coordinates move = makeMove();
-			cl.move(move.getX(), move.getY());
-		} else {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ex) {
-			}
+		// check if it is our turn; if true, make a move
+		if (this.client.getPlayer().isMyTurn()) {
+			Coordinates move = this.getRandomMove();
+			this.client.move(move.getX(), move.getY());
+		}
+		
+		// slow the pace down a little
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ex) {
+			// swallow this exception because we don't care
 		}
 	}
 
@@ -74,8 +75,8 @@ public class SampleEJBClient implements Observer {
 	 * 
 	 * @return
 	 */
-	private Coordinates makeMove() {
-		List<Coordinates> list = cl.getPlayer().getOppBoard()
+	private Coordinates getRandomMove() {
+		List<Coordinates> list = this.client.getPlayer().getOppBoard()
 				.getAllEmptyCoordinates();
 		Random random = new Random();
 		int index = random.nextInt(list.size()); // nextInt returns [0, size)

@@ -4,7 +4,6 @@ import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.Queue;
 import javax.jms.QueueReceiver;
 import javax.naming.NamingException;
 
@@ -19,34 +18,30 @@ import backend.util.Logger;
 
 public class EJBClient implements IEJBClient, Runnable {
 	private Player player;
+	private String queueName;
 	private boolean connected;
 	private JMSMsgUtils msgUtil;
-	private Queue queue;
-	String queueName;
 
 	public EJBClient(String queueName, String id, Board board) throws JMSException, NamingException {
 		this.player = new Player(id, board);
 		this.msgUtil = new JMSMsgUtils();
-		this.queue = this.msgUtil.lookupQueueByName(queueName);
 		this.queueName = queueName;
-        QueueReceiver recv = msgUtil.getSession().createReceiver(queue);
-        recv.setMessageListener(new ClientListener());
+        QueueReceiver queueReceiver = this.msgUtil.getSession().createReceiver(this.msgUtil.getQueueByName(queueName));
+        queueReceiver.setMessageListener(new ClientListener());
 	}
 
     public class ClientListener implements MessageListener {
 		public void onMessage(Message msg) {
 			MapMessage map = (MapMessage) msg;
 			try {
-				if(!map.itemExists("header")) {
+				if (!map.itemExists("header")) {
 					Logger.LogWarning("The header did not exist in the message.");
 					return;
 				}
-				String playerId = map.getString("playerId");
-				String destination = map.getString("destination");
 				int header = Integer.parseInt(map.getString("header"));
+				Logger.LogInfo("[Header: " + header + "] Message Received");
+				
 				int x, y;
-				System.out.println("<< Received " + header + " message from " + playerId + " to " + destination);
-						
 				switch(header)
 				{
 					case MsgHeader.TURN_INFO:
@@ -61,11 +56,11 @@ public class EJBClient implements IEJBClient, Runnable {
 						}
 						boolean isHit = map.getBoolean("isHit");
 						if (isHit) {
-							player.addMessage("You hit at: "+x+", " +y);
+							player.addMessage("You hit at: " + x + ", " + y);
 							player.addMessage("Your turn");
 							player.getOppBoard().setHit(x, y);
 						} else {
-							player.addMessage("You missed at: "+x+", " +y);
+							player.addMessage("You missed at: " + x +", " + y);
 							player.addMessage("Opponent's turn");
 							player.getOppBoard().setMiss(x, y);
 						}
@@ -76,12 +71,12 @@ public class EJBClient implements IEJBClient, Runnable {
 						y = map.getInt("y");
 						if (player.getMyBoard().isHit(x, y)) {
 							player.getMyBoard().setHit(x, y);
-							player.addMessage("Opponent hit at: "+x+", " +y);
+							player.addMessage("Opponent hit at: " + x + ", " + y);
 							player.addMessage("Opponent's turn");
 							player.setMyTurn(false);
 						} else {
 							player.getMyBoard().setMiss(x, y);
-							player.addMessage("Opponent missed at: "+x+", " +y);
+							player.addMessage("Opponent missed at: " + x + ", " + y);
 							player.addMessage("Your turn");
 							player.setMyTurn(true);
 						}
@@ -89,14 +84,15 @@ public class EJBClient implements IEJBClient, Runnable {
 					case MsgHeader.GAME_OVER:
 						x = map.getInt("x");
 						y = map.getInt("y");
-						GameResult result = (GameResult)map.getObject("result");
+						GameResult result = GameResult.valueOf(map.getString("result"));
+						System.out.println("Game Result: " + result.toString());
 						if (player.isMyTurn()) {
 							player.getOppBoard().setHit(x, y);
-							player.addMessage("You hit at: "+x+", " +y);
+							player.addMessage("You hit at: " + x + ", " + y);
 							player.addMessage("[DONE] You have WON!");
 						} else {
 							player.getMyBoard().setHit(x, y);
-							player.addMessage("Opponent hit at: "+x+", " +y);
+							player.addMessage("Opponent hit at: " + x + ", " + y);
 							player.addMessage("[DONE] You have LOST!");
 						}
 						player.setGameResult(result);
@@ -123,7 +119,7 @@ public class EJBClient implements IEJBClient, Runnable {
 		
 		while(this.connected) {
 			if (!this.player.isMyTurn()) {
-				//?this.waitForTurn();
+				this.waitForTurn();
 			}
 			try {
 				Thread.sleep(500);
@@ -136,7 +132,7 @@ public class EJBClient implements IEJBClient, Runnable {
 
 	public void signalReadiness() {
 		try {
-			msgUtil.sendReadyMessage(queueName, QueueNames.GAME_ENGINE, this.player.getId(), this.player.getMyBoard());
+			msgUtil.sendReadyMessage(this.queueName, QueueNames.GAME_ENGINE, this.player.getId(), this.player.getMyBoard());
 			this.connected = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,12 +142,12 @@ public class EJBClient implements IEJBClient, Runnable {
 	/**
 	 * Sends coordinates of attack. Returns true if HIT, false otherwise.
 	 * 
-	 * @see backend.IClient#move(int, int)
+	 * @see backend.IEJBClient#move(int, int)
 	 */
 	public void move(int x, int y) {
 		try {
-			msgUtil.sendMoveMessage(queueName, QueueNames.GAME_ENGINE, this.player.getId(), x, y);
-			waitForTurn();
+			this.msgUtil.sendMoveMessage(this.queueName, QueueNames.GAME_ENGINE, this.player.getId(), x, y);
+			this.waitForTurn();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -160,12 +156,16 @@ public class EJBClient implements IEJBClient, Runnable {
 	/**
 	 * Returns the current instance of the player.
 	 * 
-	 * @see backend.IClient#getBoard()
+	 * @see backend.IEJBClient#getBoard()
 	 */
 	public Player getPlayer() {
 		return this.player;
 	}
 
+	/**
+	 * 
+	 * @see backend.IEJBClient#waitForTurn()
+	 */
 	public void waitForTurn() {
 		while (!this.getPlayer().isMyTurn()) {
 			try {

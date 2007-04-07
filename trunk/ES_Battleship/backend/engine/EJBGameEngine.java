@@ -9,6 +9,7 @@ import javax.jms.MessageListener;
 import javax.jms.QueueReceiver;
 import javax.naming.NamingException;
 
+import backend.constants.GameResult;
 import backend.constants.MoveResult;
 import backend.constants.MsgHeader;
 import backend.constants.QueueNames;
@@ -19,53 +20,69 @@ import backend.util.JMSMsgUtils;
 import backend.util.Logger;
 
 public class EJBGameEngine {
-	
-	private Vector<PlayerContainer> players;
-    
+
     private JMSMsgUtils msgUtil;
-	private static boolean isGameActive = false;
+    private Vector<PlayerContainer> players;
+    private static boolean isGameActive = false;
 	private final static int MAX_PLAYERS = 2;
 	
     private class PlayerContainer {
 		private String queue;
 		private Player player;
 
-		public PlayerContainer(String q, Player p) {
-			this.queue = q;
-			this.player = p;
+		/**
+		 * Create a PlayerContainer object to map queues to players
+		 * and vice-versa.
+		 * 
+		 * @param queue
+		 * @param player
+		 */
+		public PlayerContainer(String queue, Player player) {
+			this.queue = queue;
+			this.player = player;
 		}
 		
+		/**
+		 * Get the current queue name.
+		 * @return
+		 */
 		public String getQueue() {
 			return this.queue;
 		}
-		
-		public void setQueue(String queue) {
-			this.queue = queue;
-		}
 
+		/**
+		 * Get the current player object.
+		 * @return
+		 */
 		public Player getPlayer() {
 			return this.player;
 		}
-
-		public void setPlayer(Player player) {
-			this.player = player;
-		}
 	}
     
-    public Player getPlayerByQueue(String q) {
+    /**
+     * Get the player object from the queue name.
+     * @param queueName
+     * @return
+     */
+    public Player getPlayerByQueue(String queueName) {
     	for (int i = 0; i < players.size(); i++) {
     		String currentQueue = players.elementAt(i).getQueue();
-    		if (currentQueue.equals(q)) {
+    		if (currentQueue.equals(queueName)) {
     			return players.elementAt(i).getPlayer();
     		}
 		}
     	return null;
     }
     
-    public String getQueueByPlayerId(String pId) {
+    /**
+     * Get the queue object fomr the player id.
+     * @param playerId
+     * @return
+     */
+    public String getQueueByPlayerId(String playerId) {
     	for (int i = 0; i < players.size(); i++) {
     		String currentPid = players.elementAt(i).getPlayer().getId();
-    		if (currentPid.equals(pId)) {
+    		if (currentPid.equals(playerId)) {
     			return players.elementAt(i).getQueue();
     		}
 		}
@@ -108,10 +125,17 @@ public class EJBGameEngine {
 						int x = map.getInt("x");
 						int y = map.getInt("y");
 						MoveResult moveResult = move(playerId, x, y);
-						System.out.println("PlayerId: " + playerId + " moved to (" + x + ", " + y + "). Result: " + moveResult.toString());
-						// implement gameover logic here
 						opponentId = getOpponentId(playerId);
-						System.out.println("PlayerId: " + playerId + " vs. OpponentId: " + opponentId);
+						
+						Logger.LogInfo("PlayerId: " + playerId + " moved to (" + x + ", " + y + ") against " + opponentId + ". Result: " + moveResult.toString());
+						
+						// check if the game is over
+						if (moveResult == MoveResult.WIN) {
+							Logger.LogError("GAME OVER! " + playerId + " WINS THE GAME!");
+							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, x, y, GameResult.WIN);
+							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y, GameResult.LOSS);
+						}					
+						
 						msgUtil.sendIsHitMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, moveResult, x, y);
 						msgUtil.sendMoveNotifyMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y);
 						break;
@@ -130,12 +154,16 @@ public class EJBGameEngine {
 		}
 	}
 
+    /**
+     * 
+     * @throws NamingException
+     * @throws JMSException
+     */
 	public EJBGameEngine() throws NamingException, JMSException {
 		this.msgUtil = new JMSMsgUtils();
 		this.players = new Vector<PlayerContainer>(2);
-		QueueReceiver recv = msgUtil.getSession().createReceiver(
-				msgUtil.getGameEngineQueue());
-		recv.setMessageListener(new GameEngineListener());
+		QueueReceiver queueReceiver = msgUtil.getSession().createReceiver(this.msgUtil.getGameEngineQueue());
+		queueReceiver.setMessageListener(new GameEngineListener());
 		resetGame();
 	}
 
@@ -224,8 +252,8 @@ public class EJBGameEngine {
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
 				String currentPid = this.players.elementAt(i).getPlayer().getId();
-				if(currentPid.equals(pId)){
-					return this.players.elementAt(i).getPlayer().getOppBoard();
+				if(!currentPid.equals(pId)){
+					return this.players.elementAt(i).getPlayer().getMyBoard();
 				}
 			}
 		}
@@ -277,7 +305,7 @@ public class EJBGameEngine {
 	 */
 	public void resetGame() {
 		isGameActive = true;
-		players.clear();
+		this.players.clear();
 	}
 	
 	/***
@@ -294,12 +322,12 @@ public class EJBGameEngine {
 	 * @throws Exception
 	 */
     public static void main(String args[]) throws Exception {
-        System.out.println("Game Engine started at " + System.currentTimeMillis());
+    	Logger.LogInfo("Game Engine has been initialized.. Waiting for players..");
         EJBGameEngine engine = new EJBGameEngine();
         while (isGameActive) {
         	Thread.sleep(10000);
         }
         engine.closeConnections();
-        System.exit(0);
+        Logger.LogInfo("Game Engine is shutting down. Thank you for playing.");
     }
 }
