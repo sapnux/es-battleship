@@ -73,9 +73,9 @@ public class Board {
 	}
 
 	/**
-	 * Counts the number of hits. If the number of hits is wqual to the sum of
+	 * Counts the number of hits. If the number of hits is equal to the sum of
 	 * all ship sizes, then we can infer that the player has lost. This method
-	 * returns true if the current board has lost, true otherwise.
+	 * returns true if the current board has lost, false otherwise.
 	 * 
 	 * @return
 	 */
