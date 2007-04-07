@@ -57,11 +57,11 @@ public class EsbBattleWindow extends JFrame {
 		this.setTitle("ES Battleship");
 //		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);	
 		final JFrame localWindow = this;
-//		addWindowListener(new WindowAdapter() {
-//			public void windowClosing(WindowEvent e) {            	
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {            	
 //				try {
 //					mFController.disconnect();
-//					System.exit(0);
+				System.exit(0);
 //				} catch (Exception e1) {
 //					String tMsg = e1.getMessage();
 //					if (tMsg == null) {
@@ -71,8 +71,8 @@ public class EsbBattleWindow extends JFrame {
 //							"Error", JOptionPane.ERROR_MESSAGE);
 //					System.exit(-1);
 //				}            	
-//			}
-//		});
+			}
+		});
 		this.pack();
 	}
 

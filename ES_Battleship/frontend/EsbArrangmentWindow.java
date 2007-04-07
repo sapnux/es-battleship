@@ -171,8 +171,6 @@ public class EsbArrangmentWindow extends JFrame {
 					theClient = new EJBClient(mParams[0], mParams[1], mPlayerBoard);
 					tClientThread = new Thread(theClient);
 
-					//Initialize Game Play objects
-					//TODO move call to "connect" into frontendController
 					theFController = 
 						new EsbFrontendController(theClient);
 
@@ -215,7 +213,6 @@ public class EsbArrangmentWindow extends JFrame {
 				
 				if(!mShipSelection.isSelectionEmpty()){//(mSelectedShip != null){										
 					if(mNumClicks == 0){
-						//TODO create JUnit code to test
 						mSelectedShip = (CanDrawShip) mShipSelection.getSelectedValue();
 						mGrid1X = e.getX() / mCellSide;
 						mGrid1Y = e.getY() / mCellSide;
