@@ -66,7 +66,7 @@ public class Player extends Observable {
 	 * @return
 	 */
 	public GameResult getGameResult() {
-		return gameResult;
+		return this.gameResult;
 	}
 
 	/**
