@@ -14,8 +14,8 @@ public class BattleShip {
 	 */
 	public static void main(String[] args) {
 		
-		if (args.length != 3) {
-			System.err.println("Usage: BattleShip <server-ip-address> <server-port> <player-id>");
+		if (args.length != 2) {
+			System.err.println("Usage: BattleShip <queue name> <player-id>");
 			System.exit(-1);
 		}
 

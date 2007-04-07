@@ -57,23 +57,22 @@ public class EsbBattleWindow extends JFrame {
 		this.setTitle("ES Battleship");
 //		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);	
 		final JFrame localWindow = this;
-		addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {            	
-            	try {
-					mFController.disconnect();
-					System.exit(0);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					String tMsg = e1.getMessage();
-					if (tMsg == null) {
-						tMsg = new String("Could not disconnect.");
-					}
-					JOptionPane.showMessageDialog(localWindow, tMsg, 
-							"Error", JOptionPane.ERROR_MESSAGE);
-					System.exit(-1);
-				}            	
-            }
-        });
+//		addWindowListener(new WindowAdapter() {
+//			public void windowClosing(WindowEvent e) {            	
+//				try {
+//					mFController.disconnect();
+//					System.exit(0);
+//				} catch (Exception e1) {
+//					String tMsg = e1.getMessage();
+//					if (tMsg == null) {
+//						tMsg = new String("Could not disconnect.");
+//					}
+//					JOptionPane.showMessageDialog(localWindow, tMsg, 
+//							"Error", JOptionPane.ERROR_MESSAGE);
+//					System.exit(-1);
+//				}            	
+//			}
+//		});
 		this.pack();
 	}
 
@@ -151,13 +150,13 @@ public class EsbBattleWindow extends JFrame {
 			JOptionPane.showMessageDialog(this,
 					(GameResult.WIN == mFController.getGameResult() ) ? "You Win!" : "You Lose!", 
 							"End of Game", JOptionPane.INFORMATION_MESSAGE);
-			try {
-				mFController.disconnect();
-			} catch (Exception e) {							
-				JOptionPane.showMessageDialog(this, e.getMessage(), 
-						"Error", JOptionPane.ERROR_MESSAGE);
-				System.exit(-1);
-			}
+//			try {
+//				mFController.disconnect();
+//			} catch (Exception e) {							
+//				JOptionPane.showMessageDialog(this, e.getMessage(), 
+//						"Error", JOptionPane.ERROR_MESSAGE);
+//				System.exit(-1);
+//			}
 			System.exit(0);
 		}		
 	}

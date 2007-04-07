@@ -17,13 +17,13 @@ import backend.state.*;
  */
 public class EsbFrontendController implements Observer {
 
-	private IClient mClient;
+	private IEJBClient mClient;
 	private EsbBattleWindow mBattleWindow;
 	private Player mPlayer;
 	private List<CanDrawShip> mShipList;
 	
 	
-	public EsbFrontendController(IClient aClient) {
+	public EsbFrontendController(IEJBClient aClient) {
 		mClient = aClient;
 		mPlayer = mClient.getPlayer();
 		mPlayer.addObserver(this);
@@ -93,9 +93,9 @@ public class EsbFrontendController implements Observer {
 		return mPlayer.getGameResult();
 	}
 	
-	public void disconnect() throws Exception{
-		mClient.disconnect();
-	}
+//	public void disconnect() throws Exception{
+//		mClient.disconnect();
+//	}
 	
 	public void update(Observable o, Object obj) {
 		mBattleWindow.setTurn(mPlayer.isMyTurn());
