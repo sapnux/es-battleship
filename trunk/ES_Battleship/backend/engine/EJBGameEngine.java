@@ -134,6 +134,7 @@ public class EJBGameEngine {
 							Logger.LogError("GAME OVER! " + playerId + " WINS THE GAME!");
 							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, x, y, GameResult.WIN);
 							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y, GameResult.LOSS);
+							isGameActive = false;
 							break;
 						}
 						
@@ -209,7 +210,6 @@ public class EJBGameEngine {
 		if (oppBoard.isHit(x, y)) {
 			thisMovePlayer.getOppBoard().setHit(x, y);
 			if (thisMovePlayer.getOppBoard().hasLost()) {
-				isGameActive = false;
 				return MoveResult.WIN;
 			}
 			return MoveResult.HIT;
