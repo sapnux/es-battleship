@@ -52,7 +52,7 @@ public class SampleEJBClient implements Observer {
 
 		// check if the game is over
 		if (this.client.getPlayer().getGameResult() != GameResult.UNKNOWN) {
-			System.exit(0);
+			return;
 		}
 
 		// check if it is our turn; if true, make a move
