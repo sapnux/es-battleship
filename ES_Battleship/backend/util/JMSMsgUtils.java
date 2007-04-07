@@ -248,6 +248,7 @@ public class JMSMsgUtils {
 	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSRedelivered(false);
 	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
+	    msg.setJMSRedelivered(false);
 	    msg.setJMSReplyTo(getQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
