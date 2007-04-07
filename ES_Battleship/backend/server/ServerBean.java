@@ -1,7 +1,5 @@
 package backend.server;
 
-import java.util.logging.Logger;
-
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
@@ -11,6 +9,7 @@ import javax.jms.MessageListener;
 import javax.naming.NamingException;
 
 import backend.util.JMSMsgUtils;
+import backend.util.Logger;
 
 @MessageDriven(mappedName = "jms/Queue", activationConfig = {
 	 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue"),
@@ -18,34 +17,37 @@ import backend.util.JMSMsgUtils;
 })
 public class ServerBean implements MessageListener {
 	
-    private static final Logger logger = Logger.getLogger("ServerBean");
     private static JMSMsgUtils msgUtil;
     
+    /**
+     *  
+     * @throws NamingException
+     * @throws JMSException
+     */
     public ServerBean() throws NamingException, JMSException {
 		if (msgUtil == null) {
 			msgUtil = new JMSMsgUtils();
 		}
 	}
 
-    public void onMessage(Message inMessage) {
+    /**
+     * 
+     */
+    public void onMessage(Message message) {
         try {
-            if (inMessage instanceof MapMessage) {
-                MapMessage msg = (MapMessage) inMessage;
-                logger.info("ServerBean: " + msg.getJMSTimestamp() + " Type: " + msg.getString("header") + " FROM " + msg.getJMSReplyTo());
-                String destStr = msg.getString("destination");
-                msgUtil.forwardMessage(destStr, msg);
-                logger.info("Forwarded to: " + destStr);
+            if (message instanceof MapMessage) {
+                MapMessage mapMessage = (MapMessage) message;
+                String destination = mapMessage.getString("destination");
+                Logger.LogInfo("[ServerBean] Forwarding message type=" + mapMessage.getString("header") + " from " + mapMessage.getJMSReplyTo() + " to " + destination);
+                msgUtil.forwardMessage(destination, mapMessage);
             } else {
-                logger.warning("Message of wrong type: " + inMessage.getClass().getName());
+            	Logger.LogWarning("[ServerBean] Message Type Incorrect: " + message.getClass().getName());
             }
-        } catch (JMSException e) {
-            logger.severe("SimpleMessageBean.onMessage: JMSException: " + e.toString());
-            e.printStackTrace();
-        } catch (Throwable te) {
-            logger.severe("SimpleMessageBean.onMessage: Exception: " + te.toString());
-            te.printStackTrace();
+        } catch (JMSException ex) {
+        	Logger.LogError("[ServerBean] JMSException: " + ex.toString());
+        } catch (Throwable ex) {
+        	Logger.LogError("[ServerBean] Exception: " + ex.toString());
+        	Logger.LogError("[ServerBean] Stacktrace: " + ex.getStackTrace().toString());
         }
-    	
     }
-
 }

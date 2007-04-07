@@ -22,8 +22,8 @@ public class EJBClient implements IEJBClient, Runnable {
 	private boolean connected;
 	private JMSMsgUtils msgUtil;
 
-	public EJBClient(String queueName, String id, Board board) throws JMSException, NamingException {
-		this.player = new Player(id, board);
+	public EJBClient(String queueName, String playerId, Board board) throws JMSException, NamingException {
+		this.player = new Player(playerId, board);
 		this.msgUtil = new JMSMsgUtils();
 		this.queueName = queueName;
         QueueReceiver queueReceiver = this.msgUtil.getSession().createReceiver(this.msgUtil.getQueueByName(queueName));
@@ -39,8 +39,6 @@ public class EJBClient implements IEJBClient, Runnable {
 					return;
 				}
 				int header = Integer.parseInt(map.getString("header"));
-				Logger.LogInfo("[Header: " + header + "] Message Received");
-				
 				int x, y;
 				switch(header)
 				{
@@ -56,12 +54,12 @@ public class EJBClient implements IEJBClient, Runnable {
 						}
 						boolean isHit = map.getBoolean("isHit");
 						if (isHit) {
-							player.addMessage("You hit at: " + x + ", " + y);
-							player.addMessage("Your turn");
+							player.addMessage("Your strategic attack at [" + x + ", " + y + "] is a STRIKE!!");
+							player.addMessage("Attack again!");
 							player.getOppBoard().setHit(x, y);
 						} else {
-							player.addMessage("You missed at: " + x +", " + y);
-							player.addMessage("Opponent's turn");
+							player.addMessage("Your clumsy attack at [" + x +", " + y + "] was unsuccessful..");
+							player.addMessage("Your enemy is contemplating their attack. Please wait..");
 							player.getOppBoard().setMiss(x, y);
 						}
 						player.setMyTurn(isHit);
@@ -71,13 +69,13 @@ public class EJBClient implements IEJBClient, Runnable {
 						y = map.getInt("y");
 						if (player.getMyBoard().isHit(x, y)) {
 							player.getMyBoard().setHit(x, y);
-							player.addMessage("Opponent hit at: " + x + ", " + y);
-							player.addMessage("Opponent's turn");
+							player.addMessage("You've been hit at [" + x + ", " + y + "] by your enemy!");
+							player.addMessage("Your enemy is contemplating their attack. Please wait..");
 							player.setMyTurn(false);
 						} else {
 							player.getMyBoard().setMiss(x, y);
-							player.addMessage("Opponent missed at: " + x + ", " + y);
-							player.addMessage("Your turn");
+							player.addMessage("Your enemy's foolish attack at [" + x + ", " + y + "] missed..");
+							player.addMessage("Seize this opportunity and attack carefully..");
 							player.setMyTurn(true);
 						}
 						break;
@@ -85,15 +83,14 @@ public class EJBClient implements IEJBClient, Runnable {
 						x = map.getInt("x");
 						y = map.getInt("y");
 						GameResult result = GameResult.valueOf(map.getString("result"));
-						System.out.println("Game Result: " + result.toString());
 						if (player.isMyTurn()) {
 							player.getOppBoard().setHit(x, y);
-							player.addMessage("You hit at: " + x + ", " + y);
-							player.addMessage("[DONE] You have WON!");
+							player.addMessage("Your strategic attack at [" + x + ", " + y + "] is a STRIKE!!");
+							player.addMessage("--- GAME OVER. YOU ARE THE WINNER! ---");
 						} else {
 							player.getMyBoard().setHit(x, y);
-							player.addMessage("Opponent hit at: " + x + ", " + y);
-							player.addMessage("[DONE] You have LOST!");
+							player.addMessage("You've been hit at [" + x + ", " + y + "] by your enemy!");
+							player.addMessage("--- GAME OVER. YOU HAVE LOST! ---");
 						}
 						player.setGameResult(result);
 						player.setChanged();
@@ -102,6 +99,8 @@ public class EJBClient implements IEJBClient, Runnable {
 					case MsgHeader.ERROR:
 						String message = map.getString("errorMsg");
 						player.addMessage(message);
+						player.setChanged();
+						player.notifyObservers();
 						break;
 					case MsgHeader.READY:
 					case MsgHeader.MOVE_INFO:
