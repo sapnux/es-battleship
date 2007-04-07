@@ -1,6 +1,7 @@
 package backend.test.util;
 
 import junit.framework.TestCase;
+import backend.util.BackendException;
 
 public class BackendExceptionTest extends TestCase {
 
@@ -9,19 +10,64 @@ public class BackendExceptionTest extends TestCase {
 	}
 
 	public void testBackendException() {
-		fail("Not yet implemented");
+		try
+		{
+		throw new BackendException();
+		}
+		catch(BackendException ex) {
+			// do nothing, this is a pass
+		}
+		catch(Exception ex){
+			fail("The exception was not of type BackendException.");
+		}
 	}
 
 	public void testBackendExceptionString() {
-		fail("Not yet implemented");
+		String message = "This is a nice exception string";
+		try
+		{
+		throw new BackendException(message);
+		}
+		catch(BackendException ex) {
+			if(!ex.getMessage().equals(message)) {
+				fail("The BackendException message was not expected: " + message);
+			}
+		}
+		catch(Exception ex){
+			fail("The exception was not of type BackendException.");
+		}
 	}
 
 	public void testBackendExceptionThrowable() {
-		fail("Not yet implemented");
+		String message = "This is a nice exception string";
+		try
+		{
+		throw new BackendException(message);
+		}
+		catch(BackendException ex) {
+			if(!ex.getMessage().equals(message)) {
+				fail("The BackendException message was not expected: " + message);
+			}
+		}
+		catch(Exception ex){
+			fail("The exception was not of type BackendException.");
+		}
 	}
 
 	public void testBackendExceptionStringThrowable() {
-		fail("Not yet implemented");
+		String message = "This is a nice exception string";
+		try
+		{
+		throw new BackendException(message);
+		}
+		catch(BackendException ex) {
+			if(!ex.getMessage().equals(message)) {
+				fail("The BackendException message was not expected: " + message);
+			}
+		}
+		catch(Exception ex){
+			fail("The exception was not of type BackendException.");
+		}
 	}
 
 }

@@ -246,6 +246,7 @@ public class JMSMsgUtils {
 	public void sendGameOverMessage(String source, String dest, String pId, int x, int y, GameResult result) throws Exception {
 	    QueueSender sender = queueSession.createSender(this.getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSRedelivered(false);
 	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(getQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
@@ -287,7 +288,6 @@ public class JMSMsgUtils {
 	 * Stops and closes the current session and connection.
 	 */
 	public void stop() throws JMSException {
-		System.out.println("stopping everything");
 		queueConnection.stop();
 		queueSession.close();
 		queueConnection.close();
