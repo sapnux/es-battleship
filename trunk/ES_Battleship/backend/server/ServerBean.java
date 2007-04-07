@@ -47,33 +47,5 @@ public class ServerBean implements MessageListener {
         }
     	
     }
-    
-//    public String forwardMsg(MapMessage msg) throws JMSException, NamingException {
-//    	Queue sender = (Queue) msg.getJMSReplyTo();
-//	    String ret = "";
-//    	if (msg.getInt("header") == MsgHeader.READY) {
-//    		String pId = msg.getString("playerId");
-//    		if (playerQueues.get(0) == null) {
-//    			
-//    			
-//    			playerQueues.put(QueueNames.CLIENT_ONE, msg.getString("playerId"));
-//    		} else if (!playerQueues.containsKey(QueueNames.CLIENT_TWO)) {
-//    			playerQueues.put(QueueNames.CLIENT_TWO, msg.getString("playerId"));
-//    		} else {
-//    			msgUtil.sendErrorMessage(sender, pId, "Game is full.");
-//    			return msg.getJMSReplyTo().toString();
-//    		}
-//    		
-//    	}
-//    	
-//    	if (sender.toString().contains(".A") || sender.toString().contains(".B")) {
-//    		msgUtil.forwardMessage(msgUtil.getGameEngineQueue(), msg);
-//    	    ret = msgUtil.getGameEngineQueue().toString();
-//    	} else if (sender.toString().contains(".C")) {
-//    		
-//    	}
-//    	return ret;
-//    }
-
 
 }

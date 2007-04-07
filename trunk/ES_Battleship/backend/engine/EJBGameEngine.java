@@ -16,6 +16,7 @@ import backend.state.Board;
 import backend.state.Player;
 import backend.util.BackendException;
 import backend.util.JMSMsgUtils;
+import backend.util.Logger;
 
 public class EJBGameEngine {
 	
@@ -76,8 +77,12 @@ public class EJBGameEngine {
 		public void onMessage(Message msg) {
 			MapMessage map = (MapMessage) msg;
 			try {
+				if (!map.itemExists("header")) {
+					Logger.LogWarning("Header was null. Skipping..");
+					return;
+				}
 				String playerId = map.getString("playerId");
-				String opponentId = getOpponentId(playerId);
+				String opponentId = "";
 				String destination = map.getString("destination");
 				int header = Integer.parseInt(map.getString("header"));
 				
@@ -87,27 +92,36 @@ public class EJBGameEngine {
 				{
 					case MsgHeader.READY:
 						Board board = Board.deserialize(map.getString("board"));
-						board.print();
 						addPlayer(playerId, board);
-						while (!isGameReady()){
-							Thread.sleep(2000);
-							continue;
+						if (!isGameReady()) {
+							msgUtil.sendErrorMessage(destination, getQueueByPlayerId(playerId), playerId, "Waiting for an opponent.. Please wait..");
+							Logger.LogInfo("Waiting for " + (MAX_PLAYERS - players.size()) + " more player..");
+							break;
+						} else {
+							Logger.LogInfo("Game is READY!");
 						}
+						opponentId = getOpponentId(playerId);
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, isMyTurn(playerId));
+						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, isMyTurn(opponentId));
 						break;
 					case MsgHeader.MOVE_INFO:
 						int x = map.getInt("x");
 						int y = map.getInt("y");
 						MoveResult moveResult = move(playerId, x, y);
-						msgUtil.sendIsHitMessage(QueueNames.GAME_ENGINE, "look_up", playerId, moveResult);
-						msgUtil.sendMoveNotifyMessage(QueueNames.GAME_ENGINE, "look_up_other_player", opponentId, x, y);
+						System.out.println("PlayerId: " + playerId + " moved to (" + x + ", " + y + "). Result: " + moveResult.toString());
+						// implement gameover logic here
+						opponentId = getOpponentId(playerId);
+						System.out.println("PlayerId: " + playerId + " vs. OpponentId: " + opponentId);
+						msgUtil.sendIsHitMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, moveResult, x, y);
+						msgUtil.sendMoveNotifyMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y);
 						break;
+					// client side messages should not be used here
 					case MsgHeader.TURN_INFO:
 					case MsgHeader.MOVE_RESULT:
 					case MsgHeader.MOVE_NOTICE:
 					case MsgHeader.GAME_OVER:
 					case MsgHeader.ERROR:
-						throw new Exception("Header (" + header + ") was invalid.");
+						throw new BackendException("Header (" + header + ") was invalid.");
 				}
 				
 			} catch (Exception e) {
@@ -133,13 +147,17 @@ public class EJBGameEngine {
 	 */
 	public void addPlayer(String pId, Board board) throws Exception {
 		if (this.players.size() == MAX_PLAYERS) {
-			msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "Game full.");
+			//msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "Game full.");
 			throw new BackendException("Game full");
 		}
 
-		Player tmpPlayer = new Player(pId, board);
-		String tmpQueue = getQueueByPlayerId(pId);
-		this.players.add(new PlayerContainer(tmpQueue, tmpPlayer));
+		Player player = new Player(pId, board);
+		String queue = QueueNames.CLIENT_ONE;
+		if (this.players.size() == 1) {
+			queue = QueueNames.CLIENT_TWO;
+		}
+		this.players.add(new PlayerContainer(queue, player));
+		Logger.LogInfo("Adding " + pId + " to " + queue);
 	}
 	
 	/**

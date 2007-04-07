@@ -1,5 +1,6 @@
 package backend.util;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Queue;
@@ -11,6 +12,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import backend.constants.GameResult;
 import backend.constants.MoveResult;
 import backend.constants.MsgHeader;
 import backend.constants.QueueNames;
@@ -28,7 +30,7 @@ public class JMSMsgUtils {
         Object tmp = iniCtx.lookup("ConnectionFactory");
         qcf = (QueueConnectionFactory) tmp;
         queueConnection = qcf.createQueueConnection();
-        queueSession = queueConnection.createQueueSession(false, 0);
+        queueSession = queueConnection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
 		queueConnection.start();
 	}
 	
@@ -70,7 +72,7 @@ public class JMSMsgUtils {
 	 * @return
 	 * @throws NamingException
 	 */
-	private Queue lookupQueueByName(String destStr) throws NamingException {
+	public Queue lookupQueueByName(String destStr) throws NamingException {
 		if (destStr.equals(QueueNames.CLIENT_ONE)) {
 			return this.getClientOneQueue();
 		} else if (destStr.equals(QueueNames.CLIENT_TWO)) {
@@ -83,17 +85,7 @@ public class JMSMsgUtils {
 		return null;
 	}
 
-	//Messages from Clients to Server
-	public void sendTestMessage(String dest) throws Exception {
-	    QueueSender sender = queueSession.createSender(getServerQueue());
-	    MapMessage msg = queueSession.createMapMessage();
-	    msg.setInt("header", MsgHeader.READY);
-	    msg.setString("destination", dest);
-	    msg.setString("body", "test");
-	    sender.send(msg);
-	    sender.close();
-	}
-	
+	//Messages from Clients to Server	
 	/***
 	 * 
 	 * @param source
@@ -105,6 +97,7 @@ public class JMSMsgUtils {
 	public void sendReadyMessage(String source, String dest, String pId, Board myBoard) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.READY);
 	    msg.setString("destination", dest);
@@ -126,6 +119,7 @@ public class JMSMsgUtils {
 	public void sendMoveMessage (String source, String dest, String pId, int x, int y) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_INFO);
 	    msg.setString("destination", dest);
@@ -137,9 +131,10 @@ public class JMSMsgUtils {
 	}
 	
 	//Messages from GameEngine to Clients
-	public void sendIsHitMessage (String source, String dest, String pId, MoveResult moveResult) throws Exception {
+	public void sendIsHitMessage (String source, String dest, String pId, MoveResult moveResult, int x, int y) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_RESULT);
 	    msg.setString("destination", dest);
@@ -149,6 +144,8 @@ public class JMSMsgUtils {
 		} else {
 			msg.setBoolean("isHit", false);
 		}
+	    msg.setInt("x", x);
+	    msg.setInt("y", y);
 	    sender.send(msg);
 	    sender.close();
 	}
@@ -156,6 +153,7 @@ public class JMSMsgUtils {
 	public void sendTurnMessage (String source, String dest, String pId, boolean turn) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.TURN_INFO);
 	    msg.setString("destination", dest);
@@ -163,13 +161,13 @@ public class JMSMsgUtils {
 	    msg.setBoolean("isMyTurn", turn);
 	    sender.send(msg);
 	    sender.close();
-	    queueConnection.stop();
-	    queueConnection.close();
+
 	}
 	
 	public void sendMoveNotifyMessage(String source, String dest, String pId, int x, int y) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.MOVE_NOTICE);
 	    msg.setString("destination", dest);
@@ -178,20 +176,19 @@ public class JMSMsgUtils {
 	    msg.setInt("y", y);
 	    sender.send(msg);
 	    sender.close();
-	    queueConnection.stop();
-	    queueConnection.close();
 	}
 
-	public void sendGameOverMessage(String source, String dest, String pId, int x, int y, String result) throws Exception {
+	public void sendGameOverMessage(String source, String dest, String pId, int x, int y, GameResult result) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
 	    msg.setInt("header", MsgHeader.GAME_OVER);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
 	    msg.setInt("x", x);
 	    msg.setInt("y", y);
-	    msg.setString("result", result);
+	    msg.setObject("result", result);
 	    sender.send(msg);
 	    sender.close();
 	}
@@ -199,8 +196,9 @@ public class JMSMsgUtils {
 	public void sendErrorMessage(String source, String dest, String pId, String errorMsg) throws Exception {
 	    QueueSender sender = queueSession.createSender(getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
+	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 	    msg.setJMSReplyTo(lookupQueueByName(source));
-	    msg.setInt("header", MsgHeader.GAME_OVER);
+	    msg.setInt("header", MsgHeader.ERROR);
 	    msg.setString("destination", dest);
 	    msg.setString("playerId", pId);
 	    msg.setString("errorMsg", errorMsg);
@@ -214,6 +212,7 @@ public class JMSMsgUtils {
         queueConnection.stop();
         queueSession.close();
         queueConnection.close();
+        
 	}
 	
 	public QueueSession getSession() throws JMSException {
