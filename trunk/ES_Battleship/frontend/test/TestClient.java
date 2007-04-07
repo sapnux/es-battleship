@@ -45,7 +45,7 @@ public class TestClient implements IClient {
 		return mPlayer;
 	}
 
-	public boolean move(int x, int y) {
+	public void move(int x, int y) {
 		//TEST CODE
 		boolean rValue = false;			
 		if(x<=4){
@@ -66,7 +66,7 @@ public class TestClient implements IClient {
 		
 		//mPlayer.getMyBoard().setCoordinate(c, x, y);
 		
-		return rValue;
+		//return rValue;
 	}
 	
 	public void waitForTurn()

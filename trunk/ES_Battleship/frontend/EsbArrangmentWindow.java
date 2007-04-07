@@ -163,20 +163,21 @@ public class EsbArrangmentWindow extends JFrame {
 				//TODO create JUnit code to test
 				//TEST CODE
 //				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
-				Client theClient = new Client(mParams[2], mPlayerBoard);
-				Thread tClientThread = new Thread(theClient);
-				
-				//--------------------------
-				
-				//Initialize Game Play objects
-				//TODO move call to "connect" into frontendController
-				EsbFrontendController theFController = 
-						new EsbFrontendController(theClient);
-				
-				theFController.setShips(mShipList);
-				EsbBattleWindow theBWindow = new EsbBattleWindow(theFController);
+				EsbBattleWindow theBWindow = null;
+				EsbFrontendController theFController = null;
+				EJBClient theClient = null;
+				Thread tClientThread = null;
 				try {
-					theClient.connect(mParams[0], mParams[1]);
+					theClient = new EJBClient(mParams[0], mParams[1], mPlayerBoard);
+					tClientThread = new Thread(theClient);
+
+					//Initialize Game Play objects
+					//TODO move call to "connect" into frontendController
+					theFController = 
+						new EsbFrontendController(theClient);
+
+					theFController.setShips(mShipList);
+					theBWindow = new EsbBattleWindow(theFController);
 					tClientThread.start();
 				} catch (Exception e) {							
 					JOptionPane.showMessageDialog(mLocalWindow, e.getMessage(), 

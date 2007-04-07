@@ -50,9 +50,8 @@ public class EsbArrangementWindowTest extends TestCase {
 		mBoard = new Board();
 		mTestBoard = new Board();
 		mShipList = new ArrayList<CanDrawShip>();
-		mParams[0] = "127.0.0.1";
-		mParams[1] = "7555";
-		mParams[2] = "Test Player";
+		mParams[0] = "queue/A";
+		mParams[1] = "Test Player";
 		
 		final EsbArrangmentWindow tWindow = new EsbArrangmentWindow(
 				mBoard, mShipList, mParams);

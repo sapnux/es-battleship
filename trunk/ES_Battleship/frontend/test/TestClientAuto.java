@@ -1,11 +1,11 @@
 package frontend.test;
 
-import backend.client.IClient;
+import backend.client.*;
 import backend.state.Board;
 import backend.state.Coordinates;
 import backend.state.Player;
 
-public class TestClientAuto implements IClient {
+public class TestClientAuto implements IClient, IEJBClient {
 	private Board mBoard   = null;
 	private Player mPlayer = null;
 	
@@ -51,13 +51,10 @@ public class TestClientAuto implements IClient {
 	public void sendMessage(String aMessage){
 		mPlayer.addMessage(aMessage);
 	}
-
-	public boolean move(int x, int y) {
+	
+	public void move(int x, int y) {
 		mLastClick.setX(x);
 		mLastClick.setY(y);
-		
-		
-		return false;
 	}
 
 	public void signalReadiness() {
