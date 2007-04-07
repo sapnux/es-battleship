@@ -65,10 +65,10 @@ public class EJBGameEngine {
      * @return
      */
     public Player getPlayerByQueue(String queueName) {
-    	for (int i = 0; i < players.size(); i++) {
-    		String currentQueue = players.elementAt(i).getQueue();
+    	for (int i = 0; i < this.players.size(); i++) {
+    		String currentQueue = this.players.elementAt(i).getQueue();
     		if (currentQueue.equals(queueName)) {
-    			return players.elementAt(i).getPlayer();
+    			return this.players.elementAt(i).getPlayer();
     		}
 		}
     	return null;
@@ -80,10 +80,10 @@ public class EJBGameEngine {
      * @return
      */
     public String getQueueByPlayerId(String playerId) {
-    	for (int i = 0; i < players.size(); i++) {
-    		String currentPid = players.elementAt(i).getPlayer().getId();
+    	for (int i = 0; i < this.players.size(); i++) {
+    		String currentPid = this.players.elementAt(i).getPlayer().getId();
     		if (currentPid.equals(playerId)) {
-    			return players.elementAt(i).getQueue();
+    			return this.players.elementAt(i).getQueue();
     		}
 		}
     	return null;
@@ -103,7 +103,7 @@ public class EJBGameEngine {
 				String destination = map.getString("destination");
 				int header = Integer.parseInt(map.getString("header"));
 				
-				System.out.println("<< " + header + " message from " + playerId + " to " + destination);
+				//System.out.println("<< " + header + " message from " + playerId + " to " + destination);
 						
 				switch(header)
 				{
@@ -165,7 +165,7 @@ public class EJBGameEngine {
 		this.players = new Vector<PlayerContainer>(2);
 		QueueReceiver queueReceiver = msgUtil.getSession().createReceiver(this.msgUtil.getGameEngineQueue());
 		queueReceiver.setMessageListener(new GameEngineListener());
-		resetGame();
+		this.resetGame();
 	}
 
 	/**
@@ -220,20 +220,20 @@ public class EJBGameEngine {
 	}
 
 	/***
-	 * 
-	 * @param pId
+	 * Gets the opponent's playerId.
+	 * @param playerId
 	 * @return
 	 * @throws Exception
 	 */
-	private String getOpponentId(String pId) throws Exception {
+	private String getOpponentId(String playerId) throws Exception {
 		if (this.players.size() != MAX_PLAYERS) {
-			msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "No opponent found.");
+			msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
-				String currentPid = this.players.elementAt(i).getPlayer().getId();
-				if(!currentPid.equals(pId)){
-					return currentPid;
+				String opponentId = this.players.elementAt(i).getPlayer().getId();
+				if(!opponentId.equals(playerId)){
+					return opponentId;
 				}
 			}
 		}
@@ -248,7 +248,7 @@ public class EJBGameEngine {
 	 */
 	private Board getOpponentBoard(String pId) throws Exception {
 		if (this.players.size() != MAX_PLAYERS) {
-			msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "No opponent found.");
+			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
@@ -271,16 +271,16 @@ public class EJBGameEngine {
 	}
 
 	/**
-	 * Obtain Player reference for a given ID
+	 * Get the Player object by playerId.
 	 * 
-	 * @param pId
+	 * @param playerId
 	 *            Player's ID
 	 * @return Player reference
 	 */
-	private Player getPlayer(String pId) {
+	private Player getPlayer(String playerId) {
 		for (int i = 0; i < this.players.size(); i++) {
-			String currentPid = this.players.elementAt(i).getPlayer().getId();
-			if (currentPid.equals(pId)) {
+			String thisPlayerId = this.players.elementAt(i).getPlayer().getId();
+			if (thisPlayerId.equals(playerId)) {
 				return this.players.elementAt(i).getPlayer();
 			}
 		}
@@ -328,6 +328,7 @@ public class EJBGameEngine {
         while (isGameActive) {
         	Thread.sleep(10000);
         }
+        engine.players.clear();
         engine.closeConnections();
         Logger.LogInfo("Game Engine is shutting down. Thank you for playing.");
     }

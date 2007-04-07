@@ -8,10 +8,6 @@ public class MsgUtilsTest extends TestCase {
 		super.setUp();
 	}
 
-	public void testSendTestMessage() {
-		fail("Not yet implemented");
-	}
-
 	public void testSendReadyMessage() {
 		fail("Not yet implemented");
 	}
