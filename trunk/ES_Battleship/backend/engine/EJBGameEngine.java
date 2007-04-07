@@ -102,9 +102,6 @@ public class EJBGameEngine {
 				String opponentId = "";
 				String destination = map.getString("destination");
 				int header = Integer.parseInt(map.getString("header"));
-				
-				//System.out.println("<< " + header + " message from " + playerId + " to " + destination);
-						
 				switch(header)
 				{
 					case MsgHeader.READY:
@@ -131,7 +128,7 @@ public class EJBGameEngine {
 						
 						// check if the game is over
 						if (moveResult == MoveResult.WIN) {
-							Logger.LogError("GAME OVER! " + playerId + " WINS THE GAME!");
+							Logger.LogInfo("GAME OVER! " + playerId + " WINS THE GAME!");
 							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, x, y, GameResult.WIN);
 							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y, GameResult.LOSS);
 							isGameActive = false;
@@ -171,30 +168,30 @@ public class EJBGameEngine {
 
 	/**
 	 * Adds player to the game, if possible
-	 * @param pId New player's ID
+	 * @param playerId New player's ID
 	 * @param board New player's board
 	 * @throws Exception 
 	 */
-	public void addPlayer(String pId, Board board) throws Exception {
+	public void addPlayer(String playerId, Board board) throws Exception {
 		if (this.players.size() == MAX_PLAYERS) {
-			//msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "Game full.");
+			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "Sorry, but the game is full. There are already two people enjoying themselves.");
 			throw new BackendException("Game full");
 		}
 
-		Player player = new Player(pId, board);
+		Player player = new Player(playerId, board);
 		String queue = QueueNames.CLIENT_ONE;
 		if (this.players.size() == 1) {
 			queue = QueueNames.CLIENT_TWO;
 		}
 		this.players.add(new PlayerContainer(queue, player));
-		Logger.LogInfo("Adding " + pId + " to " + queue);
+		Logger.LogInfo("Adding " + playerId + " to " + queue);
 	}
 	
 	/**
 	 * Updates player's representation of opponent's board with a hit or a miss,
 	 * and returns whether the move was a hit or a miss
 	 * 
-	 * @param pId
+	 * @param playerId
 	 *            Player id
 	 * @param x
 	 *            x-coordinate of the move
@@ -203,9 +200,9 @@ public class EJBGameEngine {
 	 * @return true if move is a hit
 	 * @throws Exception 
 	 */
-	public MoveResult move(String pId, int x, int y) throws Exception {
-		Board oppBoard = getOpponentBoard(pId);
-		Player thisMovePlayer = getPlayer(pId);
+	public MoveResult move(String playerId, int x, int y) throws Exception {
+		Board oppBoard = getOpponentBoard(playerId);
+		Player thisMovePlayer = getPlayer(playerId);
 
 		if (oppBoard.isHit(x, y)) {
 			thisMovePlayer.getOppBoard().setHit(x, y);
@@ -227,7 +224,7 @@ public class EJBGameEngine {
 	 */
 	private String getOpponentId(String playerId) throws Exception {
 		if (this.players.size() != MAX_PLAYERS) {
-			msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "No opponent found.");
+			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
@@ -294,6 +291,10 @@ public class EJBGameEngine {
 	 * @return true if player's turn, false otherwise.
 	 */
 	public boolean isMyTurn(String playerId) {
+		if (playerId == null || this.players.size() == 0) {
+			return false;
+		}
+
 		if (playerId.equals(this.players.elementAt(0).getPlayer().getId())) {
 			return true;
 		}
