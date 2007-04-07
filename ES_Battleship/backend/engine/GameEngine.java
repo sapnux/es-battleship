@@ -1,7 +1,5 @@
 package backend.engine;
 
-import java.util.Map;
-
 import backend.constants.MoveResult;
 import backend.state.Board;
 import backend.state.Player;
@@ -10,8 +8,6 @@ public class GameEngine {
 	
 	private Player player1 = null;
 	private Player player2 = null;
-	String whoMoves = null;
-	private Map queueMap;
 	
 	public GameEngine() {
 		resetGame();
@@ -23,10 +19,10 @@ public class GameEngine {
 	 * @param board New player's board
 	 */
 	public void addPlayer(String pId, Board board) {
-		if (player1 == null) {
-			player1 = new Player(pId, board);
-		} else if (player2 == null) {
-			player2 = new Player(pId, board);
+		if (this.player1 == null) {
+			this.player1 = new Player(pId, board);
+		} else if (this.player2 == null) {
+			this.player2 = new Player(pId, board);
 		} else {
 			throw new RuntimeException("Game full");
 		}
@@ -62,10 +58,10 @@ public class GameEngine {
 	 * @return revealed board of the opponent
 	 */
 	private Board getOpponentBoard(String pId) {
-		if (pId.equals(player1.getId())) {
-			return player2.getMyBoard();
-		} else if (pId.equals(player2.getId())){
-			return player1.getMyBoard();
+		if (pId.equals(this.player1.getId())) {
+			return this.player2.getMyBoard();
+		} else if (pId.equals(this.player2.getId())){
+			return this.player1.getMyBoard();
 		} else {
 			throw new RuntimeException("No such player");
 		}
@@ -73,12 +69,11 @@ public class GameEngine {
 
 	/**
 	 * Determines if both players are connected and initialized
+	 * 
 	 * @return true if both players are connected and initialized
 	 */
 	public boolean isGameReady() {
-//		 TODO Auto-generated method stub
-//		return true;
-		return player1 != null &&player2 != null;
+		return this.player1 != null && this.player2 != null;
 	}
 
 	/**
@@ -87,21 +82,30 @@ public class GameEngine {
 	 * @return Player reference
 	 */
 	private Player getPlayer(String pId) {
-		if (pId.equals(player1.getId())) {
-			return player1;
-		} else if (pId.equals(player2.getId())){
-			return player2;
+		if (pId.equals(this.player1.getId())) {
+			return this.player1;
+		} else if (pId.equals(this.player2.getId())){
+			return this.player2;
 		} else {
 			throw new RuntimeException("No such player");
 		}
 	}
 	
+	/**
+	 * Get whether it is the given playerId's turn.
+	 * @param playerId
+	 * @return
+	 */
 	public boolean isMyTurn(String playerId) {
-		return playerId.equals(player1.getId());
+		return playerId.equals(this.player1.getId());
 	}
 
+	/**
+	 * Resets the game.
+	 *
+	 */
 	public void resetGame() {
-		player1=null;
-		player2=null;
+		this.player1 = null;
+		this.player2 = null;
 	}
 }

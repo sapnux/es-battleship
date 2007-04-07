@@ -2,23 +2,41 @@ package backend.util;
 
 public class BackendException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 *
+	 */
 	public BackendException() {
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 
+	 * @param message
+	 */
 	public BackendException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 
+	 * @param cause
+	 */
 	public BackendException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 
+	 * @param message
+	 * @param cause
+	 */
 	public BackendException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

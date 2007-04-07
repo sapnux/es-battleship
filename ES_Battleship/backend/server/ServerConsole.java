@@ -26,6 +26,10 @@ import javax.swing.JTextArea;
 
 public class ServerConsole extends JFrame implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Container mainPanel;
 	JScrollPane logScrollPane;
 	protected JTextArea logArea;
