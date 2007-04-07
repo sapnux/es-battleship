@@ -134,7 +134,8 @@ public class EJBGameEngine {
 							Logger.LogError("GAME OVER! " + playerId + " WINS THE GAME!");
 							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, x, y, GameResult.WIN);
 							msgUtil.sendGameOverMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y, GameResult.LOSS);
-						}					
+							break;
+						}
 						
 						msgUtil.sendIsHitMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, moveResult, x, y);
 						msgUtil.sendMoveNotifyMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y);

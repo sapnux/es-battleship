@@ -254,7 +254,6 @@ public class JMSMsgUtils {
 	    msg.setInt("x", x);
 	    msg.setInt("y", y);
 	    msg.setString("result", result.toString());
-	    System.out.println("Game Result: " + result.toString());
 	    sender.send(msg);
 	    sender.close();
 	}
