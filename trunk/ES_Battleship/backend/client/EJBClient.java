@@ -114,6 +114,9 @@ public class EJBClient implements IEJBClient, Runnable {
 		}
 	}
 	
+    /**
+     * 
+     */
     public void run() {
 		signalReadiness();
 		
@@ -130,6 +133,9 @@ public class EJBClient implements IEJBClient, Runnable {
 		}
 	}
 
+    /**
+     * Sends the 'ready' message to the server. 
+     */
 	public void signalReadiness() {
 		try {
 			msgUtil.sendReadyMessage(this.queueName, QueueNames.GAME_ENGINE, this.player.getId(), this.player.getMyBoard());
@@ -154,14 +160,14 @@ public class EJBClient implements IEJBClient, Runnable {
 	}
 
 	/**
-	 * 
+	 * @deprecated Do not use this in the EJB component framework.
 	 */
 	public void connect(String server, String port) {
 		// do nothing
 	}
 	
 	/**
-	 * 
+	 * @deprecated Do not use this in the EJB component framework.
 	 */
 	public void disconnect() {
 		// do nothing

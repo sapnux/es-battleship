@@ -63,8 +63,8 @@ public class EsbFrontendController implements Observer {
 		mShipList = shipList;
 	}
 	
-	public boolean makeMove(int x, int y) {
-		return mClient.move(x, y);
+	public void makeMove(int x, int y) {
+		mClient.move(x, y);
 	}
 	
 	/**

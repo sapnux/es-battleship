@@ -15,7 +15,7 @@ public class Server {
 	protected static int com_port;  //port for the server to listen/respond on
 	protected static ServerConsole serverConsole;
 	protected static GameEngine gameEngine;
-	protected static HashMap outputters = new HashMap(2);
+	protected static HashMap<String, PrintWriter> outputters = new HashMap<String, PrintWriter>(2);
 	
 	public static void main (String args[]) {
 		com_port = Integer.parseInt(args[0]);
