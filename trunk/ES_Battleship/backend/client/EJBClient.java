@@ -154,6 +154,20 @@ public class EJBClient implements IEJBClient, Runnable {
 	}
 
 	/**
+	 * 
+	 */
+	public void connect(String server, String port) {
+		// do nothing
+	}
+	
+	/**
+	 * 
+	 */
+	public void disconnect() {
+		// do nothing
+	}
+	
+	/**
 	 * Returns the current instance of the player.
 	 * 
 	 * @see backend.IEJBClient#getBoard()

@@ -99,7 +99,7 @@ public class Client implements IClient, Runnable {
 	 * 
 	 * @see backend.IClient#move(int, int)
 	 */
-	public boolean move(int x, int y) {
+	public void move(int x, int y) {
 		boolean isHit = false;
 		try {
 			MsgUtils.sendMoveMessage(out, this.player.getId(), x, y);
@@ -134,7 +134,6 @@ public class Client implements IClient, Runnable {
 			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
-		return isHit;
 	}
 
 	/**
