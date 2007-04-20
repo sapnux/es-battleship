@@ -1,5 +1,6 @@
 package backend.constants;
 
+//TODO: should be an enum
 public abstract class MsgHeader {
 	public final static int READY = 0;
 	public final static int MOVE_INFO= 1;
