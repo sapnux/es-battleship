@@ -75,7 +75,7 @@ public class EJBGameEngine {
     }
     
     /**
-     * Get the queue object fomr the player id.
+     * Get the queue object from the player id.
      * @param playerId
      * @return
      */
@@ -92,6 +92,7 @@ public class EJBGameEngine {
     public class GameEngineListener implements MessageListener {
 
 		public void onMessage(Message msg) {
+			//TODO: ensure msg is a MapMessage
 			MapMessage map = (MapMessage) msg;
 			try {
 				if (!map.itemExists("header")) {
@@ -114,6 +115,7 @@ public class EJBGameEngine {
 						} else {
 							Logger.LogInfo("Game is READY!");
 						}
+						//TODO: move outside of switch
 						opponentId = getOpponentId(playerId);
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, isMyTurn(playerId));
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, isMyTurn(opponentId));
@@ -122,6 +124,7 @@ public class EJBGameEngine {
 						int x = map.getInt("x");
 						int y = map.getInt("y");
 						MoveResult moveResult = move(playerId, x, y);
+						//TODO: move outside of switch
 						opponentId = getOpponentId(playerId);
 						
 						Logger.LogInfo("PlayerId: " + playerId + " moved to (" + x + ", " + y + ") against " + opponentId + ". Result: " + moveResult.toString());
@@ -135,6 +138,7 @@ public class EJBGameEngine {
 							break;
 						}
 						
+						//TODO: change to sendMoveResultMessage
 						msgUtil.sendIsHitMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, moveResult, x, y);
 						msgUtil.sendMoveNotifyMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y);
 						break;
@@ -223,6 +227,7 @@ public class EJBGameEngine {
 	 * @throws Exception
 	 */
 	private String getOpponentId(String playerId) throws Exception {
+		//TODO: Should be < MAX_PLAYERS
 		if (this.players.size() != MAX_PLAYERS) {
 			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
@@ -244,6 +249,7 @@ public class EJBGameEngine {
 	 * @throws Exception 
 	 */
 	private Board getOpponentBoard(String pId) throws Exception {
+//		TODO: Should be < MAX_PLAYERS
 		if (this.players.size() != MAX_PLAYERS) {
 			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
@@ -291,6 +297,7 @@ public class EJBGameEngine {
 	 * @return true if player's turn, false otherwise.
 	 */
 	public boolean isMyTurn(String playerId) {
+		//TODO: this.players.size() < 2
 		if (playerId == null || this.players.size() == 0) {
 			return false;
 		}
@@ -306,6 +313,7 @@ public class EJBGameEngine {
 	 *
 	 */
 	public void resetGame() {
+		//TODO: reverse order of following statements
 		isGameActive = true;
 		this.players.clear();
 	}

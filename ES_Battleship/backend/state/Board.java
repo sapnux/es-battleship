@@ -35,8 +35,9 @@ public class Board {
 	 * 
 	 * @param x
 	 * @param y
+	 * @throws BackendException 
 	 */
-	public void setHit(int x, int y) {
+	public void setHit(int x, int y) throws BackendException {
 		setCoordinate(Constants.BOARD_HIT, x, y);
 	}
 
@@ -45,8 +46,9 @@ public class Board {
 	 * 
 	 * @param x
 	 * @param y
+	 * @throws BackendException 
 	 */
-	public void setMiss(int x, int y) {
+	public void setMiss(int x, int y) throws BackendException {
 		setCoordinate(Constants.BOARD_MISS, x, y);
 	}
 
@@ -57,6 +59,7 @@ public class Board {
 	 * @param y
 	 * @return
 	 */
+	//TODO: possible refactoring candidate
 	public boolean isHit(int x, int y) {
 		if (this.board[x][y] == Constants.BOARD_HIT) {
 			return true;
@@ -95,9 +98,17 @@ public class Board {
 	 * @param c
 	 * @param x
 	 * @param y
+	 * @throws BackendException 
 	 */
-	public void setCoordinate(char c, int x, int y) {
+	public void setCoordinate(char c, int x, int y) throws BackendException {
+		validateCoordinates(x, y);
 		this.board[x][y] = c;
+	}
+
+	private void validateCoordinates(int x, int y) throws BackendException {
+		if (x > this.board.length || y > this.board.length) {
+			throw new BackendException("Coordinate out of range.");
+		}
 	}
 
 	/**
@@ -106,8 +117,10 @@ public class Board {
 	 * @param x
 	 * @param y
 	 * @return character at coordinates x, y
+	 * @throws BackendException 
 	 */
-	public char getCoordinate(int x, int y) {
+	public char getCoordinate(int x, int y) throws BackendException {
+		validateCoordinates(x, y);
 		return this.board[x][y];
 	}
 
@@ -116,10 +129,20 @@ public class Board {
 	 * 
 	 * @param ship
 	 * @return
+	 * @throws BackendException 
 	 */
-	public List<Coordinates> getShipCoordinates(IShip ship) {
+	public List<Coordinates> getShipCoordinates(IShip ship) throws BackendException {
+		nullCheck(ship);
 		return getCoordinatesByChar(ship.getSymbol());
 	}
+
+	//TODO: move this method to more accessible location
+	private void nullCheck(Object obj) throws BackendException {
+		if (obj == null) {
+			throw new BackendException("Some object instance is null.");
+		}
+	}
+	
 
 	/**
 	 * Returns a list of MISSED coordinates on the board.
@@ -187,6 +210,7 @@ public class Board {
 	 */
 	public void add(IShip ship, Coordinates coordinates, Orientation orientation)
 			throws BackendException {
+		nullCheck(coordinates);
 		add(ship, coordinates.getX(), coordinates.getY(), orientation);
 	}
 
@@ -202,18 +226,20 @@ public class Board {
 	 */
 	public void add(IShip ship, int x, int y, Orientation orientation)
 			throws BackendException {
-
+		nullCheck(ship);
+		nullCheck(orientation);
+		
 		this.validate(ship, x, y, orientation);
 
 		if (orientation.equals(Orientation.HORIZONTAL)) {
 			// place ship horizontally
 			for (int i = x; i < x + ship.getSize(); i++) {
-				this.board[i][y] = ship.getSymbol();
+				this.board[i][y] = ship.getSymbol(); //TODO: use setCoordinate instead
 			}
 		} else {
 			// place ship vertically
 			for (int i = y; i < y + ship.getSize(); i++) {
-				this.board[x][i] = ship.getSymbol();
+				this.board[x][i] = ship.getSymbol(); //TODO: use setCoordinate instead
 			}
 		}
 	}
@@ -283,8 +309,10 @@ public class Board {
 	 * 
 	 * @param myBoard
 	 * @param oppBoard
+	 * @throws BackendException 
 	 */
-	public static void print(Board myBoard, Board oppBoard) {
+	//TODO: null defend
+	public static void print(Board myBoard, Board oppBoard) throws BackendException {
 		System.out.println("--- My Board --|-- Opp Board ---");
 		System.out.println("  0123456789   |   0123456789");
 		for (int y = 0; y < myBoard.length() && y < oppBoard.length(); y++) {
@@ -308,10 +336,15 @@ public class Board {
 		if (obj == null) {
 			return false;
 		}
+		//TODO: possible ClassCastException here
 		Board tmpBoard = (Board) obj;
 		for (int y = 0; y < this.board.length; y++) {
 			for (int x = 0; x < this.board.length; x++) {
-				if (this.board[x][y] != tmpBoard.getCoordinate(x, y)) {
+				try {
+					if (this.board[x][y] != tmpBoard.getCoordinate(x, y)) {
+						return false;
+					}
+				} catch (BackendException e) {
 					return false;
 				}
 			}
@@ -337,8 +370,10 @@ public class Board {
 	 * 
 	 * @param string
 	 * @return
+	 * @throws BackendException 
 	 */
-	public static Board deserialize(String string) {
+	//TODO: null defend
+	public static Board deserialize(String string) throws BackendException {
 		Board board = new Board();
 		int strCursor = 0;
 		for (int y = 0; y < board.length(); y++) {

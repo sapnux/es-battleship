@@ -29,6 +29,7 @@ public class Player extends Observable {
 	/**
 	 * Calls the setChanged() method on Observable.
 	 */
+	//TODO: add notifyObservers() invocation
 	public void setChanged() {
 		super.setChanged();
 	}
