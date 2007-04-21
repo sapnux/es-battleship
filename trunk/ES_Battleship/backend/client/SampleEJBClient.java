@@ -46,7 +46,12 @@ public class SampleEJBClient implements Observer {
 	 */
 	public void update(Observable o, Object obj) {
 		// output some pretty board diagrams
-		Board.print(this.client.getPlayer().getMyBoard(), this.client.getPlayer().getOppBoard());
+		try {
+			Board.print(this.client.getPlayer().getMyBoard(), this.client.getPlayer().getOppBoard());
+		} catch (BackendException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.client.getPlayer().printMessages();
 		this.client.getPlayer().resetMessages();
 

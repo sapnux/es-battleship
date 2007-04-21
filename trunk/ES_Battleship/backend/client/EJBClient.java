@@ -94,7 +94,6 @@ public class EJBClient implements IEJBClient, Runnable {
 						}
 						player.setGameResult(result);
 						player.setChanged();
-						player.notifyObservers();
 						break;
 					case MsgHeader.ERROR:
 						String message = map.getString("errorMsg");

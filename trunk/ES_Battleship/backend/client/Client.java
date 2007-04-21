@@ -12,6 +12,7 @@ import javax.net.SocketFactory;
 import backend.constants.GameResult;
 import backend.state.Board;
 import backend.state.Player;
+import backend.util.BackendException;
 import backend.util.Logger;
 import backend.util.MsgUtils;
 
@@ -132,6 +133,9 @@ public class Client implements IClient, Runnable {
 		} catch (IOException e) {
 			Logger.LogError(e.getMessage());
 			e.printStackTrace();
+		} catch (BackendException e) {
+			Logger.LogError(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -183,11 +187,13 @@ public class Client implements IClient, Runnable {
 					this.player.setGameResult(GameResult.LOSS);
 					this.player.addMessage("[DONE] You have LOST!");
 					this.player.setChanged();
-					this.player.notifyObservers();
 					break;
 				}
 			}
 		} catch (IOException e) {
+			Logger.LogError(e.getMessage());
+			e.printStackTrace();
+		} catch (BackendException e) {
 			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}

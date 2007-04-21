@@ -43,7 +43,12 @@ public class SampleClient implements Observer {
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
 	public void update(Observable o, Object obj) {
-		Board.print(cl.getPlayer().getMyBoard(), cl.getPlayer().getOppBoard());
+		try {
+			Board.print(cl.getPlayer().getMyBoard(), cl.getPlayer().getOppBoard());
+		} catch (BackendException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		cl.getPlayer().printMessages();
 		cl.getPlayer().resetMessages();
 
