@@ -46,7 +46,7 @@ public class SampleClient implements Observer {
 		try {
 			Board.print(cl.getPlayer().getMyBoard(), cl.getPlayer().getOppBoard());
 		} catch (BackendException e) {
-			// TODO Auto-generated catch block
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 		cl.getPlayer().printMessages();
