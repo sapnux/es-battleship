@@ -120,7 +120,7 @@ public class EsbBattleWindowTest extends TestCase {
 	}
 	
 	public void testEnableDisable(){
-		for(int i=0; i<500; i++){
+		for(int i=0; i<10; i++){
 			mClient.setMyTurn(false);
 			mClient.clearLastClick();
 			Mouse.doDoubleClickInRectangle(mOpponentGrid, 

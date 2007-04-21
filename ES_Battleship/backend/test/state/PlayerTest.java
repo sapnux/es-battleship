@@ -100,6 +100,8 @@ public class PlayerTest extends TestCase {
 		if (this.player.getMessages().size() != 2) {
 			fail("addMessage() did not work.");
 		}
+		//check results in console
+		this.player.printMessages();
 	}
 
 	public void testResetMessages() {

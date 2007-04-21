@@ -28,9 +28,13 @@ public class BoardTest extends TestCase {
 	public void testSetHit() {
 		for (int y = 0; y < this.board.length(); y++) {
 			for (int x = 0; x < this.board.length(); x++) {
-				this.board.setHit(x, y);
-				assertEquals("Hit did not register", Constants.BOARD_HIT,
-						this.board.getCoordinate(x, y));
+				try {
+					this.board.setHit(x, y);
+					assertEquals("Hit did not register", Constants.BOARD_HIT,
+							this.board.getCoordinate(x, y));
+				} catch (BackendException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -38,9 +42,13 @@ public class BoardTest extends TestCase {
 	public void testSetMiss() {
 		for (int y = 0; y < this.board.length(); y++) {
 			for (int x = 0; x < this.board.length(); x++) {
-				this.board.setMiss(x, y);
-				assertEquals("Miss did not register", Constants.BOARD_MISS,
-						this.board.getCoordinate(x, y));
+				try {
+					this.board.setMiss(x, y);
+					assertEquals("Miss did not register", Constants.BOARD_MISS,
+							this.board.getCoordinate(x, y));
+				} catch (BackendException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -68,7 +76,11 @@ public class BoardTest extends TestCase {
 		//Make 17 HIT moves
 		for (int i=1; i<=17; i++) {
 			Coordinates tmpCoords = makeMove(tmpBoard);
-			tmpBoard.setHit(tmpCoords.getX(), tmpCoords.getY());
+			try {
+				tmpBoard.setHit(tmpCoords.getX(), tmpCoords.getY());
+			} catch (BackendException e) {
+				e.printStackTrace();
+			}
 		}
 		assertEquals("Losing condition not determined correctly", true, tmpBoard.hasLost());
 	}
@@ -76,8 +88,12 @@ public class BoardTest extends TestCase {
 	public void testSetCoordinate() {
 		for (int y = 0; y < this.board.length(); y++) {
 			for (int x = 0; x < this.board.length(); x++) {
-				this.board.setCoordinate('!', x, y);
-				assertEquals('!', this.board.getCoordinate(x, y));
+				try {
+					this.board.setCoordinate('!', x, y);
+					assertEquals('!', this.board.getCoordinate(x, y));
+				} catch (BackendException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -86,19 +102,27 @@ public class BoardTest extends TestCase {
 		Board tmpBoard = new Board();
 		for (int y = 0; y < tmpBoard.length(); y++) {
 			for (int x = 0; x < tmpBoard.length(); x++) {
-				assertEquals(Constants.BOARD_EMPTY, tmpBoard.getCoordinate(x, y));
+				try {
+					assertEquals(Constants.BOARD_EMPTY, tmpBoard.getCoordinate(x, y));
+				} catch (BackendException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	public void testGetShipCoordinates() {
-		List<Coordinates> list = board.getShipCoordinates(Ships.getAircraftCarrier());
-		for (int i=0; i<list.size(); i++) {
-			Coordinates coordinates = list.get(i);
-			int x = coordinates.getX();
-			int y = coordinates.getY();
-			assertEquals("Ship not at coordinates", Ships.getAircraftCarrier().getSymbol(), 
-					this.board.getCoordinate(x, y));
+		try {
+			List<Coordinates> list = board.getShipCoordinates(Ships.getAircraftCarrier());
+			for (int i=0; i<list.size(); i++) {
+				Coordinates coordinates = list.get(i);
+				int x = coordinates.getX();
+				int y = coordinates.getY();
+				assertEquals("Ship not at coordinates", Ships.getAircraftCarrier().getSymbol(), 
+						this.board.getCoordinate(x, y));
+			}
+		} catch (BackendException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -107,7 +131,11 @@ public class BoardTest extends TestCase {
 		Board tmpBoard = new Board();
 		for (int i=1; i<=15; i++) {
 			Coordinates tmpCoords = makeMove(tmpBoard);
-			tmpBoard.setMiss(tmpCoords.getX(), tmpCoords.getY());
+			try {
+				tmpBoard.setMiss(tmpCoords.getX(), tmpCoords.getY());
+			} catch (BackendException e) {
+				e.printStackTrace();
+			}
 		}
 		List<Coordinates> list = tmpBoard.getAllMissedCoordinates();
 		assertEquals(15, list.size());
@@ -115,7 +143,11 @@ public class BoardTest extends TestCase {
 			Coordinates coordinates = list.get(index);
 			int x = coordinates.getX();
 			int y = coordinates.getY();
-			assertEquals(Constants.BOARD_MISS, tmpBoard.getCoordinate(x, y));
+			try {
+				assertEquals(Constants.BOARD_MISS, tmpBoard.getCoordinate(x, y));
+			} catch (BackendException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -124,7 +156,11 @@ public class BoardTest extends TestCase {
 		Board tmpBoard = new Board();
 		for (int i=1; i<=15; i++) {
 			Coordinates tmpCoords = makeMove(tmpBoard);
-			tmpBoard.setHit(tmpCoords.getX(), tmpCoords.getY());
+			try {
+				tmpBoard.setHit(tmpCoords.getX(), tmpCoords.getY());
+			} catch (BackendException e) {
+				e.printStackTrace();
+			}
 		}
 		List<Coordinates> list = tmpBoard.getAllHitCoordinates();
 		assertEquals(15, list.size());
@@ -132,7 +168,11 @@ public class BoardTest extends TestCase {
 			Coordinates coordinates = list.get(index);
 			int x = coordinates.getX();
 			int y = coordinates.getY();
-			assertEquals(Constants.BOARD_HIT, tmpBoard.getCoordinate(x, y));
+			try {
+				assertEquals(Constants.BOARD_HIT, tmpBoard.getCoordinate(x, y));
+			} catch (BackendException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -144,7 +184,11 @@ public class BoardTest extends TestCase {
 			Coordinates coordinates = list.get(index);
 			int x = coordinates.getX();
 			int y = coordinates.getY();
-			assertEquals(Constants.BOARD_EMPTY, tmpBoard.getCoordinate(x, y));
+			try {
+				assertEquals(Constants.BOARD_EMPTY, tmpBoard.getCoordinate(x, y));
+			} catch (BackendException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
