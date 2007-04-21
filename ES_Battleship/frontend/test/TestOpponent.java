@@ -5,6 +5,7 @@ import java.util.Random;
 import backend.constants.Constants;
 import backend.constants.GameResult;
 import backend.state.*;
+import backend.util.BackendException;
 
 public class TestOpponent implements Runnable {
 
@@ -37,7 +38,11 @@ public class TestOpponent implements Runnable {
 				tRandXCoord = tRandGen.nextInt(10);
 				tRandYCoord = tRandGen.nextInt(10);
 
-				tCellValue = tPlayerBoard.getCoordinate(tRandXCoord, tRandYCoord);
+				try {
+					tCellValue = tPlayerBoard.getCoordinate(tRandXCoord, tRandYCoord);
+				} catch (BackendException e) {
+					e.printStackTrace();
+				}
 				if ((Constants.BOARD_HIT  == tCellValue) ||
 					(Constants.BOARD_MISS == tCellValue)	) {
 					tValidMove = false;
@@ -46,15 +51,20 @@ public class TestOpponent implements Runnable {
 				}
 			}
 
-			if (Constants.BOARD_EMPTY == tCellValue) {	
-				tPlayerBoard.setMiss(tRandXCoord, tRandYCoord);
-				mPlayer.addMessage("Miss at " + tRandXCoord + ", " + tRandYCoord);
-				rValue = true;
-			} else {
-				tPlayerBoard.setHit(tRandXCoord, tRandYCoord);
-				mPlayer.addMessage("Hit at " + tRandXCoord + ", " + tRandYCoord);				
-				rValue = false;			
+			try {
+				if (Constants.BOARD_EMPTY == tCellValue) {	
+					tPlayerBoard.setMiss(tRandXCoord, tRandYCoord);
+					mPlayer.addMessage("Miss at " + tRandXCoord + ", " + tRandYCoord);
+					rValue = true;
+				} else {
+					tPlayerBoard.setHit(tRandXCoord, tRandYCoord);
+					mPlayer.addMessage("Hit at " + tRandXCoord + ", " + tRandYCoord);				
+					rValue = false;			
+				}
+			} catch (BackendException e) {
+				e.printStackTrace();
 			}
+			
 //			mMovesTillEndGame--;
 			if (5 <= tPlayerBoard.getAllMissedCoordinates().size()) {
 				mPlayer.setGameResult(GameResult.WIN);
