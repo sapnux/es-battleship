@@ -126,7 +126,6 @@ public class Client implements IClient, Runnable {
 				this.player.setGameResult(GameResult.WIN);
 				this.player.addMessage("[DONE] You are the WINNER!");
 				this.player.setChanged();
-				this.player.notifyObservers();
 				break;
 			}
 

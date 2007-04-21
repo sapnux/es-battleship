@@ -105,9 +105,15 @@ public class Board {
 		this.board[x][y] = c;
 	}
 
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @throws BackendException
+	 */
 	private void validateCoordinates(int x, int y) throws BackendException {
 		if (x > this.board.length || y > this.board.length) {
-			throw new BackendException("Coordinate out of range.");
+			throw new BackendException("The coordinates (" + x + ", " + y + ") is out of bounds.");
 		}
 	}
 
@@ -120,7 +126,7 @@ public class Board {
 	 * @throws BackendException 
 	 */
 	public char getCoordinate(int x, int y) throws BackendException {
-		validateCoordinates(x, y);
+		this.validateCoordinates(x, y);
 		return this.board[x][y];
 	}
 
@@ -132,18 +138,23 @@ public class Board {
 	 * @throws BackendException 
 	 */
 	public List<Coordinates> getShipCoordinates(IShip ship) throws BackendException {
-		nullCheck(ship);
+		this.nullCheck(ship);
 		return getCoordinatesByChar(ship.getSymbol());
 	}
 
-	//TODO: move this method to more accessible location
+	/**
+	 * Throws an exception if the object is null. This method is used primarily
+	 * to validate incoming parameters for null-reference exceptions.
+	 * 
+	 * @param object
+	 */
 	private void nullCheck(Object obj) throws BackendException {
+		//TODO: move this method to more accessible location
 		if (obj == null) {
 			throw new BackendException("Some object instance is null.");
 		}
 	}
 	
-
 	/**
 	 * Returns a list of MISSED coordinates on the board.
 	 * 
@@ -309,10 +320,16 @@ public class Board {
 	 * 
 	 * @param myBoard
 	 * @param oppBoard
-	 * @throws BackendException 
+	 * @throws BackendException
 	 */
-	//TODO: null defend
-	public static void print(Board myBoard, Board oppBoard) throws BackendException {
+	public static void print(Board myBoard, Board oppBoard)
+			throws BackendException {
+
+		// we can't use our nullCheck() method here because it is not static
+		if (myBoard == null || oppBoard == null) {
+			throw new BackendException("The Board object was null.");
+		}
+		
 		System.out.println("--- My Board --|-- Opp Board ---");
 		System.out.println("  0123456789   |   0123456789");
 		for (int y = 0; y < myBoard.length() && y < oppBoard.length(); y++) {
@@ -333,10 +350,10 @@ public class Board {
 	 * Override the equals method to compare two Board object accurately.
 	 */
 	public boolean equals(Object obj) {
-		if (obj == null) {
+		if (obj == null || !(obj instanceof Board)) {
 			return false;
 		}
-		//TODO: possible ClassCastException here
+
 		Board tmpBoard = (Board) obj;
 		for (int y = 0; y < this.board.length; y++) {
 			for (int x = 0; x < this.board.length; x++) {
@@ -353,8 +370,8 @@ public class Board {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Serializes the current board instance to a string.
+	 * @return serialized string
 	 */
 	public String toString() {
 		String string = "";
@@ -367,13 +384,20 @@ public class Board {
 	}
 
 	/**
+	 * Deserializes the string to a game Board object.
 	 * 
 	 * @param string
-	 * @return
-	 * @throws BackendException 
+	 *            series of characters representing the game board
+	 * @return populated game board object
+	 * @throws BackendException
 	 */
-	//TODO: null defend
 	public static Board deserialize(String string) throws BackendException {
+
+		// we can't use our nullCheck() method here because it is not static
+		if (string == null) {
+			throw new BackendException("The String paramater was null.");
+		}
+
 		Board board = new Board();
 		int strCursor = 0;
 		for (int y = 0; y < board.length(); y++) {
@@ -387,7 +411,7 @@ public class Board {
 	
 	/**
 	 * Populates the entire board with 'empty' units.
-	 *
+	 * 
 	 */
 	public void reset() {
 		for (int y = 0; y < this.board.length; y++) {
