@@ -27,11 +27,11 @@ public class Player extends Observable {
 	}
 
 	/**
-	 * Calls the setChanged() method on Observable.
+	 * Notifies all observers that the a change has occured.
 	 */
-	//TODO: add notifyObservers() invocation
 	public void setChanged() {
 		super.setChanged();
+		super.notifyObservers();
 	}
 
 	/**
@@ -95,8 +95,7 @@ public class Player extends Observable {
 	 */
 	public void setMyTurn(boolean myTurn) {
 		this.myTurn = myTurn;
-		setChanged();
-		notifyObservers();
+		this.setChanged();
 	}
 
 	/**
@@ -105,7 +104,7 @@ public class Player extends Observable {
 	 * @return Vector of Strings
 	 */
 	public Vector<String> getMessages() {
-		return messages;
+		return this.messages;
 	}
 
 	/**
@@ -114,7 +113,7 @@ public class Player extends Observable {
 	 * @param message
 	 */
 	public void addMessage(String message) {
-		messages.add(message);
+		this.messages.add(message);
 	}
 
 	/**
@@ -122,8 +121,8 @@ public class Player extends Observable {
 	 * 
 	 */
 	public void printMessages() {
-		for (int i = 0; i < messages.size(); i++) {
-			System.out.println(messages.elementAt(i));
+		for (int i = 0; i < this.messages.size(); i++) {
+			System.out.println(this.messages.elementAt(i));
 		}
 	}
 
@@ -132,6 +131,6 @@ public class Player extends Observable {
 	 * 
 	 */
 	public void resetMessages() {
-		messages.clear();
+		this.messages.clear();
 	}
 }

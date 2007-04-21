@@ -91,16 +91,18 @@ public class EJBGameEngine {
     
     public class GameEngineListener implements MessageListener {
 
-		public void onMessage(Message msg) {
-			//TODO: ensure msg is a MapMessage
-			MapMessage map = (MapMessage) msg;
+		public void onMessage(Message message) {
+			if (!(message instanceof MapMessage)) {
+				return;
+			}
+			MapMessage map = (MapMessage) message;
 			try {
 				if (!map.itemExists("header")) {
 					Logger.LogWarning("Header was null. Skipping..");
 					return;
 				}
 				String playerId = map.getString("playerId");
-				String opponentId = "";
+				String opponentId = getOpponentId(playerId);
 				String destination = map.getString("destination");
 				int header = Integer.parseInt(map.getString("header"));
 				switch(header)
@@ -115,8 +117,7 @@ public class EJBGameEngine {
 						} else {
 							Logger.LogInfo("Game is READY!");
 						}
-						//TODO: move outside of switch
-						opponentId = getOpponentId(playerId);
+						
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, isMyTurn(playerId));
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, isMyTurn(opponentId));
 						break;
@@ -124,8 +125,6 @@ public class EJBGameEngine {
 						int x = map.getInt("x");
 						int y = map.getInt("y");
 						MoveResult moveResult = move(playerId, x, y);
-						//TODO: move outside of switch
-						opponentId = getOpponentId(playerId);
 						
 						Logger.LogInfo("PlayerId: " + playerId + " moved to (" + x + ", " + y + ") against " + opponentId + ". Result: " + moveResult.toString());
 						
@@ -138,8 +137,7 @@ public class EJBGameEngine {
 							break;
 						}
 						
-						//TODO: change to sendMoveResultMessage
-						msgUtil.sendIsHitMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, moveResult, x, y);
+						msgUtil.sendMoveResultMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, moveResult, x, y);
 						msgUtil.sendMoveNotifyMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, x, y);
 						break;
 					// client side messages should not be used here
@@ -171,14 +169,22 @@ public class EJBGameEngine {
 	}
 
 	/**
-	 * Adds player to the game, if possible
-	 * @param playerId New player's ID
-	 * @param board New player's board
-	 * @throws Exception 
+	 * If the game is not already full, it adds player to the game.
+	 * 
+	 * @param playerId
+	 *            New player's ID
+	 * @param board
+	 *            New player's board
+	 * @throws Exception
 	 */
-	public void addPlayer(String playerId, Board board) throws Exception {
+	public void addPlayer(String playerId, Board board)
+			throws BackendException, JMSException, NamingException {
 		if (this.players.size() == MAX_PLAYERS) {
-			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "Sorry, but the game is full. There are already two people enjoying themselves.");
+			this.msgUtil.sendErrorMessage(
+							QueueNames.GAME_ENGINE,
+							getQueueByPlayerId(playerId),
+							playerId,
+							"Sorry, but the game is full. There are already two people enjoying themselves.");
 			throw new BackendException("Game full");
 		}
 
@@ -202,9 +208,10 @@ public class EJBGameEngine {
 	 * @param y
 	 *            y-coordinate of the move
 	 * @return true if move is a hit
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public MoveResult move(String playerId, int x, int y) throws Exception {
+	public MoveResult move(String playerId, int x, int y)
+			throws BackendException, JMSException, NamingException {
 		Board oppBoard = getOpponentBoard(playerId);
 		Player thisMovePlayer = getPlayer(playerId);
 
@@ -226,9 +233,9 @@ public class EJBGameEngine {
 	 * @return
 	 * @throws Exception
 	 */
-	private String getOpponentId(String playerId) throws Exception {
-		//TODO: Should be < MAX_PLAYERS
-		if (this.players.size() != MAX_PLAYERS) {
+	private String getOpponentId(String playerId) throws BackendException,
+			JMSException, NamingException {
+		if (this.players.size() < MAX_PLAYERS) {
 			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
 		} else {
@@ -248,9 +255,8 @@ public class EJBGameEngine {
 	 * @return revealed board of the opponent
 	 * @throws Exception 
 	 */
-	private Board getOpponentBoard(String pId) throws Exception {
-//		TODO: Should be < MAX_PLAYERS
-		if (this.players.size() != MAX_PLAYERS) {
+	private Board getOpponentBoard(String pId) throws BackendException, JMSException, NamingException {
+		if (this.players.size() < MAX_PLAYERS) {
 			this.msgUtil.sendErrorMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(pId), pId, "No opponent found.");
 			throw new BackendException("There is no opponent!");
 		} else {
@@ -297,8 +303,7 @@ public class EJBGameEngine {
 	 * @return true if player's turn, false otherwise.
 	 */
 	public boolean isMyTurn(String playerId) {
-		//TODO: this.players.size() < 2
-		if (playerId == null || this.players.size() == 0) {
+		if (playerId == null || this.players.size() < MAX_PLAYERS) {
 			return false;
 		}
 
@@ -313,9 +318,8 @@ public class EJBGameEngine {
 	 *
 	 */
 	public void resetGame() {
-		//TODO: reverse order of following statements
-		isGameActive = true;
 		this.players.clear();
+		isGameActive = true;	
 	}
 	
 	/***

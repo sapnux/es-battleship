@@ -168,7 +168,7 @@ public class JMSMsgUtils {
 	 * @param y
 	 * @throws Exception
 	 */
-	public void sendIsHitMessage(String source, String dest, String pId,
+	public void sendMoveResultMessage(String source, String dest, String pId,
 			MoveResult moveResult, int x, int y) throws Exception {
 		QueueSender sender = queueSession.createSender(this.getServerQueue());
 		MapMessage msg = queueSession.createMapMessage();
@@ -268,7 +268,7 @@ public class JMSMsgUtils {
 	 * @param errorMsg
 	 * @throws Exception
 	 */
-	public void sendErrorMessage(String source, String dest, String pId, String errorMsg) throws Exception {
+	public void sendErrorMessage(String source, String dest, String pId, String errorMsg) throws JMSException, NamingException {
 	    QueueSender sender = queueSession.createSender(this.getServerQueue());
 	    MapMessage msg = queueSession.createMapMessage();
 	    msg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
