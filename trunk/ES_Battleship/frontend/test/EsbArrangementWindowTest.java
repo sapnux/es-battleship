@@ -270,7 +270,11 @@ public class EsbArrangementWindowTest extends TestCase {
 		//Compare test board to the board produced by simulating clicking.
 		for(int i=0; i<10; i++){
 			for(int j=0; j<10; j++)
-				assertEquals(mBoard.getCoordinate(i, j), mTestBoard.getCoordinate(i, j));
+				try {
+					assertEquals(mBoard.getCoordinate(i, j), mTestBoard.getCoordinate(i, j));
+				} catch (BackendException e) {
+					e.printStackTrace();
+				}
 		}
 		
 		UISpecAssert.assertTrue(mReadyButton.isEnabled());

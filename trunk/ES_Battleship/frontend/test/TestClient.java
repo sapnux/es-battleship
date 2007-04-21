@@ -48,12 +48,16 @@ public class TestClient implements IClient {
 	public void move(int x, int y) {
 		//TEST CODE
 		boolean rValue = false;			
-		if(x<=4){
-			mPlayer.getOppBoard().setCoordinate(Constants.BOARD_HIT, x, y);
-			rValue = true;
-		} else {		
-			mPlayer.getOppBoard().setCoordinate(Constants.BOARD_MISS, x, y);
-			rValue = false;
+		try {
+			if(x<=4){
+				mPlayer.getOppBoard().setCoordinate(Constants.BOARD_HIT, x, y);
+				rValue = true;
+			} else {		
+				mPlayer.getOppBoard().setCoordinate(Constants.BOARD_MISS, x, y);
+				rValue = false;
+			}
+		} catch (BackendException e) {
+			e.printStackTrace();
 		}
 		
 		// If Hit, still player's turn
