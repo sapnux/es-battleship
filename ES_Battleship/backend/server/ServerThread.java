@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
 
 import backend.constants.MoveResult;
 import backend.state.Board;
+import backend.util.BackendException;
+import backend.util.Logger;
 import backend.util.MsgUtils;
 
 public class ServerThread extends Thread {
@@ -72,6 +74,9 @@ public class ServerThread extends Thread {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			Server.serverConsole.write("ServerThread: " + e.getMessage());
+			e.printStackTrace();
+		} catch (BackendException e) {
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 	}

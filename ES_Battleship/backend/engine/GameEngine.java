@@ -3,6 +3,8 @@ package backend.engine;
 import backend.constants.MoveResult;
 import backend.state.Board;
 import backend.state.Player;
+import backend.util.BackendException;
+import backend.util.Logger;
 
 public class GameEngine {
 	
@@ -36,19 +38,25 @@ public class GameEngine {
 	 * @return true if move is a hit
 	 */
 	public MoveResult move(String pId, String x, String y) {
-		Board oppBoard = getOpponentBoard(pId);
-		Player thisMovePlayer = getPlayer(pId);
-		int xCoord = Integer.parseInt(x);
-		int yCoord = Integer.parseInt(y);
-		
-		if (oppBoard.isHit(xCoord, yCoord)) {
-			thisMovePlayer.getOppBoard().setHit(xCoord, yCoord);
-			if (thisMovePlayer.getOppBoard().hasLost()) 
-				return MoveResult.WIN;
-			return MoveResult.HIT;
-		} else {
-			thisMovePlayer.getOppBoard().setMiss(xCoord, yCoord);
-			return MoveResult.MISS;
+		try {
+			Board oppBoard = getOpponentBoard(pId);
+			Player thisMovePlayer = getPlayer(pId);
+			int xCoord = Integer.parseInt(x);
+			int yCoord = Integer.parseInt(y);
+			
+			if (oppBoard.isHit(xCoord, yCoord)) {
+				thisMovePlayer.getOppBoard().setHit(xCoord, yCoord);
+				if (thisMovePlayer.getOppBoard().hasLost()) 
+					return MoveResult.WIN;
+				return MoveResult.HIT;
+			} else {
+				thisMovePlayer.getOppBoard().setMiss(xCoord, yCoord);
+				return MoveResult.MISS;
+			}
+		} catch (BackendException e) {
+			Logger.LogError(e.getMessage());
+			e.printStackTrace();
+			return null;
 		}
 	}
 
