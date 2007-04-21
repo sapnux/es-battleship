@@ -49,7 +49,7 @@ public class SampleEJBClient implements Observer {
 		try {
 			Board.print(this.client.getPlayer().getMyBoard(), this.client.getPlayer().getOppBoard());
 		} catch (BackendException e) {
-			// TODO Auto-generated catch block
+			Logger.LogError(e.getMessage());
 			e.printStackTrace();
 		}
 		this.client.getPlayer().printMessages();

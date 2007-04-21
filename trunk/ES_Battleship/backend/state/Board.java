@@ -245,12 +245,12 @@ public class Board {
 		if (orientation.equals(Orientation.HORIZONTAL)) {
 			// place ship horizontally
 			for (int i = x; i < x + ship.getSize(); i++) {
-				this.board[i][y] = ship.getSymbol(); //TODO: use setCoordinate instead
+				setCoordinate(ship.getSymbol(), i, y);
 			}
 		} else {
 			// place ship vertically
 			for (int i = y; i < y + ship.getSize(); i++) {
-				this.board[x][i] = ship.getSymbol(); //TODO: use setCoordinate instead
+				setCoordinate(ship.getSymbol(), x, i);
 			}
 		}
 	}
