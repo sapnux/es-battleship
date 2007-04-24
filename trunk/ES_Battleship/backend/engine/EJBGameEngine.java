@@ -102,7 +102,7 @@ public class EJBGameEngine {
 					return;
 				}
 				String playerId = map.getString("playerId");
-				String opponentId = getOpponentId(playerId);
+				String opponentId = ""; // first user logged on does NOT have an opponent
 				String destination = map.getString("destination");
 				int header = Integer.parseInt(map.getString("header"));
 				switch(header)
@@ -117,7 +117,7 @@ public class EJBGameEngine {
 						} else {
 							Logger.LogInfo("Game is READY!");
 						}
-						
+						opponentId = getOpponentId(playerId);
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(playerId), playerId, isMyTurn(playerId));
 						msgUtil.sendTurnMessage(QueueNames.GAME_ENGINE, getQueueByPlayerId(opponentId), opponentId, isMyTurn(opponentId));
 						break;
@@ -125,6 +125,7 @@ public class EJBGameEngine {
 						int x = map.getInt("x");
 						int y = map.getInt("y");
 						MoveResult moveResult = move(playerId, x, y);
+						opponentId = getOpponentId(playerId);
 						
 						Logger.LogInfo("PlayerId: " + playerId + " moved to (" + x + ", " + y + ") against " + opponentId + ". Result: " + moveResult.toString());
 						
