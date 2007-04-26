@@ -111,9 +111,21 @@ public class Board {
 	 * @param y
 	 * @throws BackendException
 	 */
-	private void validateCoordinates(int x, int y) throws BackendException {
-		if (x > this.board.length || y > this.board.length) {
+	private void validateCoordinates(int x, int y) throws BackendException {		
+		if ((x >= this.board.length) || (x<0) ||
+			(y >= this.board.length) || (y<0)    )
+		{
 			throw new BackendException("The coordinates (" + x + ", " + y + ") is out of bounds.");
+		}
+	}
+	
+	private static void validateCharacter(char c) throws BackendException {
+		switch(c) {
+		case 'a': case 'b': case 'c': case 'p':
+		case 's': case 'x': case 'm': case '*':		
+			break;
+		default:
+			throw new BackendException("Character " + c + " is an invalid character.");
 		}
 	}
 
@@ -268,10 +280,7 @@ public class Board {
 			throws BackendException {
 
 		// ensure our coordinates are within the board boundary
-		if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length) {
-			throw new BackendException("The coordinates (" + x + "," + y
-					+ ") are out of range.");
-		}
+		validateCoordinates(x, y);
 
 		// ensure placing this ship does not go out of bounds
 		int direction = orientation.equals(Orientation.HORIZONTAL) ? x : y;
@@ -397,11 +406,17 @@ public class Board {
 		if (string == null) {
 			throw new BackendException("The String paramater was null.");
 		}
+		
+		if(string.length() != 100){
+			throw new BackendException("The String paramater was the wrong length.");
+		}		
 
 		Board board = new Board();
 		int strCursor = 0;
 		for (int y = 0; y < board.length(); y++) {
 			for (int x = 0; x < board.length(); x++) {
+				validateCharacter(string.charAt(strCursor));
+					
 				board.setCoordinate(string.charAt(strCursor), x, y);
 				strCursor++;
 			}

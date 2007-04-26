@@ -20,6 +20,7 @@ import java.util.*;
 
 public class EsbArrangmentWindow extends JFrame {
 
+	//TODO make a real serialID value, or remove it entirely
 	private static final long serialVersionUID = 1L;
 
 	private JPanel  jContentPane            = null;
@@ -46,7 +47,6 @@ public class EsbArrangmentWindow extends JFrame {
 	 */
 	public EsbArrangmentWindow(Board aBoard, List <CanDrawShip> aShipList,
 							   String[] aParams) {
-		super();
 		mPlayerBoard = aBoard;
 		mShipList    = aShipList;
 		mParams = aParams;
@@ -123,7 +123,6 @@ public class EsbArrangmentWindow extends JFrame {
 //				mSelectedShip = (CanDrawShip)(((JList)e.getSource()).getSelectedValue());
 ////				//TEST CODE
 //				System.out.println(mSelectedShip);
-//				//TODO create JUnit code to test
 //			}
 //		});
 
@@ -160,7 +159,7 @@ public class EsbArrangmentWindow extends JFrame {
 		mReadyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				
-				//TODO create JUnit code to test
+				//TODO candidate for refactoring
 				//TEST CODE
 //				TestClient theClient = new TestClient(mParams[2], mPlayerBoard);
 				EsbBattleWindow theBWindow = null;
@@ -200,6 +199,7 @@ public class EsbArrangmentWindow extends JFrame {
 		mFleetPanel.setSize(new Dimension(400, 400));
 		mFleetPanel.setBackground(Color.BLUE);
 		
+		//TODO consider making a separate, fully fledged class for this
 		mFleetPanel.addMouseListener(new MouseAdapter(){
 			private int mCellSide = mFleetPanel.getCellSide();
 			private int mGrid1X = 0, mGrid1Y = 0;
@@ -211,7 +211,9 @@ public class EsbArrangmentWindow extends JFrame {
 				// TEST CODE
 				//System.out.println("Got a click! " + e.getX() + " " + e.getY());
 				
-				if(!mShipSelection.isSelectionEmpty()){//(mSelectedShip != null){										
+				//TODO move numClicks if blocks out of isEmpty if block.
+				if(!mShipSelection.isSelectionEmpty()){//(mSelectedShip != null){
+					//TODO refactor mNumClicks into a boolean
 					if(mNumClicks == 0){
 						mSelectedShip = (CanDrawShip) mShipSelection.getSelectedValue();
 						mGrid1X = e.getX() / mCellSide;
@@ -303,19 +305,23 @@ public class EsbArrangmentWindow extends JFrame {
 			private int mRecentGridY      = -1;
 			private Coordinates mRefPoint = null;			
 			
-			public void mouseMoved(MouseEvent e){				
+			public void mouseMoved(MouseEvent e){
+				
+				//TODO move code out of numClicks if block.
+				//TODO refactor mNumClicks into a boolean				
 				if(mNumClicks == 1){
-					int tGridX, tGridY;
+					int tGridX = e.getX()/mCellSide;
+					int tGridY = e.getY()/mCellSide;
+					
+					//TODO consider refactoring code around cellChanged 
 					boolean cellChanged = false;
 					
-					if((tGridX = e.getX()/mCellSide) != mRecentGridX)
-						cellChanged = true;
-					if((tGridY = e.getY()/mCellSide) != mRecentGridY)
+					if((tGridX != mRecentGridX)||(tGridY != mRecentGridY))
 						cellChanged = true;
 					//if the mouse is in the same cell, don't change anything
 					if(!cellChanged)
 						return;
-					else{
+					else{ // TODO this else statement is useless logically
 						mRefPoint = mFleetPanel.getReticle();
 						mRecentGridX = tGridX;
 						mRecentGridY = tGridY;
@@ -329,7 +335,7 @@ public class EsbArrangmentWindow extends JFrame {
 					
 					int tNWx, tNWy;
 					Rectangle tGuide;
-					//Guide should be horizontal
+					//Guide should be vertical
 					if(tGridX == mRefPoint.getX()){
 						tNWx = tGridX * mCellSide;
 						tNWy = Math.min(tGridY, mRefPoint.getY()) * mCellSide;
@@ -337,7 +343,7 @@ public class EsbArrangmentWindow extends JFrame {
 								mCellSide,
 								mSelectedShip.getIShip().getSize() * mCellSide);
 					}
-					//Guide should be vertical
+					//Guide should be horizontal
 					else if(tGridY == mRefPoint.getY()){
 						tNWy = tGridY * mCellSide;
 						tNWx = Math.min(tGridX, mRefPoint.getX()) * mCellSide;
