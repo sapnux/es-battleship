@@ -215,6 +215,9 @@ public class EJBGameEngine {
 			throws BackendException, JMSException, NamingException {
 		Board oppBoard = getOpponentBoard(playerId);
 		Player thisMovePlayer = getPlayer(playerId);
+		
+		if(thisMovePlayer == null)
+			throw new BackendException("Player "+playerId+" not found.");
 
 		if (oppBoard.isHit(x, y)) {
 			thisMovePlayer.getOppBoard().setHit(x, y);

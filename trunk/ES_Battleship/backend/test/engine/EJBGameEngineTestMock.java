@@ -17,6 +17,7 @@ import backend.constants.*;
 import backend.engine.*;
 import backend.state.*;
 import backend.state.ships.*;
+import backend.util.BackendException;
 import backend.client.*;
 
 public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
@@ -66,17 +67,26 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 //		MockContextFactory.revertSetAsInitial();
 //	}
 	
-	public void testInitPrintMessageReceiver() throws Exception
+	public void testInit() throws Exception
     {
         verifyQueueConnectionStarted();
         verifyNumberQueueSessions(1);
         verifyNumberQueueReceivers(0, mGameEngQueue.getQueueName(), 1);
         verifyNumberQueueReceivers(0, mServerQueue.getQueueName(), 1);
+        
+        MockMessage tMsg = new MockMessage();
+        mGameEngQueue.addMessage(tMsg);
+        verifyNumberOfReceivedQueueMessages(mGameEngQueue.getQueueName(), 1);
+        verifyNumberOfReceivedQueueMessages(mServerQueue.getQueueName(), 0);
+        
     }
 	
-	public void testSendReadyMessage() throws Exception{
-		
+	public void testSendReadyMessage() throws Exception{		
 		MockMapMessage tMsg = new MockMapMessage();
+		mGameEngQueue.addMessage(tMsg);
+	    verifyNumberOfReceivedQueueMessages(mGameEngQueue.getQueueName(), 1);
+	    verifyNumberOfReceivedQueueMessages(mServerQueue.getQueueName(), 0);
+	    
 		tMsg.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 		tMsg.setJMSReplyTo(mClient1Queue);
 		tMsg.setInt("header", MsgHeader.READY);
@@ -86,7 +96,7 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 	    
 	    mGameEngQueue.addMessage(tMsg);
 	    
-	    verifyNumberOfReceivedQueueMessages(mGameEngQueue.getQueueName(), 1);	   
+	    verifyNumberOfReceivedQueueMessages(mGameEngQueue.getQueueName(), 2);	   
 	    
 	    verifyAllReceivedQueueMessagesAcknowledged(mServerQueue.getQueueName());
 	    verifyNumberOfReceivedQueueMessages(mServerQueue.getQueueName(), 1);
@@ -165,8 +175,8 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
                 tRecdMsg3);	
 	}
 	
-	public void testMakeMove() throws Exception {
-		
+	public void testMoveInfo() throws Exception {
+		//Send a move message before all players are in.
 		//Player1
 		playerJoin(mClient1Queue, "Player1", new Board().toString());	
 		
@@ -192,6 +202,7 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 		verifyReceivedQueueMessageEquals(mServerQueue.getQueueName(), 1, 
                 tRecdMsg1);	
 		
+		//Add a second player and test a single hit.
 	    //Player2
 		Board tBoard = new Board();
 		tBoard.add(new AircraftCarrier(), 0, 0, Orientation.HORIZONTAL);
@@ -238,6 +249,8 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 		    mGameEngQueue.addMessage(tMsg);
 	    }
 		//+30 msgs ServerQueue, total of 36 at this point
+		
+		//do the final hit.  This results in win for player 1.
 	    tMsg.setInt("x", 6);
 	    tMsg.setInt("y", 1);
 	    mGameEngQueue.addMessage(tMsg);
@@ -345,6 +358,22 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 	    assertNull(tQueueName);
 	}
 	
+	public void testIsMyTurn() throws Exception {
+		assertFalse(mGameEngine.isMyTurn(null));
+		
+		//Player1
+		playerJoin(mClient1Queue, "Player1", new Board().toString());		
+		assertFalse(mGameEngine.isMyTurn("Player1"));
+		
+		//Player2
+		playerJoin(mClient2Queue, "Player2", new Board().toString());
+		assertFalse(mGameEngine.isMyTurn("Player2"));
+		
+		assertTrue(mGameEngine.isMyTurn("Player1"));
+		
+		assertFalse(mGameEngine.isMyTurn("Player3"));
+	}
+	
 	public void testMove() throws Exception{
 		//Player1
 		playerJoin(mClient1Queue, "Player1", new Board().toString());
@@ -359,8 +388,17 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 		
 		playerJoin(mClient2Queue, "Player2", tBoard.toString());
 	    
-	    //Test Results
-	    MoveResult tResult;
+		MoveResult tResult;
+		
+		try {
+			tResult = mGameEngine.move("Player3", 0, 0);
+			fail("Exception not thrown");
+		} catch (BackendException e) {
+			assertEquals(e.getMessage(), "Player Player3 not found.");
+		}
+		
+		
+	    //Test Results	  
 	    tResult = mGameEngine.move("Player1", 0, 9);
 	    assertEquals(tResult, MoveResult.MISS);
 	    
@@ -373,36 +411,68 @@ public class EJBGameEngineTestMock extends JMSTestCaseAdapter{
 	    assertEquals(tResult, MoveResult.WIN);
 	}
 	
-	public void testMockStuff() throws Exception{
-
-		MockQueue tTestQueue = getDestinationManager().createQueue("testQueue");
-        mEjbModule.bindToContext("queue/testQueue", tTestQueue);
-		
+	public void testCloseConnection() throws Exception {
 		MockConnection tCurrConn = getJMSMockObjectFactory().getMockQueueConnectionFactory().getLatestConnection();
-//		Session tSession = tCurrConn.createSession(false, QueueSession.AUTO_ACKNOWLEDGE);
-		Session tSession = (Session)tCurrConn.getSessionList().get(0);
-		
-		MockMapMessage tJoin1 = new MockMapMessage();
-		tJoin1.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
-		tJoin1.setJMSReplyTo(mClient1Queue);
-		tJoin1.setInt("header", MsgHeader.READY);
-		tJoin1.setString("destination", QueueNames.GAME_ENGINE);
-		tJoin1.setString("playerId", "Player1");
-		tJoin1.setString("board", new Board().toString());
-		
-		QueueReceiver tTestReceiver = ((QueueSession)tSession).createReceiver(tTestQueue);
-		tTestReceiver.setMessageListener(new MessageListener() {			
-			public void onMessage(Message msg) {
-				System.out.println(msg.toString());
-			}
-		});	
-		
-//		QueueSender tTestSender = ((QueueSession)tSession).createSender(tTestQueue);
-//		tTestSender.send(tJoin1);
-		tTestQueue.addMessage(tJoin1);
-		
-	    verifyAllReceivedQueueMessagesAcknowledged("testQueue");
-	    verifyNumberOfReceivedQueueMessages("testQueue", 1);
-		
+		assertTrue(tCurrConn.isStarted());
+		mGameEngine.closeConnections();
+		assertTrue(tCurrConn.isStopped());		
+		assertTrue(tCurrConn.isClosed());		
 	}
+	
+//	public void testMainMethod() throws Exception {
+//		tearDown();
+//		
+//		Thread tMain = new Thread(new Runnable() {
+//			public void run() {			
+//				try {
+//					EJBGameEngine.main(null);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//		tMain.start();
+//		
+//		MockConnection tCurrConn = getJMSMockObjectFactory().getMockQueueConnectionFactory().getLatestConnection();
+//		assertTrue(tCurrConn.isStarted());
+//		
+//		testMoveInfo();
+//		
+//		assertTrue(tCurrConn.isStopped());		
+//		assertTrue(tCurrConn.isClosed());			
+//	}
+	
+//	public void testMockStuff() throws Exception{		
+//		
+//		MockQueue tTestQueue = getDestinationManager().createQueue("testQueue");
+//        mEjbModule.bindToContext("queue/testQueue", tTestQueue);
+//		
+//		MockConnection tCurrConn = getJMSMockObjectFactory().getMockQueueConnectionFactory().getLatestConnection();
+////		Session tSession = tCurrConn.createSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+//		Session tSession = (Session)tCurrConn.getSessionList().get(0);
+//		
+//		MockMapMessage tJoin1 = new MockMapMessage();
+//		tJoin1.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
+//		tJoin1.setJMSReplyTo(mClient1Queue);
+//		tJoin1.setInt("header", MsgHeader.READY);
+//		tJoin1.setString("destination", QueueNames.GAME_ENGINE);
+//		tJoin1.setString("playerId", "Player1");
+//		tJoin1.setString("board", new Board().toString());
+//		
+//		QueueReceiver tTestReceiver = ((QueueSession)tSession).createReceiver(tTestQueue);
+//		tTestReceiver.setMessageListener(new MessageListener() {			
+//			public void onMessage(Message msg) {
+//				System.out.println(msg.toString());
+//			}
+//		});	
+//		
+////		QueueSender tTestSender = ((QueueSession)tSession).createSender(tTestQueue);
+////		tTestSender.send(tJoin1);
+//		tTestQueue.addMessage(tJoin1);
+//		
+//	    verifyAllReceivedQueueMessagesAcknowledged("testQueue");
+//	    verifyNumberOfReceivedQueueMessages("testQueue", 1);
+//		
+//	}
 }
